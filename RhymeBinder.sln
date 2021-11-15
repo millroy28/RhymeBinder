@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhymeBinder", "RhymeBinder\RhymeBinder.csproj", "{B3275B0A-39B0-4A1A-AC92-4DF9CF9A325A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3275B0A-39B0-4A1A-AC92-4DF9CF9A325A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3275B0A-39B0-4A1A-AC92-4DF9CF9A325A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3275B0A-39B0-4A1A-AC92-4DF9CF9A325A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3275B0A-39B0-4A1A-AC92-4DF9CF9A325A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {64C209B1-5D45-489B-A539-8B4307ED6E9C}
+	EndGlobalSection
+EndGlobal
