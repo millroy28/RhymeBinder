@@ -10,9 +10,11 @@ namespace RhymeBinder.Models
         public int TextRecordId { get; set; }
         public int TextHeaderId { get; set; }
         public int TextId { get; set; }
+        public string UserId { get; set; }
         public DateTime? Recorded { get; set; }
 
         public virtual Text Text { get; set; }
         public virtual TextHeader TextHeader { get; set; }
+        public virtual AspNetUser User { get; set; }
     }
 }

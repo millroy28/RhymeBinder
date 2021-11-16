@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewData["Title"] = "EditText";
+}
+@{
+}
+@model Text
+
+<h2>Editing text: </h2>
+    
+<form action="EditText" method="post">
+    <input type ="hidden" name="TextId" value="@Model.TextId" />
+    <input type ="hidden" name="Created" value="@Model.Created"/>
+    <input type="text" name="TextBody" />
+
+    <input type="submit" value="Continue" />
+</form>

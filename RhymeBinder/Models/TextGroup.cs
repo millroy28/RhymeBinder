@@ -14,7 +14,9 @@ namespace RhymeBinder.Models
 
         public int TextGroupId { get; set; }
         public string GroupTitle { get; set; }
+        public string OwnerId { get; set; }
 
+        public virtual AspNetUser Owner { get; set; }
         public virtual ICollection<TextHeader> TextHeaders { get; set; }
     }
 }

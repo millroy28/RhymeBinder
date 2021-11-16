@@ -147,7 +147,7 @@ namespace RhymeBinder.Models
             modelBuilder.Entity<LnkTextSubmission>(entity =>
             {
                 entity.HasKey(e => e.LnkTextSumbissionId)
-                    .HasName("PK__lnkTextS__077E7A660A0AF7AA");
+                    .HasName("PK__lnkTextS__077E7A66DAABFE7D");
 
                 entity.ToTable("lnkTextSubmission");
 
@@ -163,13 +163,13 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.LnkTextSubmissions)
                     .HasForeignKey(d => d.SubmissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__lnkTextSu__Submi__4D2A7347");
+                    .HasConstraintName("FK__lnkTextSu__Submi__473C8FC7");
 
                 entity.HasOne(d => d.TextHeader)
                     .WithMany(p => p.LnkTextSubmissions)
                     .HasForeignKey(d => d.TextHeaderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__lnkTextSu__TextH__4C364F0E");
+                    .HasConstraintName("FK__lnkTextSu__TextH__46486B8E");
             });
 
             modelBuilder.Entity<Publication>(entity =>
@@ -192,12 +192,12 @@ namespace RhymeBinder.Models
                 entity.HasOne(d => d.PublicationRating)
                     .WithMany(p => p.Publications)
                     .HasForeignKey(d => d.PublicationRatingId)
-                    .HasConstraintName("FK__Publicati__Publi__3552E9B6");
+                    .HasConstraintName("FK__Publicati__Publi__2AA05119");
 
                 entity.HasOne(d => d.PublicationType)
                     .WithMany(p => p.Publications)
                     .HasForeignKey(d => d.PublicationTypeId)
-                    .HasConstraintName("FK__Publicati__Publi__345EC57D");
+                    .HasConstraintName("FK__Publicati__Publi__29AC2CE0");
             });
 
             modelBuilder.Entity<PublicationRating>(entity =>
@@ -242,19 +242,19 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.Submissions)
                     .HasForeignKey(d => d.PublicationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Submissio__Publi__477199F1");
+                    .HasConstraintName("FK__Submissio__Publi__4183B671");
 
                 entity.HasOne(d => d.SubmissionStatus)
                     .WithMany(p => p.Submissions)
                     .HasForeignKey(d => d.SubmissionStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Submissio__Submi__4865BE2A");
+                    .HasConstraintName("FK__Submissio__Submi__4277DAAA");
 
                 entity.HasOne(d => d.TextHeader)
                     .WithMany(p => p.Submissions)
                     .HasForeignKey(d => d.TextHeaderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Submissio__TextH__4959E263");
+                    .HasConstraintName("FK__Submissio__TextH__436BFEE3");
             });
 
             modelBuilder.Entity<SubmissionStatus>(entity =>
@@ -281,6 +281,15 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.GroupTitle)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
+
+                entity.Property(e => e.OwnerId)
+                    .HasMaxLength(450)
+                    .HasColumnName("OwnerID");
+
+                entity.HasOne(d => d.Owner)
+                    .WithMany(p => p.TextGroups)
+                    .HasForeignKey(d => d.OwnerId)
+                    .HasConstraintName("FK__TextGroup__Owner__314D4EA8");
             });
 
             modelBuilder.Entity<TextHeader>(entity =>
@@ -289,9 +298,15 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.Created).HasColumnType("datetime");
 
+                entity.Property(e => e.CreatedBy).HasMaxLength(450);
+
                 entity.Property(e => e.LastModified).HasColumnType("datetime");
 
+                entity.Property(e => e.LastModifiedBy).HasMaxLength(450);
+
                 entity.Property(e => e.LastRead).HasColumnType("datetime");
+
+                entity.Property(e => e.LastReadBy).HasMaxLength(450);
 
                 entity.Property(e => e.TextGroupId).HasColumnName("TextGroupID");
 
@@ -303,27 +318,41 @@ namespace RhymeBinder.Models
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.TextHeaderCreatedByNavigations)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK__TextHeade__Creat__361203C5");
+
+                entity.HasOne(d => d.LastModifiedByNavigation)
+                    .WithMany(p => p.TextHeaderLastModifiedByNavigations)
+                    .HasForeignKey(d => d.LastModifiedBy)
+                    .HasConstraintName("FK__TextHeade__LastM__370627FE");
+
+                entity.HasOne(d => d.LastReadByNavigation)
+                    .WithMany(p => p.TextHeaderLastReadByNavigations)
+                    .HasForeignKey(d => d.LastReadBy)
+                    .HasConstraintName("FK__TextHeade__LastR__37FA4C37");
+
                 entity.HasOne(d => d.TextGroup)
                     .WithMany(p => p.TextHeaders)
                     .HasForeignKey(d => d.TextGroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__TextHeade__TextG__3DE82FB7");
+                    .HasConstraintName("FK__TextHeade__TextG__3429BB53");
 
                 entity.HasOne(d => d.Text)
                     .WithMany(p => p.TextHeaders)
                     .HasForeignKey(d => d.TextId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__TextHeade__TextI__3EDC53F0");
+                    .HasConstraintName("FK__TextHeade__TextI__351DDF8C");
 
                 entity.HasOne(d => d.TextRevisionStatus)
                     .WithMany(p => p.TextHeaders)
                     .HasForeignKey(d => d.TextRevisionStatusId)
-                    .HasConstraintName("FK__TextHeade__TextR__3FD07829");
+                    .HasConstraintName("FK__TextHeade__TextR__38EE7070");
 
                 entity.HasOne(d => d.VersionOfNavigation)
                     .WithMany(p => p.InverseVersionOfNavigation)
                     .HasForeignKey(d => d.VersionOf)
-                    .HasConstraintName("FK__TextHeade__Versi__40C49C62");
+                    .HasConstraintName("FK__TextHeade__Versi__39E294A9");
             });
 
             modelBuilder.Entity<TextRecord>(entity =>
@@ -338,17 +367,26 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.TextId).HasColumnName("TextID");
 
+                entity.Property(e => e.UserId)
+                    .HasMaxLength(450)
+                    .HasColumnName("UserID");
+
                 entity.HasOne(d => d.TextHeader)
                     .WithMany(p => p.TextRecords)
                     .HasForeignKey(d => d.TextHeaderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__TextRecor__TextH__43A1090D");
+                    .HasConstraintName("FK__TextRecor__TextH__3CBF0154");
 
                 entity.HasOne(d => d.Text)
                     .WithMany(p => p.TextRecords)
                     .HasForeignKey(d => d.TextId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__TextRecor__TextI__44952D46");
+                    .HasConstraintName("FK__TextRecor__TextI__3DB3258D");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.TextRecords)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK__TextRecor__UserI__3EA749C6");
             });
 
             modelBuilder.Entity<TextRevisionStatus>(entity =>
