@@ -146,5 +146,19 @@ namespace RhymeBinder.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public IActionResult ListTexts()
+        {
+            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<TextHeader> texts = new List<TextHeader>();
+
+            texts = _context.TextHeaders.Where(x => x.CreatedBy == userID &&
+                                                    x.Top == true &&
+                                                    x.Deleted == false).ToList();
+
+
+            return View(texts);
+        }
     }
 }

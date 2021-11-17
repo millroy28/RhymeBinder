@@ -1,0 +1,28 @@
+﻿@{ 
+    ViewData["Title"] = "ListTexts";
+}
+
+@{
+}
+@model List<TextHeader>
+
+<h2>Compositions:</h2>
+
+<table class="table table-responsive">
+    <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Revision Status</th>
+    </tr>
+
+    @foreach(var text in Model)
+    {
+        <tr>
+            <td>@text.Title</td>
+            <td>@text.Created</td>
+            <td>placeholder for revision status</td>
+        </tr>
+        
+    }
+
+</table>
