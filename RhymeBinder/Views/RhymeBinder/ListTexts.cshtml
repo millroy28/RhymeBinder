@@ -13,14 +13,18 @@
         <th>Title</th>
         <th>Created</th>
         <th>Revision Status</th>
+        <th></th>
+        <th></th>
     </tr>
 
     @foreach(var text in Model)
     {
         <tr>
             <td>@text.Title</td>
-            <td>@text.Created</td>
+            <td>@text.LastModified</td>
             <td>placeholder for revision status</td>
+            <td><a href="/RhymeBinder/ReadText?textHeaderID=@text.TextHeaderId">Link to read it</a></td>
+            <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">Link to edit it</a></td>
         </tr>
         
     }

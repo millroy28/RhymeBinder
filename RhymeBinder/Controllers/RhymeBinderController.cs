@@ -115,13 +115,14 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-            return Redirect($"/RhymeBinder/EditText?textId={newText.TextId}");
+            return Redirect($"/RhymeBinder/EditText?textId={thisTextHeader.TextHeaderId}");
         }
 
         [HttpGet]
-        public IActionResult EditText(int textId)
+        public IActionResult EditText(int TextHeaderID)
         {
-            Text thisText = _context.Texts.Find(textId);
+            TextHeader thisTextHeader = _context.TextHeaders.Find(TextHeaderID);
+            Text thisText = _context.Texts.Find(thisTextHeader.TextId);
             return View(thisText);
         }
 
@@ -129,6 +130,8 @@ namespace RhymeBinder.Controllers
         public IActionResult EditText(Text editedText)
         {
             Text thisText = _context.Texts.Find(editedText.TextId);
+
+            
 
             if (ModelState.IsValid)
             {
