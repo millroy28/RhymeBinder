@@ -4,14 +4,32 @@
 }
 @{
 }
-@model Text
+@model TextHeaderBodyUserRecord
 
 <h2>Editing text: </h2>
     
 <form action="EditText" method="post">
-    <input type ="hidden" name="TextId" value="@Model.TextId" />
-    <input type ="hidden" name="Created" value="@Model.Created"/>
-    <input type="text" name="TextBody" value="@Model.TextBody" />
+    <input type="hidden" name="TextHeader.TextHeaderId" value="@Model.TextHeader.TextHeaderId" />
+    <input type="hidden" name="TextHeader.TextGroupId" value="@Model.TextHeader.TextGroupId" />
+    <input type="hidden" name="TextHeader.TextId" value="@Model.TextHeader.TextId" />
+    <input type="hidden" name="TextHeader.Created" value="@Model.TextHeader.Created" />
+    <input type="hidden" name="TextHeader.CreatedBy" value="@Model.TextHeader.CreatedBy" />
+    <input type="hidden" name="TextHeader.LastModified" value="@Model.TextHeader.LastModified" />
+    <input type="hidden" name="TextHeader.LastModifiedBy" value="@Model.TextHeader.LastModifiedBy" />
+    <input type="hidden" name="TextHeader.LastRead" value="@Model.TextHeader.LastRead" />
+    <input type="hidden" name="TextHeader.LastReadNy" value="@Model.TextHeader.LastReadBy" />
+    <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.VisionNumber" />
+    <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.VersionOf" />
+    <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.Deleted" />
+    <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.Locked" />
+    <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.Top" />
+    <input type="hidden" name="User.UserID" value="@Model.User.UserID" />
+    <input type="hidden" name="User.UserName" value="@Model.User.UserName" />
+    <input type="hidden" name="Text.TextID" value="@Model.Text.TextId" />
+    <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
 
+
+    <input type="text" name="Text.TextBody" value="@Model.Text.TextBody" />
     <input type="submit" value="Continue" />
 </form>
+

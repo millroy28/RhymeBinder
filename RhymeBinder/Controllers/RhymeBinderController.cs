@@ -121,24 +121,37 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult EditText(int TextHeaderID)
         {
+            //Build up the TextHeaderBodyUserRecord to pass into view
             TextHeader thisTextHeader = _context.TextHeaders.Find(TextHeaderID);
             Text thisText = _context.Texts.Find(thisTextHeader.TextId);
-            return View(thisText);
+            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            AspNetUser aspNetUser = _context.AspNetUsers.Find(userID);
+            UserSimplified thisUser = new UserSimplified();
+            thisUser.UserID = aspNetUser.Id;
+            thisUser.UserName = aspNetUser.UserName;
+            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
+            {
+                TextHeader = thisTextHeader,
+                Text = thisText,
+                User = thisUser
+            };
+
+            return View(thisTextHeaderBodyUserRecord);
         }
 
         [HttpPost]
-        public IActionResult EditText(Text editedText)
+        public IActionResult EditText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord)
         {
-            Text thisText = _context.Texts.Find(editedText.TextId);
+            //Create a new record in the Text table 
+            Text newText = new Text();
 
+            newText.TextBody = editedTextHeaderBodyUserRecord.Text.TextBody;
+            newText.Created = DateTime.Now;
             
 
             if (ModelState.IsValid)
             {
-                thisText.TextBody = editedText.TextBody;
-                thisText.Created = editedText.Created;
-                _context.Entry(thisText).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  
-                _context.Update(thisText);
+                _context.Texts.Add(newText);
                 _context.SaveChanges();
             }
             else
@@ -146,6 +159,43 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
+            //Create a new log entry for the TextRecord table
+            TextRecord newTextRecord = new TextRecord();
+            
+            newTextRecord.TextHeaderId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
+            newTextRecord.TextId = newText.TextId;
+            newTextRecord.UserId = editedTextHeaderBodyUserRecord.User.UserID;
+            newTextRecord.Recorded = newText.Created;
+
+            if (ModelState.IsValid)
+            {
+                _context.TextRecords.Add(newTextRecord);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            //Update the TextHeader with the new TextID, etc
+            TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
+
+            updatedTextHeader.LastModified = newText.Created;
+            updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserID;
+            updatedTextHeader.LastRead = newText.Created;
+            updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserID;
+            updatedTextHeader.TextId = newTextRecord.TextId;
+
+            if (ModelState.IsValid)
+            {
+                _context.Entry(updatedTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(updatedTextHeader);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
 
             return RedirectToAction("Index");
         }
