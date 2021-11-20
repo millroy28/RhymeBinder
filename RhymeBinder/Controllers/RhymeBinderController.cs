@@ -36,7 +36,7 @@ namespace RhymeBinder.Controllers
         {
             string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            //creating a new TextGroup
+            //start by creating a new TextGroup
             TextGroup newTextGroup = new TextGroup();
            
             newTextGroup.GroupTitle = title;
@@ -54,7 +54,7 @@ namespace RhymeBinder.Controllers
             int newTextGroupID = newTextGroup.TextGroupId;
 
 
-            //creating a new TextHeader entry (DEFAULTS of a new TextHeader set here):
+            //create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             TextHeader newTextHeader = new TextHeader();
             
             newTextHeader.TextGroupId = newTextGroupID;
@@ -76,54 +76,22 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-            //get header id to pass into the editing portion
-            int newTextHeaderID = newTextHeader.TextHeaderId;
-
-            return AddText(newTextHeaderID);
+            return Redirect($"/RhymeBinder/EditText?textHeaderID={newTextHeader.TextHeaderId}");
         }
 
-        public IActionResult AddText(int textHeaderID)
-        {
-
-            Text newText = new Text();
-
-            newText.Created = DateTime.Now;
-            
-            if (ModelState.IsValid)
-            {
-                _context.Texts.Add(newText);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
-
-            //write the new textID into the TextHeader
-
-            TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
-
-            if (ModelState.IsValid)
-            {
-                thisTextHeader.TextId = newText.TextId;
-                _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(thisTextHeader);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
-
-            return Redirect($"/RhymeBinder/EditText?textId={thisTextHeader.TextHeaderId}");
-        }
 
         [HttpGet]
-        public IActionResult EditText(int TextHeaderID)
+        public IActionResult EditText(int textHeaderID)
         {
             //Build up the TextHeaderBodyUserRecord to pass into view
-            TextHeader thisTextHeader = _context.TextHeaders.Find(TextHeaderID);
-            Text thisText = _context.Texts.Find(thisTextHeader.TextId);
+            TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
+            Text thisText = new Text();
+
+            if (thisTextHeader.TextId != null)
+            {
+                thisText = _context.Texts.Find(thisTextHeader.TextId);
+            }
+                        
             string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             AspNetUser aspNetUser = _context.AspNetUsers.Find(userID);
             UserSimplified thisUser = new UserSimplified();
@@ -206,7 +174,7 @@ namespace RhymeBinder.Controllers
 
             List<TextHeader> texts = new List<TextHeader>();
 
-            texts = _context.TextHeaders.Where(x => x.CreatedBy == userID &&
+            texts = _context.TextHeaders.OrderByDescending(x => x.LastModified).Where(x => x.CreatedBy == userID &&
                                                     x.Top == true &&
                                                     x.Deleted == false).ToList();
 
