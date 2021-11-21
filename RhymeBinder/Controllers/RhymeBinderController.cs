@@ -79,30 +79,35 @@ namespace RhymeBinder.Controllers
             return Redirect($"/RhymeBinder/EditText?textHeaderID={newTextHeader.TextHeaderId}");
         }
 
+        public IActionResult ReadText(int textHeaderID)
+        {
+            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = BuildTextHeaderBodyUserRecord(textHeaderID);
+
+            TextHeader thisTextHeader = thisTextHeaderBodyUserRecord.TextHeader;
+
+            thisTextHeader.LastRead = DateTime.Now;
+            thisTextHeader.LastReadBy = thisTextHeaderBodyUserRecord.User.UserID;
+
+            if (ModelState.IsValid)
+            {
+                _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisTextHeader);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            return View(thisTextHeaderBodyUserRecord);
+
+        }
 
         [HttpGet]
         public IActionResult EditText(int textHeaderID)
         {
             //Build up the TextHeaderBodyUserRecord to pass into view
-            TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
-            Text thisText = new Text();
-
-            if (thisTextHeader.TextId != null)
-            {
-                thisText = _context.Texts.Find(thisTextHeader.TextId);
-            }
-                        
-            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            AspNetUser aspNetUser = _context.AspNetUsers.Find(userID);
-            UserSimplified thisUser = new UserSimplified();
-            thisUser.UserID = aspNetUser.Id;
-            thisUser.UserName = aspNetUser.UserName;
-            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
-            {
-                TextHeader = thisTextHeader,
-                Text = thisText,
-                User = thisUser
-            };
+            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = BuildTextHeaderBodyUserRecord(textHeaderID);
 
             return View(thisTextHeaderBodyUserRecord);
         }
@@ -180,6 +185,33 @@ namespace RhymeBinder.Controllers
 
 
             return View(texts);
+        }
+        
+        //Utility Methods:
+        public TextHeaderBodyUserRecord BuildTextHeaderBodyUserRecord(int textHeaderID)
+        {
+            //Build up a TextHeaderBodyUserRecord to pass into a view
+            TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
+            Text thisText = new Text();
+
+            if (thisTextHeader.TextId != null)
+            {
+                thisText = _context.Texts.Find(thisTextHeader.TextId);
+            }
+
+            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            AspNetUser aspNetUser = _context.AspNetUsers.Find(userID);
+            UserSimplified thisUser = new UserSimplified();
+            thisUser.UserID = aspNetUser.Id;
+            thisUser.UserName = aspNetUser.UserName;
+            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
+            {
+                TextHeader = thisTextHeader,
+                Text = thisText,
+                User = thisUser
+            };
+
+            return (thisTextHeaderBodyUserRecord);
         }
     }
 }

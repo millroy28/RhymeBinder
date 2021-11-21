@@ -97,3 +97,4 @@ C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Rhym
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\StartNewTextGroup.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\EditText.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\ListTexts.cshtml.g.cs
+C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\ReadText.cshtml.g.cs
