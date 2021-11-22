@@ -173,18 +173,21 @@ namespace RhymeBinder.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult ListTexts()
+        public IActionResult ListTexts(string sort)
         {
             string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string set = "active";
 
-            List<TextHeader> texts = new List<TextHeader>();
+            List<TextHeader> theseTextHeaders = GetTextHeaders(set, sort, userID);
 
-            texts = _context.TextHeaders.OrderByDescending(x => x.LastModified).Where(x => x.CreatedBy == userID &&
-                                                    x.Top == true &&
-                                                    x.Deleted == false).ToList();
+            //List<TextHeader> texts = new List<TextHeader>();
+
+            //texts = _context.TextHeaders.OrderByDescending(x => x.LastModified).Where(x => x.CreatedBy == userID &&
+            //                                        x.Top == true &&
+            //                                        x.Deleted == false).ToList();
 
 
-            return View(texts);
+            return View(theseTextHeaders);
         }
         
         //Utility Methods:
@@ -212,6 +215,42 @@ namespace RhymeBinder.Controllers
             };
 
             return (thisTextHeaderBodyUserRecord);
+        }
+
+        public List<TextHeader> GetTextHeaders (string set, string sort, string userID)
+        {
+            List<TextHeader> theseTextHeaders = new List<TextHeader>();
+            
+            switch (set)
+            {
+                case "active":
+                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID &&
+                                                                  x.Top == true &&
+                                                                  x.Deleted == false).ToList();
+                    break;
+
+                case "deleted":
+                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID &&
+                                                                  x.Deleted == true).ToList();
+                    break;
+
+                case "all":
+                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID).ToList();
+                    break;
+            }
+
+            switch (sort)
+            {
+                case "title":
+                    theseTextHeaders = theseTextHeaders.OrderBy(x => x.Title).ToList();
+                    break;
+                case "lastModified":
+                    theseTextHeaders = theseTextHeaders.OrderBy(x => x.LastModified).ToList();
+                    break;
+            }
+
+
+            return (theseTextHeaders);
         }
     }
 }
