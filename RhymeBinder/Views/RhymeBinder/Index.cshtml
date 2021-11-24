@@ -4,15 +4,16 @@
 }
 @{
 }
-
+@model SimpleUser 
 
 <h1>RhymeBinder Index Page</h1>
 
+<h2>Hello, @Model.UserName!</h2>
 <h3>Links for what will be a menu at some point:</h3>
 <ul>
     <li>Directory</li>
     <li>Editor</li>
     <li><a href="/RhymeBinder/StartNewTextGroup">Start new</a></li>
-    <li><a href="/RhymeBinder/ListTexts">List Texts</a></li>
+    <li><a href="/RhymeBinder/ListTexts?userID=@Model.UserId">List Texts</a></li>
 
 </ul>

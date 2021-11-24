@@ -3,7 +3,7 @@
 
 USE RhymeBinder
 /*
-
+DROP TABLE SimpleUsers
 DROP TABLE TextRecord
 DROP TABLE lnkTextSubmission
 DROP TABLE Texts
@@ -15,7 +15,7 @@ DROP TABLE PublicationRatings
 DROP TABLE SubmissionStatuses
 DROP TABLE TextRevisionStatuses
 DROP TABLE Submissions
-
+DROP TABLE SavedViews
 
 */
 /*
@@ -37,6 +37,11 @@ Example of organization:
 
 */
 
+CREATE TABLE SimpleUsers (
+UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+AspNetUserID NVARCHAR(450) FOREIGN KEY REFERENCES AspNetUsers(ID) NOT NULL,
+UserName NVARCHAR(300),
+)
 
 CREATE TABLE Texts (
 TextID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
@@ -75,7 +80,7 @@ TextRevisionStatus VARCHAR(100)
 CREATE TABLE TextGroups (
 TextGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 GroupTitle VARCHAR(1000),
-OwnerID NVARCHAR (450) FOREIGN KEY REFERENCES AspNetUsers(ID)
+OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
 
 CREATE TABLE TextHeaders (
@@ -84,11 +89,11 @@ TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID) NOT NULL,
 TextID INT FOREIGN KEY REFERENCES Texts (TextID),
 Title VARCHAR(1000),
 Created DATETIME,
-CreatedBy NVARCHAR (450) FOREIGN KEY REFERENCES AspNetUsers(ID),
+CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 LastModified DATETIME,
-LastModifiedBy NVARCHAR (450) FOREIGN KEY REFERENCES AspNetUsers(ID),
+LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 LastRead DATETIME,
-LastReadBy NVARCHAR (450) FOREIGN KEY REFERENCES AspNetUsers(ID),
+LastReadBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 TextRevisionStatusID INT FOREIGN KEY REFERENCES TextRevisionStatuses(TextRevisionStatusID),
 VisionNumber INT,
 VersionOf INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID), --parent id
@@ -102,7 +107,7 @@ CREATE TABLE TextRecord (
 TextRecordID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
 TextID INT FOREIGN KEY REFERENCES Texts(TextID) NOT NULL,
-UserID NVARCHAR (450) FOREIGN KEY REFERENCES AspNetUsers(ID),
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 Recorded DATETIME
 )
 
@@ -126,3 +131,14 @@ Created DATETIME
 )
 
 
+CREATE TABLE SavedViews (
+SavedViewID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+SetValue VARCHAR (20),
+SortValue VARCHAR (20),
+Descending BIT,
+ViewName VARCHAR(200),
+[Default] BIT,
+[Saved] BIT,
+[LastView] BIT
+)

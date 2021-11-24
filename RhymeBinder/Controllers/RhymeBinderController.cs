@@ -22,7 +22,79 @@ namespace RhymeBinder.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            //check that a SimpleUser record has been created for this user; if not, create one;
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = new SimpleUser();
+            try
+            {
+                thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+            }
+            catch
+            {
+                return RedirectToAction("SetupNewUser");
+            }
+
+            return View(thisUser);
+        }
+
+        [HttpGet]
+        public IActionResult SetupNewUser()
+        {
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser newUser = new SimpleUser();
+
+            newUser.AspNetUserId = aspUserID;
+            return View(newUser);
+        }
+        [HttpPost]
+        public IActionResult SetupNewUser(SimpleUser newUser)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.SimpleUsers.Add(newUser);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+
+            //create default saved view for user
+            SavedView newSavedView = new SavedView()
+            {
+                UserId = newUser.UserId,
+                SetValue = "Active",
+                SortValue = "Title",
+                Descending = false,
+                Default = true,
+                Saved = false,
+                LastView = false
+            };
+            //create artificial last saved view for user
+            SavedView lastSavedView = new SavedView()
+            {
+                UserId = newUser.UserId,
+                SetValue = "Active",
+                SortValue = "Title",
+                Descending = false,
+                Default = false,
+                Saved = false,
+                LastView = true
+            };
+
+            if (ModelState.IsValid)
+            {
+                _context.SavedViews.Add(newSavedView);
+                _context.SavedViews.Add(lastSavedView);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -34,13 +106,14 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult StartNewTextGroup(string title)
         {
-            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
             //start by creating a new TextGroup
             TextGroup newTextGroup = new TextGroup();
            
             newTextGroup.GroupTitle = title;
-            newTextGroup.OwnerId = userID;
+            newTextGroup.OwnerId = thisUser.UserId;
 
             if (ModelState.IsValid)
             {
@@ -60,7 +133,7 @@ namespace RhymeBinder.Controllers
             newTextHeader.TextGroupId = newTextGroupID;
             newTextHeader.Title = title;
             newTextHeader.Created = DateTime.Now;
-            newTextHeader.CreatedBy = userID;
+            newTextHeader.CreatedBy = thisUser.UserId;
             newTextHeader.VisionNumber = 1;
             newTextHeader.Deleted = false;
             newTextHeader.Locked = false;
@@ -86,7 +159,7 @@ namespace RhymeBinder.Controllers
             TextHeader thisTextHeader = thisTextHeaderBodyUserRecord.TextHeader;
 
             thisTextHeader.LastRead = DateTime.Now;
-            thisTextHeader.LastReadBy = thisTextHeaderBodyUserRecord.User.UserID;
+            thisTextHeader.LastReadBy = thisTextHeaderBodyUserRecord.User.UserId;
 
             if (ModelState.IsValid)
             {
@@ -137,7 +210,7 @@ namespace RhymeBinder.Controllers
             
             newTextRecord.TextHeaderId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
             newTextRecord.TextId = newText.TextId;
-            newTextRecord.UserId = editedTextHeaderBodyUserRecord.User.UserID;
+            newTextRecord.UserId = editedTextHeaderBodyUserRecord.User.UserId;
             newTextRecord.Recorded = newText.Created;
 
             if (ModelState.IsValid)
@@ -154,9 +227,9 @@ namespace RhymeBinder.Controllers
             TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
 
             updatedTextHeader.LastModified = newText.Created;
-            updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserID;
+            updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserId;
             updatedTextHeader.LastRead = newText.Created;
-            updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserID;
+            updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
             updatedTextHeader.TextId = newTextRecord.TextId;
 
             if (ModelState.IsValid)
@@ -173,23 +246,58 @@ namespace RhymeBinder.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult ListTexts(string sort)
+        public IActionResult ListTexts(int userID)
         {
-            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            string set = "active";
-
-            List<TextHeader> theseTextHeaders = GetTextHeaders(set, sort, userID);
-
-            //List<TextHeader> texts = new List<TextHeader>();
-
-            //texts = _context.TextHeaders.OrderByDescending(x => x.LastModified).Where(x => x.CreatedBy == userID &&
-            //                                        x.Top == true &&
-            //                                        x.Deleted == false).ToList();
-
+            SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.LastView == true).First();
+                        
+            List<TextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
 
             return View(theseTextHeaders);
         }
-        
+        public IActionResult ChangeListDisplay (string change)
+        {
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+
+            SavedView thisView = _context.SavedViews.Where(x => x.UserId == thisUser.UserId && x.LastView == true).First();
+
+            //when clicking the same column already sorting by, toggle desc/asc
+            if (change == thisView.SortValue)
+            {
+                thisView.Descending = !thisView.Descending;
+            }
+
+            if(change == "default")
+            {
+                SavedView defaultView = _context.SavedViews.Where(x => x.UserId == thisUser.UserId && x.Default == true).First();
+                thisView = defaultView;
+                thisView.Default = false;
+                thisView.LastView = true;
+            }
+            else if (change == "all" || change == "deleted" || change == "active")
+            {
+                thisView.SetValue = change;
+            }
+            else
+            {
+                thisView.SortValue = change;
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Entry(thisView).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisView);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+
+            return Redirect($"/RhymeBinder/ListTexts?userID={thisView.UserId}");
+        }
+
         //Utility Methods:
         public TextHeaderBodyUserRecord BuildTextHeaderBodyUserRecord(int textHeaderID)
         {
@@ -202,11 +310,9 @@ namespace RhymeBinder.Controllers
                 thisText = _context.Texts.Find(thisTextHeader.TextId);
             }
 
-            string userID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            AspNetUser aspNetUser = _context.AspNetUsers.Find(userID);
-            UserSimplified thisUser = new UserSimplified();
-            thisUser.UserID = aspNetUser.Id;
-            thisUser.UserName = aspNetUser.UserName;
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+
             TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
             {
                 TextHeader = thisTextHeader,
@@ -217,36 +323,53 @@ namespace RhymeBinder.Controllers
             return (thisTextHeaderBodyUserRecord);
         }
 
-        public List<TextHeader> GetTextHeaders (string set, string sort, string userID)
+        public List<TextHeader> GetTextHeaders (int savedViewID)
         {
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
-            
-            switch (set)
+            SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == savedViewID).First();
+
+
+            switch (thisView.SetValue)
             {
                 case "active":
-                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID &&
+                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                   x.Top == true &&
                                                                   x.Deleted == false).ToList();
                     break;
 
                 case "deleted":
-                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID &&
+                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                   x.Deleted == true).ToList();
                     break;
 
                 case "all":
-                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID).ToList();
+                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId).ToList();
                     break;
             }
 
-            switch (sort)
+            if(thisView.Descending == false)
             {
-                case "title":
-                    theseTextHeaders = theseTextHeaders.OrderBy(x => x.Title).ToList();
-                    break;
-                case "lastModified":
-                    theseTextHeaders = theseTextHeaders.OrderBy(x => x.LastModified).ToList();
-                    break;
+                switch (thisView.SortValue)
+                {
+                    case "title":
+                        theseTextHeaders = theseTextHeaders.OrderBy(x => x.Title).ToList();
+                        break;
+                    case "lastModified":
+                        theseTextHeaders = theseTextHeaders.OrderBy(x => x.LastModified).ToList();
+                        break;
+                }
+            }
+            else
+            {
+                switch (thisView.SortValue)
+                {
+                    case "title":
+                        theseTextHeaders = theseTextHeaders.OrderByDescending(x => x.Title).ToList();
+                        break;
+                    case "lastModified":
+                        theseTextHeaders = theseTextHeaders.OrderByDescending(x => x.LastModified).ToList();
+                        break;
+                }
             }
 
 

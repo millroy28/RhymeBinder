@@ -11,7 +11,7 @@ namespace RhymeBinder.Models
         
         public TextHeader TextHeader { get; set; }
 
-        public UserSimplified User { get; set; }
+        public SimpleUser User { get; set; }
 
         //public List<TextRecord> TextHistory { get; set; }
 

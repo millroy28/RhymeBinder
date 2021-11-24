@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "SetupNewUser";
+}
+
+@{
+}
+@model SimpleUser
+
+<h1>Welcome!</h1>
+
+<h2>New user setup:</h2>
+<p>What would you like to be called?</p>
+<form action="SetupNewUser" method="post">
+    <input type="hidden" name="AspNetUserId" value="@Model.AspNetUserId" />
+    <input type="text" name="UserName" />
+    <input type="submit" value="Continue" />
+</form>

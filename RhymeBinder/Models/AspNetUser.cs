@@ -13,11 +13,7 @@ namespace RhymeBinder.Models
             AspNetUserLogins = new HashSet<AspNetUserLogin>();
             AspNetUserRoles = new HashSet<AspNetUserRole>();
             AspNetUserTokens = new HashSet<AspNetUserToken>();
-            TextGroups = new HashSet<TextGroup>();
-            TextHeaderCreatedByNavigations = new HashSet<TextHeader>();
-            TextHeaderLastModifiedByNavigations = new HashSet<TextHeader>();
-            TextHeaderLastReadByNavigations = new HashSet<TextHeader>();
-            TextRecords = new HashSet<TextRecord>();
+            SimpleUsers = new HashSet<SimpleUser>();
         }
 
         public string Id { get; set; }
@@ -40,10 +36,6 @@ namespace RhymeBinder.Models
         public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; }
         public virtual ICollection<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; }
-        public virtual ICollection<TextGroup> TextGroups { get; set; }
-        public virtual ICollection<TextHeader> TextHeaderCreatedByNavigations { get; set; }
-        public virtual ICollection<TextHeader> TextHeaderLastModifiedByNavigations { get; set; }
-        public virtual ICollection<TextHeader> TextHeaderLastReadByNavigations { get; set; }
-        public virtual ICollection<TextRecord> TextRecords { get; set; }
+        public virtual ICollection<SimpleUser> SimpleUsers { get; set; }
     }
 }

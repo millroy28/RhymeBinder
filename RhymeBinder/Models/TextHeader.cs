@@ -20,11 +20,11 @@ namespace RhymeBinder.Models
         public int? TextId { get; set; }
         public string Title { get; set; }
         public DateTime? Created { get; set; }
-        public string CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
         public DateTime? LastModified { get; set; }
-        public string LastModifiedBy { get; set; }
+        public int? LastModifiedBy { get; set; }
         public DateTime? LastRead { get; set; }
-        public string LastReadBy { get; set; }
+        public int? LastReadBy { get; set; }
         public int? TextRevisionStatusId { get; set; }
         public int? VisionNumber { get; set; }
         public int? VersionOf { get; set; }
@@ -32,9 +32,9 @@ namespace RhymeBinder.Models
         public bool? Locked { get; set; }
         public bool? Top { get; set; }
 
-        public virtual AspNetUser CreatedByNavigation { get; set; }
-        public virtual AspNetUser LastModifiedByNavigation { get; set; }
-        public virtual AspNetUser LastReadByNavigation { get; set; }
+        public virtual SimpleUser CreatedByNavigation { get; set; }
+        public virtual SimpleUser LastModifiedByNavigation { get; set; }
+        public virtual SimpleUser LastReadByNavigation { get; set; }
         public virtual Text Text { get; set; }
         public virtual TextGroup TextGroup { get; set; }
         public virtual TextRevisionStatus TextRevisionStatus { get; set; }
