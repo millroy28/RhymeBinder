@@ -64,8 +64,8 @@ namespace RhymeBinder.Controllers
             SavedView newSavedView = new SavedView()
             {
                 UserId = newUser.UserId,
-                SetValue = "Active",
-                SortValue = "Title",
+                SetValue = "active",
+                SortValue = "title",
                 Descending = false,
                 Default = true,
                 Saved = false,
@@ -75,8 +75,8 @@ namespace RhymeBinder.Controllers
             SavedView lastSavedView = new SavedView()
             {
                 UserId = newUser.UserId,
-                SetValue = "Active",
-                SortValue = "Title",
+                SetValue = "active",
+                SortValue = "title",
                 Descending = false,
                 Default = false,
                 Saved = false,
