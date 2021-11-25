@@ -250,7 +250,7 @@ namespace RhymeBinder.Controllers
         {
             SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.LastView == true).First();
                         
-            List<TextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+            List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
 
             return View(theseTextHeaders);
         }
@@ -323,16 +323,16 @@ namespace RhymeBinder.Controllers
             return (thisTextHeaderBodyUserRecord);
         }
 
-        public List<TextHeader> GetTextHeaders (int savedViewID)
+        public List<DisplayTextHeader> GetTextHeaders (int savedViewID)
         {
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == savedViewID).First();
 
-
+            //Populate list of TextHeaders
             switch (thisView.SetValue)
             {
                 case "active":
-                    theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
+                    theseTextHeaders =  _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                   x.Top == true &&
                                                                   x.Deleted == false).ToList();
                     break;
@@ -347,15 +347,48 @@ namespace RhymeBinder.Controllers
                     break;
             }
 
-            if(thisView.Descending == false)
+            //make a list of DisplayTextHeaders and populate the written names/statuses
+            List<DisplayTextHeader> theseDisplayTextHeaders = new List<DisplayTextHeader>();
+
+            //doing this manually cause I'm a dum-dum what can't get the cast/convert right
+            foreach (TextHeader textHeader in theseTextHeaders)
+            {
+                theseDisplayTextHeaders.Add(new DisplayTextHeader
+                {
+                    TextHeaderId = textHeader.TextHeaderId,
+                    TextId = textHeader.TextId,
+                    TextRevisionStatusId = textHeader.TextRevisionStatusId,
+                    LastModifiedBy = textHeader.LastModifiedBy,
+                    LastReadBy = textHeader.LastReadBy,
+                    CreatedBy = textHeader.CreatedBy,
+                    Title = textHeader.Title,
+                    VisionNumber = textHeader.VisionNumber,
+                    Created = textHeader.Created,
+                    LastModified = textHeader.LastModified,
+                    LastRead = textHeader.LastRead
+                }
+                    );
+            }
+
+            foreach (var textHeader in theseDisplayTextHeaders)
+            {
+                textHeader.CreatedByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.CreatedBy).First().UserName;
+                textHeader.ModifyByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastModifiedBy).First().UserName;
+                textHeader.ReadByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastReadBy).First().UserName;
+                //breaks if tries to pull null. Revisions aren't populated yet so re-enable once they are
+                //textHeader.RevisionStatus = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1;
+            }
+
+            //sort the list based on the sort values/descending value
+            if (thisView.Descending == false)
             {
                 switch (thisView.SortValue)
                 {
                     case "title":
-                        theseTextHeaders = theseTextHeaders.OrderBy(x => x.Title).ToList();
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Title).ToList();
                         break;
                     case "lastModified":
-                        theseTextHeaders = theseTextHeaders.OrderBy(x => x.LastModified).ToList();
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.LastModified).ToList();
                         break;
                 }
             }
@@ -364,16 +397,16 @@ namespace RhymeBinder.Controllers
                 switch (thisView.SortValue)
                 {
                     case "title":
-                        theseTextHeaders = theseTextHeaders.OrderByDescending(x => x.Title).ToList();
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.Title).ToList();
                         break;
                     case "lastModified":
-                        theseTextHeaders = theseTextHeaders.OrderByDescending(x => x.LastModified).ToList();
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.LastModified).ToList();
                         break;
                 }
             }
 
 
-            return (theseTextHeaders);
+            return (theseDisplayTextHeaders);
         }
     }
 }

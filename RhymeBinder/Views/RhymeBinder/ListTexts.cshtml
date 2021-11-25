@@ -4,7 +4,7 @@
 
 @{
 }
-@model List<TextHeader>
+@model List<DisplayTextHeader>
 
 <h2>Compositions:</h2>
 
@@ -12,19 +12,24 @@
     <tr>
         <th><a href="/RhymeBinder/ChangeListDisplay?change=title">Title</a></th>
         <th><a href="/RhymeBinder/ChangeListDisplay?change=lastModified">Last Modified</a></th>
+        <th><a href="/RhymeBinder/ChangeListDisplay?change=lastModifiedBy">Last Modified By</a></th>
+        <th>Created</th>
+        <th>Created By</th>
+        <th>Vision Number</th>
         <th>Revision Status</th>
-        <th></th>
-        <th></th>
     </tr>
 
     @foreach(var text in Model)
     {
         <tr>
-            <td>@text.Title</td>
+            <td><a href="/RhymeBinder/ReadText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
             <td>@text.LastModified</td>
-            <td>placeholder for revision status</td>
-            <td><a href="/RhymeBinder/ReadText?textHeaderID=@text.TextHeaderId">Link to read it</a></td>
-            <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">Link to edit it</a></td>
+            <td>@text.ModifyByName</td>
+            <td>@text.Created</td>
+            <td>@text.CreatedByName</td>
+            <td>@text.VisionNumber</td>
+            <th>@text.RevisionStatus</th>
+ 
         </tr>
         
     }
