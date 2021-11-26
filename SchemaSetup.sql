@@ -142,3 +142,12 @@ ViewName VARCHAR(200),
 [Saved] BIT,
 [LastView] BIT
 )
+
+
+INSERT INTO TextRevisionStatuses (TextRevisionStatus) VALUES
+('Scraps'),
+('First Draft'),
+('Revised'),
+('Polished'),
+('Finished')
+

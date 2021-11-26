@@ -138,6 +138,7 @@ namespace RhymeBinder.Controllers
             newTextHeader.Deleted = false;
             newTextHeader.Locked = false;
             newTextHeader.Top = true;
+            newTextHeader.TextRevisionStatusId = 1;
 
             if (ModelState.IsValid)
             {
@@ -375,8 +376,7 @@ namespace RhymeBinder.Controllers
                 textHeader.CreatedByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.CreatedBy).First().UserName;
                 textHeader.ModifyByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastModifiedBy).First().UserName;
                 textHeader.ReadByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastReadBy).First().UserName;
-                //breaks if tries to pull null. Revisions aren't populated yet so re-enable once they are
-                //textHeader.RevisionStatus = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1;
+                textHeader.RevisionStatus = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1;
             }
 
             //sort the list based on the sort values/descending value
@@ -390,6 +390,18 @@ namespace RhymeBinder.Controllers
                     case "lastModified":
                         theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.LastModified).ToList();
                         break;
+                    case "created":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Created).ToList();
+                        break;
+                    case "createdBy":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.CreatedByName).ToList();
+                        break;
+                    case "visionNumber":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.VisionNumber).ToList();
+                        break;
+                    case "revision":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
+                        break;
                 }
             }
             else
@@ -401,6 +413,18 @@ namespace RhymeBinder.Controllers
                         break;
                     case "lastModified":
                         theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.LastModified).ToList();
+                        break;
+                    case "created":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.Created).ToList();
+                        break;
+                    case "createdBy":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.CreatedByName).ToList();
+                        break;
+                    case "visionNumber":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.VisionNumber).ToList();
+                        break;
+                    case "revision":
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.TextRevisionStatusId).ToList();
                         break;
                 }
             }

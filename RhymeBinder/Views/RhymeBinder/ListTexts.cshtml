@@ -13,10 +13,10 @@
         <th><a href="/RhymeBinder/ChangeListDisplay?change=title">Title</a></th>
         <th><a href="/RhymeBinder/ChangeListDisplay?change=lastModified">Last Modified</a></th>
         <th><a href="/RhymeBinder/ChangeListDisplay?change=lastModifiedBy">Last Modified By</a></th>
-        <th>Created</th>
-        <th>Created By</th>
-        <th>Vision Number</th>
-        <th>Revision Status</th>
+        <th><a href="/RhymeBinder/ChangeListDisplay?change=created">Created</a></th>
+        <th><a href="/RhymeBinder/ChangeListDisplay?change=createdBy">Created By</a></th>
+        <th><a href="/RhymeBinder/ChangeListDisplay?change=visionNumber">Vision Number</a></th>
+        <th><a href="/RhymeBinder/ChangeListDisplay?change=revision">Revision Status</a></th>
     </tr>
 
     @foreach(var text in Model)
@@ -28,7 +28,7 @@
             <td>@text.Created</td>
             <td>@text.CreatedByName</td>
             <td>@text.VisionNumber</td>
-            <th>@text.RevisionStatus</th>
+            <td>@text.RevisionStatus</td>
  
         </tr>
         
