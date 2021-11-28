@@ -235,6 +235,8 @@ namespace RhymeBinder.Controllers
             updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
             updatedTextHeader.TextId = newTextRecord.TextId;
             updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
+            updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
+
 
             if (ModelState.IsValid)
             {

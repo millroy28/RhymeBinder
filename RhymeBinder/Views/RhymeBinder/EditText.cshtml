@@ -12,19 +12,19 @@
     <input type="hidden" name="TextHeader.TextHeaderId" value="@Model.TextHeader.TextHeaderId" />
     <input type="hidden" name="TextHeader.TextGroupId" value="@Model.TextHeader.TextGroupId" />
     <input type="hidden" name="TextHeader.TextId" value="@Model.TextHeader.TextId" />
-    <input type="hidden" name="TextHeader.Title" value="@Model.TextHeader.Title" />
+    @*<input type="hidden" name="TextHeader.Title" value="@Model.TextHeader.Title" />*@
     <input type="hidden" name="TextHeader.Created" value="@Model.TextHeader.Created" />
     <input type="hidden" name="TextHeader.CreatedBy" value="@Model.TextHeader.CreatedBy" />
     <input type="hidden" name="TextHeader.LastModified" value="@Model.TextHeader.LastModified" />
     <input type="hidden" name="TextHeader.LastModifiedBy" value="@Model.TextHeader.LastModifiedBy" />
     <input type="hidden" name="TextHeader.LastRead" value="@Model.TextHeader.LastRead" />
     <input type="hidden" name="TextHeader.LastReadBy" value="@Model.TextHeader.LastReadBy" />
-  @*  <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.TextRevisionStatusId" />*@
+    @*  <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.TextRevisionStatusId" />*@
     <input type="hidden" name="TextHeader.VisionNumber" value="@Model.TextHeader.VisionNumber" />
     <input type="hidden" name="TextHeader.VersionOf" value="@Model.TextHeader.VersionOf" />
     @*<input type="hidden" name="TextHeader.Deleted" value="@Model.TextHeader.Deleted" />
-    <input type="hidden" name="TextHeader.Locked" value="@Model.TextHeader.Locked" />
-    <input type="hidden" name="TextHeader.Top" value="@Model.TextHeader.Top" />*@
+        <input type="hidden" name="TextHeader.Locked" value="@Model.TextHeader.Locked" />
+        <input type="hidden" name="TextHeader.Top" value="@Model.TextHeader.Top" />*@
 
     <input type="hidden" name="User.UserId" value="@Model.User.UserId" />
     <input type="hidden" name="User.UserName" value="@Model.User.UserName" />
@@ -33,13 +33,20 @@
     <input type="hidden" name="Text.TextId" value="@Model.Text.TextId" />
     <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
     <select name="TextHeader.TextRevisionStatusID">
-            @foreach(var revisionStatus in Model.RevisionStatuses)
-                {   
-                    <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                }
-        </select>
+        @foreach (var revisionStatus in Model.RevisionStatuses)
+        {
+            if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
+            {
+                <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
+            }
+            else
+            {
+                <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
+            }
+        }
+    </select>
 
-
+    <input type="text" name="TextHeader.Title" value="@Model.TextHeader.Title" />
     <input type="text" name="Text.TextBody" value="@Model.Text.TextBody" />
     <input type="submit" value="Save and Exit" />
 </form>
