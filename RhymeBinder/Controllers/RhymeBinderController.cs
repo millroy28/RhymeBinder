@@ -251,7 +251,35 @@ namespace RhymeBinder.Controllers
 
             return RedirectToAction("Index");
         }
+        
+        [HttpGet]
+        public IActionResult HideHeader(int textHeaderID)
+        {
+            TextHeaderBodyUserRecord thisTextHeader = BuildTextHeaderBodyUserRecord(textHeaderID);
 
+            return View(thisTextHeader);
+        }
+        [HttpPost]
+        public IActionResult HideHeader(TextHeaderBodyUserRecord textHeaderConfirmed)
+        {
+            //texts are "deleted" when the deleted field in the text header is true
+            //no entries are actually removed from the database, however, so recoverability is always possible
+            TextHeader textHeaderToHide = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderConfirmed.TextHeader.TextHeaderId).First();
+
+            textHeaderToHide.Deleted = true;
+            if (ModelState.IsValid)
+            {
+                _context.Entry(textHeaderToHide).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(textHeaderToHide);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            return RedirectToAction("Index");
+        }
         public IActionResult ListTexts(int userID)
         {
             SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.LastView == true).First();

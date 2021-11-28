@@ -99,3 +99,4 @@ C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razo
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\ReadText.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\SetupNewUser.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.csproj.AssemblyReference.cache
+C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\HideHeader.cshtml.g.cs
