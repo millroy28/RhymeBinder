@@ -93,9 +93,9 @@ C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\bin\Debug\netcoreapp3.1\runt
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.pdb
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\Index.cshtml.g.cs
-C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.csproj.AssemblyReference.cache
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\StartNewTextGroup.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\EditText.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\ListTexts.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\ReadText.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\SetupNewUser.cshtml.g.cs
+C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.csproj.AssemblyReference.cache

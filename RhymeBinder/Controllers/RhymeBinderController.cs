@@ -139,6 +139,8 @@ namespace RhymeBinder.Controllers
             newTextHeader.Locked = false;
             newTextHeader.Top = true;
             newTextHeader.TextRevisionStatusId = 1;
+            newTextHeader.LastRead = DateTime.Now;
+            newTextHeader.LastReadBy = thisUser.UserId;
 
             if (ModelState.IsValid)
             {
@@ -232,6 +234,7 @@ namespace RhymeBinder.Controllers
             updatedTextHeader.LastRead = newText.Created;
             updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
             updatedTextHeader.TextId = newTextRecord.TextId;
+            updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
 
             if (ModelState.IsValid)
             {
@@ -311,6 +314,8 @@ namespace RhymeBinder.Controllers
                 thisText = _context.Texts.Find(thisTextHeader.TextId);
             }
 
+            List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
+
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
@@ -318,7 +323,8 @@ namespace RhymeBinder.Controllers
             {
                 TextHeader = thisTextHeader,
                 Text = thisText,
-                User = thisUser
+                User = thisUser,
+                RevisionStatuses = revisionStatuses
             };
 
             return (thisTextHeaderBodyUserRecord);
