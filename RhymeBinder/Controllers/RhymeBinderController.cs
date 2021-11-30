@@ -82,6 +82,18 @@ namespace RhymeBinder.Controllers
                 Saved = false,
                 LastView = true
             };
+            //create artificial last saved view for user
+            SavedView deleted = new SavedView()
+            {
+                UserId = newUser.UserId,
+                SetValue = "deleted",
+                SortValue = "title",
+                Descending = false,
+                Default = false,
+                Saved = false,
+                LastView = false
+            };
+
 
             if (ModelState.IsValid)
             {
@@ -287,6 +299,41 @@ namespace RhymeBinder.Controllers
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
 
             return View(theseTextHeaders);
+        }
+        public IActionResult ScrapStack(int userID)
+        {
+            SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.SetValue == "deleted").First();
+            
+            List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+
+            return View(theseTextHeaders);
+        }
+
+        public IActionResult ReviewScrappedText(int textHeaderID)
+        {
+            TextHeaderBodyUserRecord textHeaderBodyUserRecord = BuildTextHeaderBodyUserRecord(textHeaderID);
+            return View(textHeaderBodyUserRecord);
+        }
+        public IActionResult RestoreScrappedText(int textHeaderID)
+        {
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+
+            TextHeader restoredTextHeader = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderID).First();
+            restoredTextHeader.Deleted = false;
+
+            if (ModelState.IsValid)
+            {
+                _context.Entry(restoredTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(restoredTextHeader);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            return Redirect($"/RhymeBinder/ListTexts?userID={thisUser.UserId}");
         }
         public IActionResult ChangeListDisplay (string change)
         {

@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "ReviewScrappedText";
+}
+@{
+}
+@model TextHeaderBodyUserRecord
+
+<h2>Reviewing text: </h2>
+<h3>@Model.TextHeader.Title</h3>
+
+<i>Last Modified by @Model.User.UserName on @Model.TextHeader.LastModified</i>
+<i>Last Viewed by @Model.User.UserName on @Model.TextHeader.LastRead</i>
+<br />
+<b><i>A cool button section or something:</i></b>
+<ul>
+    <li><a href="/RhymeBinder/RestoreScrappedText?textHeaderID=@Model.TextHeader.TextHeaderId">Restore this scrapped text</a></li>
+    <li><a href="/RhymeBinder/ScrapStack?userID=@Model.User.UserId">Scrap Stack</a></li>
+    <li><a href="/RhymeBinder/ListTexts?userID=@Model.User.UserId">Return to the list</a></li>
+</ul>
+
+<blockquote>
+    @Model.Text.TextBody
+</blockquote>
