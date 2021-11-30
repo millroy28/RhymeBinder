@@ -308,7 +308,6 @@ namespace RhymeBinder.Controllers
 
             return View(theseTextHeaders);
         }
-
         public IActionResult ReviewScrappedText(int textHeaderID)
         {
             TextHeaderBodyUserRecord textHeaderBodyUserRecord = BuildTextHeaderBodyUserRecord(textHeaderID);
@@ -334,6 +333,57 @@ namespace RhymeBinder.Controllers
             }
 
             return Redirect($"/RhymeBinder/ListTexts?userID={thisUser.UserId}");
+        }
+        public IActionResult AddRevision(int textHeaderID)
+        {
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+
+            TextHeader oldTextHeader = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderID).First();
+            TextHeader newTextHeader = new TextHeader();
+
+            newTextHeader.Created = DateTime.Now;
+            newTextHeader.CreatedBy = thisUser.UserId;
+            newTextHeader.LastModified = DateTime.Now;
+            newTextHeader.LastModifiedBy = thisUser.UserId;
+            newTextHeader.LastRead = DateTime.Now;
+            newTextHeader.LastReadBy = thisUser.UserId;
+            newTextHeader.Deleted = false;
+            newTextHeader.Locked = false;
+            newTextHeader.Top = true;
+            newTextHeader.TextId = oldTextHeader.TextId;
+            newTextHeader.Title = oldTextHeader.Title;
+            newTextHeader.TextGroupId = oldTextHeader.TextGroupId;
+            newTextHeader.VersionOf = oldTextHeader.TextHeaderId;
+            newTextHeader.VisionNumber = oldTextHeader.VisionNumber + 1;
+            newTextHeader.TextRevisionStatusId = oldTextHeader.TextRevisionStatusId;
+
+            oldTextHeader.Top = false;
+            oldTextHeader.Locked = true;
+
+
+            if (ModelState.IsValid)
+            {
+                _context.Entry(oldTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(oldTextHeader);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.TextHeaders.Add(newTextHeader);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            return Redirect($"/RhymeBinder/EditText?textHeaderID={newTextHeader.TextHeaderId}");
         }
         public IActionResult ChangeListDisplay (string change)
         {
