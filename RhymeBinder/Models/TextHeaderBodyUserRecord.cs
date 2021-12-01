@@ -15,6 +15,10 @@ namespace RhymeBinder.Models
 
         public List<TextRevisionStatus> RevisionStatuses { get; set; }
 
+        public List<TextHeader> PreviousTextHeaders { get; set; }
+
+        public List<Text> PreviousTexts { get; set; }
+
         //public List<TextRecord> TextHistory { get; set; }
 
     }

@@ -432,8 +432,11 @@ namespace RhymeBinder.Controllers
         //Utility Methods:
         public TextHeaderBodyUserRecord BuildTextHeaderBodyUserRecord(int textHeaderID)
         {
-            //Build up a TextHeaderBodyUserRecord to pass into a view
+            //build up a TextHeaderBodyUserRecord to pass into a view:
+            //obvs, gonna need that TextHeader:
             TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
+            
+            //grab the related text (if it exists)
             Text thisText = new Text();
 
             if (thisTextHeader.TextId != null)
@@ -441,17 +444,40 @@ namespace RhymeBinder.Controllers
                 thisText = _context.Texts.Find(thisTextHeader.TextId);
             }
 
+            //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
 
+            //grab the SimpleUser object for current user
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
+            //build up previous Text "visions" and TextHeaders for them
+            //TextGroup thisTextGroup = _context.TextGroups.Where(x => x.TextGroupId == thisTextHeader.TextGroupId).First();
+            List<TextHeader> previousTextHeaders = new List<TextHeader>();
+            List<Text> previousTexts = new List<Text>();
+            try
+            {
+                previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
+                foreach(var textHeader in previousTextHeaders)
+                {
+                    previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
+                }
+            }
+            catch
+            {
+            }
+
+
+
+            //wrap it up and send it
             TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
             {
                 TextHeader = thisTextHeader,
                 Text = thisText,
                 User = thisUser,
-                RevisionStatuses = revisionStatuses
+                RevisionStatuses = revisionStatuses,
+                PreviousTextHeaders = previousTextHeaders,
+                PreviousTexts = previousTexts
             };
 
             return (thisTextHeaderBodyUserRecord);
