@@ -452,9 +452,11 @@ namespace RhymeBinder.Controllers
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
             //build up previous Text "visions" and TextHeaders for them
-            //TextGroup thisTextGroup = _context.TextGroups.Where(x => x.TextGroupId == thisTextHeader.TextGroupId).First();
             List<TextHeader> previousTextHeaders = new List<TextHeader>();
             List<Text> previousTexts = new List<Text>();
+            List<SimpleTextHeaderAndText> previousTextsAndHeaders = new List<SimpleTextHeaderAndText>();
+            List<SimpleUser> users = _context.SimpleUsers.ToList();
+
             try
             {
                 previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
@@ -462,12 +464,28 @@ namespace RhymeBinder.Controllers
                 {
                     previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
                 }
+
+                previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
+                                           join Text text in previousTexts
+                                             on textHeader.TextId equals text.TextId
+                                           join SimpleUser createdUser in users
+                                             on textHeader.CreatedBy equals createdUser.UserId
+                                           join SimpleUser modifiedUser in users
+                                             on textHeader.LastModifiedBy equals modifiedUser.UserId
+                                           select new SimpleTextHeaderAndText
+                                            {
+                                              Title = textHeader.Title,
+                                              TextBody = text.TextBody,
+                                              Created = textHeader.Created,
+                                              LastModified = textHeader.LastModified,
+                                              CreatedBy = createdUser.UserName,
+                                              LastModifiedBy = modifiedUser.UserName
+                                            }
+                                          ).ToList();
             }
             catch
             {
             }
-
-
 
             //wrap it up and send it
             TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
@@ -476,8 +494,7 @@ namespace RhymeBinder.Controllers
                 Text = thisText,
                 User = thisUser,
                 RevisionStatuses = revisionStatuses,
-                PreviousTextHeaders = previousTextHeaders,
-                PreviousTexts = previousTexts
+                PreviousTexts = previousTextsAndHeaders
             };
 
             return (thisTextHeaderBodyUserRecord);
