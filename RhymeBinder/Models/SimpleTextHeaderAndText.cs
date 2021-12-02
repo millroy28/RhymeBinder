@@ -9,7 +9,7 @@ namespace RhymeBinder.Models
     {
         public string Title { get; set; }
         public string TextBody { get; set; }
-
+        public int? VisionNumber { get; set; }
         public DateTime? Created { get; set; }
 
         public DateTime? LastModified { get; set; }

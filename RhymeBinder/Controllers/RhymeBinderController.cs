@@ -476,12 +476,15 @@ namespace RhymeBinder.Controllers
                                             {
                                               Title = textHeader.Title,
                                               TextBody = text.TextBody,
+                                              VisionNumber = textHeader.VisionNumber,
                                               Created = textHeader.Created,
                                               LastModified = textHeader.LastModified,
                                               CreatedBy = createdUser.UserName,
                                               LastModifiedBy = modifiedUser.UserName
                                             }
                                           ).ToList();
+
+                previousTextsAndHeaders = previousTextsAndHeaders.OrderByDescending(x => x.VisionNumber).ToList();
             }
             catch
             {

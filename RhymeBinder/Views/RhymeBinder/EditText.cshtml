@@ -50,5 +50,20 @@
     <input type="text" name="Text.TextBody" value="@Model.Text.TextBody" />
     <input type="submit" value="Save and Exit" />
 </form>
+<br />
+
+
+@if(Model.PreviousTexts.Count() > 0)
+{
+    <h3>Previous visions:</h3>
+    foreach(var prev in Model.PreviousTexts)
+    {
+        <br />
+        <b><p>Vision @prev.VisionNumber: @prev.Title</p></b>
+        <p>Created @prev.Created by @prev.CreatedBy</p>
+        <p>Last Modified @prev.LastModified by @prev.LastModifiedBy</p>
+        <p>@prev.TextBody</p>
+    }
+}
 
 
