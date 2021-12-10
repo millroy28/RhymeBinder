@@ -6,71 +6,74 @@
 }
 @model TextHeaderBodyUserRecord
 
-    <div class="editor-container">
-        <h2>Editing text: @Model.TextHeader.Title </h2>
     
-    <form action="EditText" method="post">
+    <form class="wrapper" action="EditText" method="post">
         <input type="hidden" name="TextHeader.TextHeaderId" value="@Model.TextHeader.TextHeaderId" />
         <input type="hidden" name="TextHeader.TextGroupId" value="@Model.TextHeader.TextGroupId" />
         <input type="hidden" name="TextHeader.TextId" value="@Model.TextHeader.TextId" />
-        @*<input type="hidden" name="TextHeader.Title" value="@Model.TextHeader.Title" />*@
         <input type="hidden" name="TextHeader.Created" value="@Model.TextHeader.Created" />
         <input type="hidden" name="TextHeader.CreatedBy" value="@Model.TextHeader.CreatedBy" />
         <input type="hidden" name="TextHeader.LastModified" value="@Model.TextHeader.LastModified" />
         <input type="hidden" name="TextHeader.LastModifiedBy" value="@Model.TextHeader.LastModifiedBy" />
         <input type="hidden" name="TextHeader.LastRead" value="@Model.TextHeader.LastRead" />
         <input type="hidden" name="TextHeader.LastReadBy" value="@Model.TextHeader.LastReadBy" />
-        @*  <input type="hidden" name="TextHeader.TextRevisionStatusId" value="@Model.TextHeader.TextRevisionStatusId" />*@
         <input type="hidden" name="TextHeader.VisionNumber" value="@Model.TextHeader.VisionNumber" />
         <input type="hidden" name="TextHeader.VersionOf" value="@Model.TextHeader.VersionOf" />
-        @*<input type="hidden" name="TextHeader.Deleted" value="@Model.TextHeader.Deleted" />
-            <input type="hidden" name="TextHeader.Locked" value="@Model.TextHeader.Locked" />
-            <input type="hidden" name="TextHeader.Top" value="@Model.TextHeader.Top" />*@
-
         <input type="hidden" name="User.UserId" value="@Model.User.UserId" />
         <input type="hidden" name="User.UserName" value="@Model.User.UserName" />
         <input type="hidden" name="User.AspNetUserId" value="@Model.User.AspNetUserId" />
-
         <input type="hidden" name="Text.TextId" value="@Model.Text.TextId" />
         <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
-            <div class="editor-container-buttons-left">
-                <div class="editor-container-button">
-                <p class="font-control-label">Title: </p>
-                </div>
-                <div class="editor-container-button">
-                <input id="title-box" type="text" name="TextHeader.Title" value="@Model.TextHeader.Title" />
-                </div>
-            </div>
-        <div class="editor-container-buttons-right">
-            <div class="editor-container-button">
-            <p class="font-control-label">Revision Status: </p>
-            </div>
-            <div class="editor-container-button">
-            <select name="TextHeader.TextRevisionStatusID">
-                @foreach (var revisionStatus in Model.RevisionStatuses)
-                {
-                    if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
-                    {
-                        <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
-                    }
-                    else
-                    {
-                        <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                    }
-                }
-            </select>
-            </div>
-            <div class="editor-container-button">
-            <input type="submit" value="Save and Exit" />
-            </div>
+
+
+        <div class="a font-control-header">
+        Editing:
         </div>
-        <input id="editor" type="text" name="Text.TextBody" value="@Model.Text.TextBody" />
+        <div class="b font-weight-bold">
+        @Model.TextHeader.Title
+        </div>
+
+        <div class="z title-box">
+            <textarea name="TextHeader.Title" rows="1" cols="100"> @Model.TextHeader.Title </textarea>
+        </div>
+        <div class="e font-control-label">
+        Revision Status:
+        </div>
+        
+        
+        <div class="f">
+        <select name="TextHeader.TextRevisionStatusID">
+        @foreach (var revisionStatus in Model.RevisionStatuses)
+        {
+            if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
+            {
+                <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
+            }
+            else
+            {
+                <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
+            }
+        }
+        </select>
+        </div>
+        
+        <div class="c">
+        <input type="submit" value="Save and Exit" />
+        </div>
+        <div class="d">
+        Save button
+        </div>
+
+        <div class="y editor">
+            <textarea name="Text.TextBody" rows="30" cols="100"> @Model.Text.TextBody </textarea>
+        </div>
+        
         </form>
-        </div>
+
     <br />
 
 
-    @if (Model.PreviousTexts.Count() > 0)
+    @*@if (Model.PreviousTexts.Count() > 0)
     {
         <h3>Previous visions:</h3>
         foreach (var prev in Model.PreviousTexts)
@@ -82,6 +85,6 @@
             <p>@prev.TextBody</p>
             </div>
         }
-    }
+    }*@
 
 
