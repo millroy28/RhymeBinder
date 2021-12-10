@@ -201,7 +201,7 @@ namespace RhymeBinder.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord)
+        public IActionResult EditText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord, string action)
         {
             //Create a new record in the Text table 
             Text newText = new Text();
@@ -261,7 +261,16 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-            return RedirectToAction("Index");
+            switch (action)
+            {
+                case "Save and Exit":
+                    return RedirectToAction("Index");
+                case "Save":
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={updatedTextHeader.TextHeaderId}");
+                default:
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={updatedTextHeader.TextHeaderId}");
+            }
+
         }
         
         [HttpGet]
