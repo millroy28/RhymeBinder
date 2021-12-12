@@ -456,6 +456,9 @@ namespace RhymeBinder.Controllers
             //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
 
+            //grab the current revision status in a readable format for display
+            string currentRevisionStatus = revisionStatuses.Single(x => x.TextRevisionStatusId == thisTextHeader.TextRevisionStatusId).TextRevisionStatus1;
+
             //grab the SimpleUser object for current user
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
@@ -505,8 +508,9 @@ namespace RhymeBinder.Controllers
                 TextHeader = thisTextHeader,
                 Text = thisText,
                 User = thisUser,
-                RevisionStatuses = revisionStatuses,
-                PreviousTexts = previousTextsAndHeaders
+                AllRevisionStatuses = revisionStatuses,
+                PreviousTexts = previousTextsAndHeaders,
+                CurrentRevisionStatus = currentRevisionStatus
             };
 
             return (thisTextHeaderBodyUserRecord);

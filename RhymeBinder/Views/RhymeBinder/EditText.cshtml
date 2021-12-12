@@ -43,7 +43,7 @@
         
         <div class="f">
         <select name="TextHeader.TextRevisionStatusID">
-        @foreach (var revisionStatus in Model.RevisionStatuses)
+        @foreach (var revisionStatus in Model.AllRevisionStatuses)
         {
             if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
             {
