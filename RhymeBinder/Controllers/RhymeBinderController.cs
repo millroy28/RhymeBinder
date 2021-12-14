@@ -138,6 +138,21 @@ namespace RhymeBinder.Controllers
             }
             int newTextGroupID = newTextGroup.TextGroupId;
 
+            //create a new blank Text
+            Text newText = new Text();
+            newText.TextBody = "";
+            newText.Created = DateTime.Now;
+
+            if (ModelState.IsValid)
+            {
+                _context.Texts.Add(newText);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
 
             //create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             TextHeader newTextHeader = new TextHeader();
@@ -153,6 +168,7 @@ namespace RhymeBinder.Controllers
             newTextHeader.TextRevisionStatusId = 1;
             newTextHeader.LastRead = DateTime.Now;
             newTextHeader.LastReadBy = thisUser.UserId;
+            newTextHeader.TextId = newText.TextId;
 
             if (ModelState.IsValid)
             {
@@ -203,72 +219,82 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult EditText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord, string action)
         {
-            //Create a new record in the Text table 
-            Text newText = new Text();
+            //Check for change and only save if the text has changed
+            bool unchanged;
+            Text origText = new Text();
+            origText = _context.Texts.Find(editedTextHeaderBodyUserRecord.TextHeader.TextId);
 
-            newText.TextBody = editedTextHeaderBodyUserRecord.Text.TextBody;
-            newText.Created = DateTime.Now;
-            
+            unchanged = TextComparitor(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody);
 
-            if (ModelState.IsValid)
+            if (!unchanged)
             {
-                _context.Texts.Add(newText);
-                _context.SaveChanges();
+                //Create a new record in the Text table 
+                Text newText = new Text();
+                newText.TextBody = editedTextHeaderBodyUserRecord.Text.TextBody;
+
+                newText.Created = DateTime.Now;
+                
+                if (ModelState.IsValid)
+                {
+                    _context.Texts.Add(newText);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return View();  //!!insert error handlin?
+                }
+
+                //Create a new log entry for the TextRecord table
+                TextRecord newTextRecord = new TextRecord();
+                
+                newTextRecord.TextHeaderId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
+                newTextRecord.TextId = newText.TextId;
+                newTextRecord.UserId = editedTextHeaderBodyUserRecord.User.UserId;
+                newTextRecord.Recorded = newText.Created;
+
+                if (ModelState.IsValid)
+                {
+                    _context.TextRecords.Add(newTextRecord);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return View();  //!!insert error handlin?
+                }
+
+                //Update the TextHeader with the new TextID, etc
+                TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
+
+                updatedTextHeader.LastModified = newText.Created;
+                updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserId;
+                updatedTextHeader.LastRead = newText.Created;
+                updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
+                updatedTextHeader.TextId = newTextRecord.TextId;
+                updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
+                updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
+
+
+                if (ModelState.IsValid)
+                {
+                    _context.Entry(updatedTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                    _context.Update(updatedTextHeader);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return View();  //!!insert error handlin?
+                }
             }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
 
-            //Create a new log entry for the TextRecord table
-            TextRecord newTextRecord = new TextRecord();
-            
-            newTextRecord.TextHeaderId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
-            newTextRecord.TextId = newText.TextId;
-            newTextRecord.UserId = editedTextHeaderBodyUserRecord.User.UserId;
-            newTextRecord.Recorded = newText.Created;
-
-            if (ModelState.IsValid)
-            {
-                _context.TextRecords.Add(newTextRecord);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
-
-            //Update the TextHeader with the new TextID, etc
-            TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
-
-            updatedTextHeader.LastModified = newText.Created;
-            updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserId;
-            updatedTextHeader.LastRead = newText.Created;
-            updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
-            updatedTextHeader.TextId = newTextRecord.TextId;
-            updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
-            updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
-
-
-            if (ModelState.IsValid)
-            {
-                _context.Entry(updatedTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(updatedTextHeader);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
-
+            //Where do we go from here?
             switch (action)
             {
                 case "Save and Exit":
                     return RedirectToAction("Index");
                 case "Save":
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={updatedTextHeader.TextHeaderId}");
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
                 default:
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={updatedTextHeader.TextHeaderId}");
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
             }
 
         }
@@ -623,6 +649,23 @@ namespace RhymeBinder.Controllers
 
 
             return (theseDisplayTextHeaders);
+        }
+
+        public bool TextComparitor (string originalText, string textToCompare)
+        {
+            //I don't know if it will be quicker to convert the text to a unique (or semi-unique) numeric value,
+            //then compare those values, or to do straight string comparison. I'll have to test with a large text value
+            bool same;
+
+            if (originalText == textToCompare)
+            {
+                same = true;
+            }else
+            {
+                same = false;
+            }
+
+            return same;
         }
     }
 }
