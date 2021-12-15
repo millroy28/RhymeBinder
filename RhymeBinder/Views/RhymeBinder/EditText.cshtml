@@ -34,7 +34,7 @@
     </div>
 
     <div class="z title-box">
-        <textarea name="TextHeader.Title" rows="1" cols="100">@Model.TextHeader.Title</textarea>
+        <textarea name="TextHeader.Title" rows="1" cols="100" id="title_edit_field">@Model.TextHeader.Title</textarea>
     </div>
     <div class="e font-control-label">
         Revision Status:
@@ -65,15 +65,15 @@
     </div>
 
     <div class="y editor">
-        <textarea name="Text.TextBody" rows="30" cols="100" id="editArea">@Model.Text.TextBody</textarea>
+        <textarea name="Text.TextBody" rows="30" cols="100" id="body_edit_field">@Model.Text.TextBody</textarea>
     </div>
 
 </form>
 
+<script language="Javascript" src="~/js/autosave.js"></script>
+
 <br />
 
-<script language="Javascript" src="~/js/autosave.js">
-</script>
 
 
 
