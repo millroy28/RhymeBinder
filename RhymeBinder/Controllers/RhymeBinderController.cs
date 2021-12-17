@@ -225,6 +225,17 @@ namespace RhymeBinder.Controllers
             origText = _context.Texts.Find(editedTextHeaderBodyUserRecord.TextHeader.TextId);
 
             unchanged = TextComparitor(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody);
+            
+            //also checking for status changes
+            if (unchanged)
+            {
+                TextHeader origHeader = new TextHeader();
+                origHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
+                if (origHeader.TextRevisionStatusId != editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId)
+                {
+                    unchanged = false;
+                }
+            }
 
             if (!unchanged)
             {
