@@ -56,11 +56,10 @@ function check_content_for_difference() {
         ) {
         is_content_different = 1;
         document.getElementById('save').disabled = false;
-        console.log('content changed');
+        console.log('content changed - counting down to autosave');
     } else {
         is_content_different = 0;
         document.getElementById('save').disabled = true;
-        console.log('content same');
     }
 }
 
@@ -70,8 +69,9 @@ function set_focus_on_edit_field() {
 }
 
 function set_cursor_to_previous_position() {
-    original_cursor_position = document.getElementById('prev_cursor_position_value').value;
-    document.getElementById('body_edit_field').selectionEnd = original_cursor_position;
+    original_cursor_position = document.getElementById('prev_cursor_position_value').innerHTML;
+    console.log('setting cursor to previous position: ' + original_cursor_position);
+    document.getElementById('body_edit_field').selectionStart = original_cursor_position;
 }
 
 //calling on load

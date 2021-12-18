@@ -300,7 +300,9 @@ namespace RhymeBinder.Controllers
                                                                                                 && x.TextHeaderId == editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId).First();
                 if (action == "EditText")
                 {
-                    thisEditWindowProperty = editedTextHeaderBodyUserRecord.EditWindowProperty;
+                    thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
+                    thisEditWindowProperty.TextAreaFocus = editedTextHeaderBodyUserRecord.EditWindowProperty.TextAreaFocus;
+
                     if (ModelState.IsValid)
                     {
                         _context.Entry(thisEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
