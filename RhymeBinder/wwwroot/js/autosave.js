@@ -10,9 +10,11 @@ var check_body_string;
 var is_content_different;
 var original_revision_status;
 var check_revision_status;
+var current_cursor_position;
+var original_cursor_position;
 
 function reset_autosave_timer() {
-    autosave_timer = 60; //seconds before autosaving
+    autosave_timer = 5; //seconds before autosaving
 }
 
 
@@ -24,11 +26,17 @@ function autosave_counter() {
     } else {
         autosave_timer--;
         if (autosave_timer == 0) {
+            get_current_cursor_position_and_form_focus();
+            document.getElementById('cursor_position').value = current_cursor_position;
             document.getElementById('edit').submit();
         }
     }
 
     setTimeout('autosave_counter()', 1000); //elapses one second before calling function again
+}
+
+function get_current_cursor_position_and_form_focus() {
+    current_cursor_position = document.getElementById('body_edit_field').selectionEnd;
 }
 
 function get_initial_content_values() {
@@ -61,8 +69,14 @@ function set_focus_on_edit_field() {
     document.getElementById('body_edit_field').focus();
 }
 
+function set_cursor_to_previous_position() {
+    original_cursor_position = document.getElementById('prev_cursor_position_value').value;
+    document.getElementById('body_edit_field').selectionEnd = original_cursor_position;
+}
+
 //calling on load
 set_focus_on_edit_field();
+set_cursor_to_previous_position();
 get_initial_content_values();
 reset_autosave_timer();
 autosave_counter();

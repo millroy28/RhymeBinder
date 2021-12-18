@@ -295,6 +295,23 @@ namespace RhymeBinder.Controllers
                 {
                     return View();  //!!insert error handlin?
                 }
+                //If we are coming from autosave, update that EditWindowStatus
+                EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == editedTextHeaderBodyUserRecord.User.UserId
+                                                                                                && x.TextHeaderId == editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId).First();
+                if (action == "EditText")
+                {
+                    thisEditWindowProperty = editedTextHeaderBodyUserRecord.EditWindowProperty;
+                    if (ModelState.IsValid)
+                    {
+                        _context.Entry(thisEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                        _context.Update(thisEditWindowProperty);
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        return View();  //!!insert error handlin?
+                    }
+                }
             }
 
             //Where do we go from here?
@@ -500,6 +517,28 @@ namespace RhymeBinder.Controllers
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
+            //grab the EditWindowStatus for the current user/header (if it exists; if not-create it)
+            EditWindowProperty thisEditWindowProperty = new EditWindowProperty();
+            try
+            {
+                thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == thisUser.UserId
+                                                                               && x.TextHeaderId == textHeaderID).First();
+            } catch
+            {
+                EditWindowProperty newEditWindowProperty = new EditWindowProperty();
+                newEditWindowProperty.UserId = thisUser.UserId;
+                newEditWindowProperty.TextHeaderId = textHeaderID;
+                newEditWindowProperty.CursorPosition = 0;
+                newEditWindowProperty.TextAreaFocus = 0;
+                
+                if (ModelState.IsValid)
+                {
+                    _context.EditWindowProperties.Add(newEditWindowProperty);
+                    _context.SaveChanges();
+                }
+            }
+
+
             //build up previous Text "visions" and TextHeaders for them
             List<TextHeader> previousTextHeaders = new List<TextHeader>();
             List<Text> previousTexts = new List<Text>();
@@ -547,7 +586,8 @@ namespace RhymeBinder.Controllers
                 User = thisUser,
                 AllRevisionStatuses = revisionStatuses,
                 PreviousTexts = previousTextsAndHeaders,
-                CurrentRevisionStatus = currentRevisionStatus
+                CurrentRevisionStatus = currentRevisionStatus,
+                EditWindowProperty = thisEditWindowProperty
             };
 
             return (thisTextHeaderBodyUserRecord);

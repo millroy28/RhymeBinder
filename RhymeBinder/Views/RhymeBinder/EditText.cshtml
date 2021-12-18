@@ -24,6 +24,9 @@
     <input type="hidden" name="User.AspNetUserId" value="@Model.User.AspNetUserId" />
     <input type="hidden" name="Text.TextId" value="@Model.Text.TextId" />
     <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
+    <input type="hidden" name="EditWindowProperty.CursorPosition" id="cursor_position" />
+    <input type="hidden" name="EditWindowProperty.TextAreaFocus" id="form_focus" value="1"/>
+
 
 
     <div class="a font-control-header" id="test">
@@ -69,6 +72,8 @@
     </div>
 
 </form>
+
+<div id="prev_cursor_position_value">@Model.EditWindowProperty.CursorPosition</div>
 
 <script language="Javascript" src="~/js/autosave.js"></script>
 

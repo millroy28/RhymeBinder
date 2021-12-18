@@ -9,6 +9,7 @@ namespace RhymeBinder.Models
     {
         public SimpleUser()
         {
+            EditWindowProperties = new HashSet<EditWindowProperty>();
             SavedViews = new HashSet<SavedView>();
             TextGroups = new HashSet<TextGroup>();
             TextHeaderCreatedByNavigations = new HashSet<TextHeader>();
@@ -22,6 +23,7 @@ namespace RhymeBinder.Models
         public string UserName { get; set; }
 
         public virtual AspNetUser AspNetUser { get; set; }
+        public virtual ICollection<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual ICollection<SavedView> SavedViews { get; set; }
         public virtual ICollection<TextGroup> TextGroups { get; set; }
         public virtual ICollection<TextHeader> TextHeaderCreatedByNavigations { get; set; }

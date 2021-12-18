@@ -19,6 +19,7 @@ namespace RhymeBinder.Models
 
         public string CurrentRevisionStatus { get; set; }
         
+        public EditWindowProperty EditWindowProperty { get; set; }
 
     }
 }

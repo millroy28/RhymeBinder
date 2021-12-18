@@ -9,6 +9,7 @@ namespace RhymeBinder.Models
     {
         public TextHeader()
         {
+            EditWindowProperties = new HashSet<EditWindowProperty>();
             InverseVersionOfNavigation = new HashSet<TextHeader>();
             LnkTextSubmissions = new HashSet<LnkTextSubmission>();
             Submissions = new HashSet<Submission>();
@@ -39,6 +40,7 @@ namespace RhymeBinder.Models
         public virtual TextGroup TextGroup { get; set; }
         public virtual TextRevisionStatus TextRevisionStatus { get; set; }
         public virtual TextHeader VersionOfNavigation { get; set; }
+        public virtual ICollection<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual ICollection<TextHeader> InverseVersionOfNavigation { get; set; }
         public virtual ICollection<LnkTextSubmission> LnkTextSubmissions { get; set; }
         public virtual ICollection<Submission> Submissions { get; set; }

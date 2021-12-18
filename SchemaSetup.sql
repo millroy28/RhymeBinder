@@ -143,6 +143,13 @@ ViewName VARCHAR(200),
 [LastView] BIT
 )
 
+CREATE TABLE EditWindowProperties (
+EditWindowPropertyID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
+TextAreaFocus INT,
+CursorPosition INT
+)
 
 INSERT INTO TextRevisionStatuses (TextRevisionStatus) VALUES
 ('Scraps'),
