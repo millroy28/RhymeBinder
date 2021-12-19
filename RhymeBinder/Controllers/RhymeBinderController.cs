@@ -222,11 +222,12 @@ namespace RhymeBinder.Controllers
             //Check for change and only save if the text has changed
             bool unchanged;
             Text origText = new Text();
-            origText = _context.Texts.Find(editedTextHeaderBodyUserRecord.TextHeader.TextId);
 
+            origText = _context.Texts.Find(editedTextHeaderBodyUserRecord.TextHeader.TextId);
+    
             unchanged = TextComparitor(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody);
-            
-            //also checking for status changes
+           
+            //also checking for status changes and title changes
             if (unchanged)
             {
                 TextHeader origHeader = new TextHeader();
@@ -234,6 +235,10 @@ namespace RhymeBinder.Controllers
                 if (origHeader.TextRevisionStatusId != editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId)
                 {
                     unchanged = false;
+                }
+                if (unchanged)
+                {
+                    unchanged = TextComparitor(origHeader.Title, editedTextHeaderBodyUserRecord.TextHeader.Title);
                 }
             }
 
@@ -301,7 +306,7 @@ namespace RhymeBinder.Controllers
                 if (action == "EditText")
                 {
                     thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
-                    thisEditWindowProperty.TextAreaFocus = editedTextHeaderBodyUserRecord.EditWindowProperty.TextAreaFocus;
+                    thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
 
                     if (ModelState.IsValid)
                     {
@@ -531,7 +536,7 @@ namespace RhymeBinder.Controllers
                 newEditWindowProperty.UserId = thisUser.UserId;
                 newEditWindowProperty.TextHeaderId = textHeaderID;
                 newEditWindowProperty.CursorPosition = 0;
-                newEditWindowProperty.TextAreaFocus = 0;
+                newEditWindowProperty.ActiveElement = "body_edit_field";
                 
                 if (ModelState.IsValid)
                 {

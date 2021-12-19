@@ -151,6 +151,10 @@ namespace RhymeBinder.Models
             {
                 entity.Property(e => e.EditWindowPropertyId).HasColumnName("EditWindowPropertyID");
 
+                entity.Property(e => e.ActiveElement)
+                    .HasMaxLength(300)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.TextHeaderId).HasColumnName("TextHeaderID");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
@@ -159,12 +163,12 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.EditWindowProperties)
                     .HasForeignKey(d => d.TextHeaderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EditWindo__TextH__76B698BF");
+                    .HasConstraintName("FK__EditWindo__TextH__06ED0088");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EditWindowProperties)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__EditWindo__UserI__75C27486");
+                    .HasConstraintName("FK__EditWindo__UserI__05F8DC4F");
             });
 
             modelBuilder.Entity<LnkTextSubmission>(entity =>
