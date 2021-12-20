@@ -13,14 +13,16 @@ var current_cursor_position;
 var previous_cursor_position;
 var current_focus_element;
 var previous_focus_element;
+var keyup_timer;
 
 function reset_autosave_timer() {
     autosave_timer = 5; //seconds before autosaving
 }
 
+function reset_keyup_timer() {
+    keyup_timer = 3;    //seconds wait for pause in typing before autosave
+}
 
-// Get the input box
-let input = document.getElementById('my-input');
 
 
 function autosave_counter() {
@@ -32,29 +34,52 @@ function autosave_counter() {
         autosave_timer--;
         if (autosave_timer == 0) {
             save_content();
+            return;
         }
     }
     setTimeout('autosave_counter()', 1000); //elapses one second before calling function again
 }
 
 function save_content() {
-
     get_current_cursor_position_and_form_focus();
-    document.getElementById('cursor_position').value = current_cursor_position;
-    document.getElementById('form_focus').value = current_focus_element;
-    document.getElementById('edit').submit();
+    console.log('preparing to autosave... current focus element: ' + current_focus_element);
+    console.log('preparing to autosave... current cursor position: ' + current_cursor_position);
+    console.log('preparing to autosave... waiting for user to stop typing...');
+
+    let input = document.getElementById(current_focus_element);
+    input.addEventListener('keyup', function (e) {
+        reset_keyup_timer();
+    });
+
+    wait_for_typing_to_finish_before_saving();
+    
+}
+
+function wait_for_typing_to_finish_before_saving() {
+    keyup_timer--;
+    console.log('no-typing detected countown at: ' + keyup_timer);
+
+    if (keyup_timer == 0) {
+        //set cursor position and form focus values in form to be saved to server
+        get_current_cursor_position_and_form_focus();
+        document.getElementById('cursor_position').value = current_cursor_position;
+        document.getElementById('form_focus').value = current_focus_element;
+        document.getElementById('edit').submit();
+        return;
+    } else {
+        setTimeout('wait_for_typing_to_finish_before_saving()', 1000); //elapses one second before calling function again
+    }
+
 }
 
 function get_current_cursor_position_and_form_focus() {
     current_focus_element = document.activeElement.id;
-    console.log('preparing to autosave... current focus element: ' + current_focus_element);
    // current_cursor_position = document.getElementById('body_edit_field').selectionEnd;
     if (current_focus_element == 'body_edit_field' || current_focus_element == 'title_edit_field') {
         current_cursor_position = document.getElementById(current_focus_element).selectionEnd;
     } else {
         current_cursor_position = 0;
     }
-    console.log('preparing to autosave... current cursor position: ' + current_cursor_position);
 }
 
 
