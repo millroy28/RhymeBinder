@@ -74,10 +74,11 @@ function wait_for_typing_to_finish_before_saving() {
 
 function get_current_cursor_position_and_form_focus() {
     current_focus_element = document.activeElement.id;
-   // current_cursor_position = document.getElementById('body_edit_field').selectionEnd;
+
     if (current_focus_element == 'body_edit_field' || current_focus_element == 'title_edit_field') {
         current_cursor_position = document.getElementById(current_focus_element).selectionEnd;
     } else {
+        current_focus_element = 'body_edit_field'
         current_cursor_position = 0;
     }
 }
@@ -122,6 +123,7 @@ function run_these_functions_on_page_load() {
 set_cursor_and_focus_to_previous();
 get_initial_content_values();
 reset_autosave_timer();
+reset_keyup_timer();
 autosave_counter();  //this is the one that runs continuously 
 }
 
