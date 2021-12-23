@@ -4,28 +4,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RhymeBinder</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />*@
     <link rel="stylesheet" href="~/css/main.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RhymeBinder</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="RhymeBinder" asp-action="Index">Home</a>
+        <nav class="navbar">
+           
+                
+                                
+                    <ul class="navbar-links">
+                        <li class="navbar-item-brand">
+                            <a asp-area="" asp-controller="RhymeBinder" asp-action="Index">RhymeBinder</a>
                         </li>
+                        <li class="navbar-item">
+                            <a asp-area="" asp-controller="RhymeBinder" asp-action="StartNewTextGroup">NEW</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a asp-area="" asp-controller="RhymeBinder" asp-action="ListTextsNUID">BINDER</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a asp-area="" asp-controller="RhymeBinder" asp-action="Manage">MANAGE</a>
+                        </li>
+                        <li class="navbar-item">
+                            <a asp-area="" asp-controller="RhymeBinder" asp-action="Settings">SETTINGS</a>
+                        </li>
+                        <partial name="_LoginPartial" />
                     </ul>
-                </div>
-            </div>
+
+            
         </nav>
     </header>
     <div class="container">

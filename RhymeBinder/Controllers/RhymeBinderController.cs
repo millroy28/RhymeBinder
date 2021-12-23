@@ -362,6 +362,12 @@ namespace RhymeBinder.Controllers
 
             return RedirectToAction("Index");
         }
+        public IActionResult ListTextsNUID()
+        {
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+            return Redirect($"/RhymeBinder/ListTexts?userID={thisUser.UserId}");
+        }
         public IActionResult ListTexts(int userID)
         {
             SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.LastView == true).First();
