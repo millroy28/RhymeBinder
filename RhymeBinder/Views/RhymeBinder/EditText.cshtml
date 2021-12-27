@@ -7,7 +7,7 @@
 @model TextHeaderBodyUserRecord
 
 
-<form class="wrapper" action="EditText" method="post" id="edit">
+<form class="editor-view-wrapper" action="EditText" method="post" id="edit">
     <input type="hidden" name="TextHeader.TextHeaderId" value="@Model.TextHeader.TextHeaderId" />
     <input type="hidden" name="TextHeader.TextGroupId" value="@Model.TextHeader.TextGroupId" />
     <input type="hidden" name="TextHeader.TextId" value="@Model.TextHeader.TextId" />
@@ -30,52 +30,53 @@
     <input type="hidden" name="EditWindowProperty.TextHeaderID" value="@Model.TextHeader.TextHeaderId" />
 
 
-    <div class="a font-control-header" id="test">
-        Editing:
-    </div>
-    <div class="b font-weight-bold">
-        @Model.TextHeader.Title
-    </div>
 
-    <div class="z title-box">
-        <textarea name="TextHeader.Title" rows="1" cols="100" id="title_edit_field">@Model.TextHeader.Title</textarea>
-    </div>
-    <div class="e font-control-label">
-        Revision Status:
-    </div>
-
-
-    <div class="f">
-        <select name="TextHeader.TextRevisionStatusID" id="revision_status">
-            @foreach (var revisionStatus in Model.AllRevisionStatuses)
-            {
-                if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
+    <div class="menu-bar-main">
+        <div class="menu-bar-title">
+            Editing:
+        </div>
+        <div class="menu-bar-item">
+            Revision Status:
+        </div>
+        <div class="menu-bar-item">
+            <select name="TextHeader.TextRevisionStatusID" id="revision_status">
+                @foreach (var revisionStatus in Model.AllRevisionStatuses)
                 {
-                    <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
+                    if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
+                    {
+                        <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
+                    }
+                    else
+                    {
+                        <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
+                    }
                 }
-                else
-                {
-                    <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                }
-            }
-        </select>
+            </select>
+        </div>
+    </div>
+    <div class="menu-bar-escape">
+        <div class="menu-bar-item">
+                <input type="submit" name="action" class = "button menu-bar-button" value="Save and Exit" />
+        </div>
+        <div class="menu-bar-item">
+                <input type="submit" name="action" class = "button menu-bar-button" value="Save" id="save" />
+        </div>
     </div>
 
-    <div class="c">
-        <input type="submit" name="action" value="Save and Exit" />
-    </div>
-    <div class="d">
-        <input type="submit" name="action" value="Save" id="save" />
-    </div>
 
-    <div class="y editor">
-        <textarea name="Text.TextBody" rows="30" cols="100" id="body_edit_field">@Model.Text.TextBody</textarea>
+
+    <div class="title-bar">
+        <div class="title-box">
+            <textarea name="TextHeader.Title" rows="1" cols="100" id="title_edit_field">@Model.TextHeader.Title</textarea>
+        </div>
+    </div>
+    <div class="editor-container">
+        <div class="y editor">
+            <textarea name="Text.TextBody" rows="30" cols="100" id="body_edit_field">@Model.Text.TextBody</textarea>
+        </div>
     </div>
 
 </form>
-
-<div id="prev_cursor_position_value" hidden>@Model.EditWindowProperty.CursorPosition</div>
-<div id="prev_focus_element" hidden>@Model.EditWindowProperty.ActiveElement</div>
 
 
 <script language="Javascript" src="~/js/autosave.js"></script>
