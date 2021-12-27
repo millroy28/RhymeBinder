@@ -56,7 +56,7 @@
     </div>
     <div class="menu-bar-escape">
         <div class="menu-bar-item-right-final">
-                <input type="submit" name="action" class = "button menu-bar-button" value="Return to Binder" />
+                <input type="submit" name="action" class = "button menu-bar-button" value="Return" />
         </div>
         <div class="menu-bar-item">
                 <input type="submit" name="action" class = "button menu-bar-button" value="Save" id="save" />
@@ -66,14 +66,10 @@
 
 
     <div class="title-bar">
-        <div class="title-box">
-            <textarea name="TextHeader.Title" rows="1" cols="100" id="title_edit_field">@Model.TextHeader.Title</textarea>
-        </div>
+            <textarea name="TextHeader.Title" class ="title-box" id="title_edit_field">@Model.TextHeader.Title</textarea>
     </div>
     <div class="editor-container">
-        <div class="y editor">
-            <textarea name="Text.TextBody" rows="30" cols="100" id="body_edit_field">@Model.Text.TextBody</textarea>
-        </div>
+            <textarea name="Text.TextBody" class="editor-box" id="body_edit_field">@Model.Text.TextBody</textarea>
     </div>
 
 </form>

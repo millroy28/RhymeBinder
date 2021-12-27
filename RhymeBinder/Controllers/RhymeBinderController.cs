@@ -324,8 +324,8 @@ namespace RhymeBinder.Controllers
             //Where do we go from here?
             switch (action)
             {
-                case "Save and Exit":
-                    return RedirectToAction("Index");
+                case "Return":
+                    return RedirectToAction("ListTextsNUID");
                 case "Save":
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
                 default:
