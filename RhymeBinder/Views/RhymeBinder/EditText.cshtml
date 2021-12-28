@@ -29,8 +29,6 @@
     <input type="hidden" name="EditWindowProperty.UserID" value="@Model.User.UserId" />
     <input type="hidden" name="EditWindowProperty.TextHeaderID" value="@Model.TextHeader.TextHeaderId" />
 
-
-
     <div class="menu-bar-main">
         <div class="menu-bar-title">
             Editing:
@@ -54,6 +52,7 @@
             </select>
         </div>
     </div>
+
     <div class="menu-bar-escape">
         <div class="menu-bar-item-right-final">
                 <input type="submit" name="action" class = "button menu-bar-button" value="Return" />
@@ -63,13 +62,35 @@
         </div>
     </div>
 
-
-
     <div class="title-bar">
             <textarea name="TextHeader.Title" class ="title-box" id="title_edit_field">@Model.TextHeader.Title</textarea>
     </div>
+
     <div class="editor-container">
             <textarea name="Text.TextBody" class="editor-box" id="body_edit_field">@Model.Text.TextBody</textarea>
+    </div>
+    
+    <div class="left-sidebar">
+        <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
+        <div class="left-sidebar-item">Vision No. @Model.TextHeader.VisionNumber</div>
+        @if (Model.PreviousTexts.Count() > 0)
+        {
+            <div class="left-sidebar-item">Previous visions:</div>
+            foreach (var prev in Model.PreviousTexts)
+            {
+                
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: @prev.Title</div>
+                <div class="left-sidebar-item">Created @prev.Created by @prev.CreatedBy</div>
+                <div class="left-sidebar-item">Last Modified @prev.LastModified by @prev.LastModifiedBy</div>                
+            }
+        }
+    </div>
+
+    <div class="right-sidebar">
+        <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified</div>
+        <div class="right-sidebar-item">by @Model.TextHeader.LastModifiedBy</div>
+        <div class="right-sidebar-item">Created @Model.TextHeader.Created</div>
+        <div class="right-sidebar-item">by @Model.TextHeader.CreatedBy</div>
     </div>
 
 </form>
@@ -83,18 +104,6 @@
 
 
 
-@*@if (Model.PreviousTexts.Count() > 0)
-    {
-        <h3>Previous visions:</h3>
-        foreach (var prev in Model.PreviousTexts)
-        {
-            <div class="editor-container">
-            <b><p>Vision @prev.VisionNumber: @prev.Title</p></b>
-            <p>Created @prev.Created by @prev.CreatedBy</p>
-            <p>Last Modified @prev.LastModified by @prev.LastModifiedBy</p>
-            <p>@prev.TextBody</p>
-            </div>
-        }
-    }*@
+
 
 

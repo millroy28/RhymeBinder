@@ -223,6 +223,7 @@ body {
     grid-row: 2 / 3;
     align-self: center;
     justify-self: stretch;
+
 }
 .title-box {
     text-align: left;
@@ -253,13 +254,53 @@ body {
     word-wrap: normal;
 }
 
-/*``[Editor:LeftSidebar*/
-.left-sidebar{
-
+.text-boxes-area {
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
+    background-color: #c6c9b6;
 }
 
+/*``[Editor:LeftSidebar*/
+.left-sidebar {
+    grid-column: 1 / 2;
+    grid-row: 2 / 4;
+    display: flex;
+    flex-direction: column;
+    background-color: #eff3d8;
+    padding-left: 26px;
+    padding-right: 10px;
+}
+.left-sidebar-item{
+    align-self: flex-start;
+    font-size: small;
+    padding-left: 6px;
+}
+.left-sidebar-item-heading {
+    align-self: flex-start;
+    font-size: small;
+    font-weight: 600;
+}
 /*``[Editor:RightSidebar*/
+.right-sidebar {
+    grid-column: 3 / 4;
+    grid-row: 2 / 4;
+    display: flex;
+    flex-direction: column;
+    background-color: #eff3d8;
+    padding-left: 10px;
+    padding-right: 16px;
+}
+.right-sidebar-item {
+    align-self: flex-start;
+    font-size: small;
+    padding-left: 6px
 
+}
+.right-sidebar-item-heading {
+    align-self: flex-start;
+    font-size: small;
+    font-weight: 600;
+}
 
 /*``[Misc and utils]*/
 .button {
