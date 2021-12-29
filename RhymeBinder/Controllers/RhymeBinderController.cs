@@ -161,6 +161,8 @@ namespace RhymeBinder.Controllers
             newTextHeader.Title = title;
             newTextHeader.Created = DateTime.Now;
             newTextHeader.CreatedBy = thisUser.UserId;
+            newTextHeader.LastModified = DateTime.Now;
+            newTextHeader.LastModifiedBy = thisUser.UserId;
             newTextHeader.VisionNumber = 1;
             newTextHeader.Deleted = false;
             newTextHeader.Locked = false;
@@ -533,10 +535,24 @@ namespace RhymeBinder.Controllers
             SimpleUser currentUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
             //grab the SimpleUser object for the user who created the TextHeader
-            SimpleUser createdUser = _context.SimpleUsers.Where(x => x.UserId == thisTextHeader.CreatedBy).First();
+            SimpleUser createdUser = new SimpleUser();
+            try
+            {
+                createdUser = _context.SimpleUsers.Where(x => x.UserId == thisTextHeader.CreatedBy).First();
+            }
+            catch
+            {
+            }
 
             //grab the SimpleUser object for the user who last modified the TextHeader
-            SimpleUser lastModifiedUser = _context.SimpleUsers.Where(x => x.UserId == thisTextHeader.LastModifiedBy).First();
+            SimpleUser lastModifiedUser = new SimpleUser();
+            try
+            {
+                lastModifiedUser = _context.SimpleUsers.Where(x => x.UserId == thisTextHeader.LastModifiedBy).First();
+            }
+            catch
+            {
+            }
 
             //grab the EditWindowStatus for the current user/header (if it exists; if not-create it)
             EditWindowProperty thisEditWindowProperty = new EditWindowProperty();

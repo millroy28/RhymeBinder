@@ -86,16 +86,16 @@
 
                 <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls= "@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
                 <div class="left-sidebar-item">Status: @prev.Status</div>
-                <div class="left-sidebar-item">Created @prev.Created by @prev.CreatedBy</div>
-                <div class="left-sidebar-item">Last Modified @prev.LastModified by @prev.LastModifiedBy</div>
+                <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
+                <div class="left-sidebar-item">Last Modified @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
                     }
                 }
     </div>
 
     <div class="right-sidebar">
-        <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified</div>
+        <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified.Value.ToString("d")</div>
         <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
-        <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created</div>
+        <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created.Value.ToString("d")</div>
         <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
     </div>
 
