@@ -137,7 +137,7 @@ body {
 .editor-view-wrapper {
     display: grid;
     grid-gap: 0px;
-    grid-template-columns: 20% 60% 20%;
+    grid-template-columns: 28% 52% 20%;
     grid-template-rows: 30px 50px auto;
     box-sizing: border-box;
     width: 100%;
@@ -193,7 +193,7 @@ body {
 
     background-color: #afc33c;
     border-color: transparent;
-    padding: 5px !important;
+    padding: 4px !important;
     margin: 0px !important;
     border: 0px !important;
     border-bottom-left-radius: 4px;
@@ -253,7 +253,6 @@ body {
     resize: none;
     word-wrap: normal;
 }
-
 .text-boxes-area {
     grid-column: 2 / 3;
     grid-row: 2 / 4;
@@ -279,6 +278,7 @@ body {
     align-self: flex-start;
     font-size: small;
     font-weight: 600;
+    padding-top: 4px;
 }
 /*``[Editor:RightSidebar*/
 .right-sidebar {
@@ -300,6 +300,7 @@ body {
     align-self: flex-start;
     font-size: small;
     font-weight: 600;
+    padding-top: 4px;
 }
 
 /*``[Misc and utils]*/
@@ -335,4 +336,102 @@ body {
     border-style: outset;
     border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
     border-image: initial;
+}
+
+
+/*``[Drawer]*/
+
+.drawer {
+    display: none;
+}
+
+.drawer__header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    font-size: smaller;
+    font-family: Courier New, Courier, monospace;
+}
+
+.drawer__close {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    background-image: url("../img/left-collapse.jpg");
+    width: 20px;
+    height: 20px;
+}
+
+.drawer__wrapper {
+    position: fixed;
+    top: 75px;
+    right: 0;
+    bottom: 0;
+    height: 86%;
+    width: 100%;
+    max-width: 27%;
+    z-index: 9999;
+    overflow: auto;
+    transition: transform 0.8s;
+    will-change: transform;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    -webkit-transform: translateX(103%);
+    transform: translateX(103%); /* extra 3% because of box-shadow */
+    -webkit-overflow-scrolling: touch; /* enables momentum scrolling in iOS overflow elements */
+    box-shadow: 0 2px 6px #777;
+}
+
+.drawer__content {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    flex-grow: 1;
+    padding: 1.5rem;
+    font-size: smaller;
+    font-family: Courier New, Courier, monospace;
+    resize: none;
+}
+
+.drawer.is-active {
+    display: block;
+}
+
+.drawer.is-visible .drawer__wrapper {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+}
+
+.drawer.is-visible .drawer__overlay {
+    opacity: 0.5;
+}
+
+.drawer__overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 200;
+/*    opacity: 0;*/
+/*    transition: opacity 0.3s;
+    will-change: opacity;*/
+    /*background-color: #000;*/
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.drawer--left .drawer__wrapper {
+    left: 0;
+    right: auto;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
 }

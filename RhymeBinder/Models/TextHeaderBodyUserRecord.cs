@@ -13,6 +13,10 @@ namespace RhymeBinder.Models
 
         public SimpleUser User { get; set; }
 
+        public SimpleUser CreatedByUser { get; set; }
+
+        public SimpleUser LastModifiedByUser { get; set; }
+
         public List<TextRevisionStatus> AllRevisionStatuses { get; set; }
 
         public List<SimpleTextHeaderAndText> PreviousTexts { get; set; }

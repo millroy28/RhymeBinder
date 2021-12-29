@@ -16,6 +16,6 @@ namespace RhymeBinder.Models
 
         public string CreatedBy { get; set; }
         public string LastModifiedBy { get; set; }
-
+        public string Status { get; set; }
     }
 }

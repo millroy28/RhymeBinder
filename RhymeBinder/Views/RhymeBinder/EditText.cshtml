@@ -53,23 +53,28 @@
         </div>
     </div>
 
+
+
     <div class="menu-bar-escape">
-        <div class="menu-bar-item-right-final">
-                <input type="submit" name="action" class = "button menu-bar-button" value="Return" />
+        <div class="menu-bar-item-">
+            <input type="submit" name="action" class="button menu-bar-button" value="Return" />
         </div>
         <div class="menu-bar-item">
-                <input type="submit" name="action" class = "button menu-bar-button" value="Save" id="save" />
+            <input type="submit" name="action" class="button menu-bar-button" value="Save" id="save" />
+        </div>
+        <div class="menu-bar-item-right-final">
+            <input type="submit" name="action" class="button menu-bar-button" value="Revision" id="save" />
         </div>
     </div>
 
     <div class="title-bar">
-            <textarea name="TextHeader.Title" class ="title-box" id="title_edit_field">@Model.TextHeader.Title</textarea>
+        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field">@Model.TextHeader.Title</textarea>
     </div>
 
     <div class="editor-container">
-            <textarea name="Text.TextBody" class="editor-box" id="body_edit_field">@Model.Text.TextBody</textarea>
+        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field">@Model.Text.TextBody</textarea>
     </div>
-    
+
     <div class="left-sidebar">
         <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
         <div class="left-sidebar-item">Vision No. @Model.TextHeader.VisionNumber</div>
@@ -78,23 +83,45 @@
             <div class="left-sidebar-item">Previous visions:</div>
             foreach (var prev in Model.PreviousTexts)
             {
-                
-                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: @prev.Title</div>
+
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls= "@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
+                <div class="left-sidebar-item">Status: @prev.Status</div>
                 <div class="left-sidebar-item">Created @prev.Created by @prev.CreatedBy</div>
-                <div class="left-sidebar-item">Last Modified @prev.LastModified by @prev.LastModifiedBy</div>                
-            }
-        }
+                <div class="left-sidebar-item">Last Modified @prev.LastModified by @prev.LastModifiedBy</div>
+                    }
+                }
     </div>
 
     <div class="right-sidebar">
         <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified</div>
-        <div class="right-sidebar-item">by @Model.TextHeader.LastModifiedBy</div>
-        <div class="right-sidebar-item">Created @Model.TextHeader.Created</div>
-        <div class="right-sidebar-item">by @Model.TextHeader.CreatedBy</div>
+        <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
+        <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created</div>
+        <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
     </div>
+
+
+
+
 
 </form>
 
+@* Populate Drawers *@
+@foreach (var prev in Model.PreviousTexts)
+  {
+    <section class="drawer drawer--left" id="@prev.VisionNumber" data-drawer-target>
+        <div class="drawer__wrapper">
+            <div class="drawer__header">
+                <div class="drawer__title">
+                    @prev.Title (Vision No.: @prev.VisionNumber)
+                </div>
+                <button class="drawer__close" data-drawer-close aria-label="Close Drawer"></button>
+            </div>
+            <textarea class="drawer__content">
+                @prev.TextBody
+            </textarea>
+        </div>
+    </section>
+  }
 
 <script language="Javascript" src="~/js/autosave.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>

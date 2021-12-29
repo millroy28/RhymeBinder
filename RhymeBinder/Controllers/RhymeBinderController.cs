@@ -328,6 +328,8 @@ namespace RhymeBinder.Controllers
                     return RedirectToAction("ListTextsNUID");
                 case "Save":
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
+                case "Revision":
+                    return Redirect($"/RhymeBinder/AddRevision?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
                 default:
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
             }
@@ -528,18 +530,24 @@ namespace RhymeBinder.Controllers
 
             //grab the SimpleUser object for current user
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+            SimpleUser currentUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+
+            //grab the SimpleUser object for the user who created the TextHeader
+            SimpleUser createdUser = _context.SimpleUsers.Where(x => x.UserId == thisTextHeader.CreatedBy).First();
+
+            //grab the SimpleUser object for the user who last modified the TextHeader
+            SimpleUser lastModifiedUser = _context.SimpleUsers.Where(x => x.UserId == thisTextHeader.LastModifiedBy).First();
 
             //grab the EditWindowStatus for the current user/header (if it exists; if not-create it)
             EditWindowProperty thisEditWindowProperty = new EditWindowProperty();
             try
             {
-                thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == thisUser.UserId
+                thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == currentUser.UserId
                                                                                && x.TextHeaderId == textHeaderID).First();
             } catch
             {
                 EditWindowProperty newEditWindowProperty = new EditWindowProperty();
-                newEditWindowProperty.UserId = thisUser.UserId;
+                newEditWindowProperty.UserId = currentUser.UserId;
                 newEditWindowProperty.TextHeaderId = textHeaderID;
                 newEditWindowProperty.CursorPosition = 0;
                 newEditWindowProperty.ActiveElement = "body_edit_field";
@@ -569,10 +577,12 @@ namespace RhymeBinder.Controllers
                 previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
                                            join Text text in previousTexts
                                              on textHeader.TextId equals text.TextId
-                                           join SimpleUser createdUser in users
-                                             on textHeader.CreatedBy equals createdUser.UserId
+                                           join SimpleUser createdByUser in users
+                                             on textHeader.CreatedBy equals createdByUser.UserId
                                            join SimpleUser modifiedUser in users
                                              on textHeader.LastModifiedBy equals modifiedUser.UserId
+                                           join TextRevisionStatus revisionStatus in revisionStatuses
+                                             on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
                                            select new SimpleTextHeaderAndText
                                             {
                                               Title = textHeader.Title,
@@ -580,8 +590,9 @@ namespace RhymeBinder.Controllers
                                               VisionNumber = textHeader.VisionNumber,
                                               Created = textHeader.Created,
                                               LastModified = textHeader.LastModified,
-                                              CreatedBy = createdUser.UserName,
-                                              LastModifiedBy = modifiedUser.UserName
+                                              CreatedBy = createdByUser.UserName,
+                                              LastModifiedBy = modifiedUser.UserName,
+                                              Status = revisionStatus.TextRevisionStatus1
                                             }
                                           ).ToList();
 
@@ -596,7 +607,9 @@ namespace RhymeBinder.Controllers
             {
                 TextHeader = thisTextHeader,
                 Text = thisText,
-                User = thisUser,
+                User = currentUser,
+                CreatedByUser = createdUser,
+                LastModifiedByUser = lastModifiedUser,
                 AllRevisionStatuses = revisionStatuses,
                 PreviousTexts = previousTextsAndHeaders,
                 CurrentRevisionStatus = currentRevisionStatus,
