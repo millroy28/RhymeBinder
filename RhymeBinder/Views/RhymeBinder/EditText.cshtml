@@ -74,6 +74,9 @@
     <div class="editor-container">
         <textarea name="Text.TextBody" class="editor-box" id="body_edit_field">@Model.Text.TextBody</textarea>
     </div>
+    <div class="ruler-container">
+        <textarea class="ruler-box" id="line_count" readonly ="true"></textarea>
+    </div>    
 
     <div class="left-sidebar">
         <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
@@ -84,12 +87,12 @@
             foreach (var prev in Model.PreviousTexts)
             {
 
-                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls= "@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls="@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
                 <div class="left-sidebar-item">Status: @prev.Status</div>
                 <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
                 <div class="left-sidebar-item">Last Modified @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
-                    }
-                }
+            }
+        }
     </div>
 
     <div class="right-sidebar">
@@ -107,7 +110,7 @@
 
 @* Populate Drawers *@
 @foreach (var prev in Model.PreviousTexts)
-  {
+{
     <section class="drawer drawer--left" id="@prev.VisionNumber" data-drawer-target>
         <div class="drawer__wrapper">
             <div class="drawer__header">
@@ -121,7 +124,10 @@
             </textarea>
         </div>
     </section>
-  }
+}
+
+<div id="textWidthSample" class="text-sample" hidden>X</div>
+
 
 <script language="Javascript" src="~/js/autosave.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>
