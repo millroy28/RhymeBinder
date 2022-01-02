@@ -255,7 +255,18 @@ populate_count_rulers(); //do it once on load
 window.addEventListener("resize", populate_count_rulers);
 
 let textboxTyping = document.getElementById('body_edit_field');
-input.addEventListener('keyup', function (e) {
+textboxTyping.addEventListener('keyup', function (e) {
     populate_count_rulers();
 });
+
+
+//Sync scroll of rulers with main text area
+function SyncScroll() {
+    var rulerA = document.getElementById('paragraph_count');
+    var rulerB = document.getElementById('line_count');
+    var textArea = document.getElementById('body_edit_field');
+
+    rulerA.scrollTop = textArea.scrollTop;
+    rulerB.scrollTop = textArea.scrollTop;
+}
 
