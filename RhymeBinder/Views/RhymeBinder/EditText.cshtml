@@ -74,9 +74,12 @@
     <div class="editor-container">
         <textarea name="Text.TextBody" class="editor-box" id="body_edit_field">@Model.Text.TextBody</textarea>
     </div>
-    <div class="ruler-container">
-        <textarea class="ruler-box" id="line_count" readonly ="true"></textarea>
+    <div class="ruler-container-a">
+        <textarea class="ruler-box ruler-box-b" id="paragraph_count" readonly></textarea>
     </div>    
+    <div class="ruler-container-b">
+        <textarea class="ruler-box" id="line_count" readonly></textarea>
+    </div>
 
     <div class="left-sidebar">
         <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>

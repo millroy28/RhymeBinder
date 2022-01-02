@@ -179,16 +179,17 @@ function get_characters_per_line() {
     console.log('Estimated Characters per Line: ' + estCharactersInLine);
     return estCharactersInLine;
 }
-function generate_line_display_string() {
+function populate_count_rulers() {
     var charsInLine = get_characters_per_line();
     var text = document.getElementById('body_edit_field').value;
 
     var splitTextArray = text.split("\n");
     var splitTextArrayCount = splitTextArray.length;
-    var arrayLine;
-    var arrayLineLength;
     var lineDisplayString = "";
+    var paraDisplayString = "";
     var textLineNumber = 1;
+    var textParaNumber = 1;
+    var midPara = 0;
 
     for (let i = 0; i < splitTextArrayCount; i++) {
         
@@ -205,11 +206,19 @@ function generate_line_display_string() {
             let overRunFactor = Math.floor(arrayLineLength / charsInLine);
             lineDisplayString += textLineNumber.toString();
             textLineNumber++;
-            
+
+            if (midPara == 1) {
+                paraDisplayString += "|"
+            }
+            if (midPara == 0) {
+                paraDisplayString += textParaNumber.toString();
+                midPara = 1;
+            }
             
             //add extra line breaks so next line number matches next populated line in text area
             for (let j = 0; j < overRunFactor; j++) {
                 lineDisplayString += ' \r\n';
+                paraDisplayString += ' \r\n|';
             }
 
         }
@@ -217,24 +226,36 @@ function generate_line_display_string() {
             console.log('line exists at ' + i);
             lineDisplayString += textLineNumber.toString();
             textLineNumber++;
-        }
 
+            if (midPara == 1) {
+                paraDisplayString += "|"
+            }
+            if (midPara == 0) {
+                paraDisplayString += textParaNumber.toString();
+                midPara = 1;
+            }
+
+        }
+        if (arrayLineLength == 0 && midPara == 1) {
+            midPara = 0;
+            textParaNumber++;
+        }
+        
 
         lineDisplayString += ' \r\n';
-
+        paraDisplayString += ' \r\n';
     };
 
-    return lineDisplayString;
+    document.getElementById('line_count').value = lineDisplayString;
+    document.getElementById('paragraph_count').value = paraDisplayString;
 }
-function populate_line_count() {
-    let lineCount = generate_line_display_string();
-    document.getElementById('line_count').value = lineCount;
-}
-populate_line_count(); //do it once on load
 
-window.addEventListener("resize", populate_line_count);
+populate_count_rulers(); //do it once on load
+
+window.addEventListener("resize", populate_count_rulers);
+
 let textboxTyping = document.getElementById('body_edit_field');
 input.addEventListener('keyup', function (e) {
-    populate_line_count();
+    populate_count_rulers();
 });
 
