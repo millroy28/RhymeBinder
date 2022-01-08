@@ -26,6 +26,8 @@
     <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
     <input type="hidden" name="EditWindowProperty.CursorPosition" id="cursor_position" value="@Model.EditWindowProperty.CursorPosition" />
     <input type="hidden" name="EditWindowProperty.ActiveElement" id="form_focus" value="@Model.EditWindowProperty.ActiveElement" />
+    <input type="hidden" name="EditWindowProperty.ShowLineCount" id="show_line_count" value="@Model.EditWindowProperty.ShowLineCount" />
+    <input type="hidden" name="EditWindowProperty.ShowParagraphCount" id="show_paragraph_count" value="@Model.EditWindowProperty.ShowParagraphCount" />
     <input type="hidden" name="EditWindowProperty.UserID" value="@Model.User.UserId" />
     <input type="hidden" name="EditWindowProperty.TextHeaderID" value="@Model.TextHeader.TextHeaderId" />
 
@@ -59,8 +61,8 @@
                 View ▼
             </div>
             <div class="menu-bar-dropdown-content">
-                <a href="#" class="menu-bar-dropdown-item">Hide Line Count</a>
-                <a href="#" class="menu-bar-dropdown-item">Hide Stanza Count</a>
+                <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_line_count', this.id, 'line_count')" id="toggle_line_count">? Line Count</a>
+                <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_paragraph_count', this.id, 'paragraph_count')" id="toggle_paragraph_count">? Stanza Count</a>
             </div>
 
         </div>
@@ -85,11 +87,11 @@
     </div>
 
     <div class="editor-container">
-        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" onscroll="SyncScroll()">@Model.Text.TextBody</textarea>
+        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()">@Model.Text.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
         <textarea class="ruler-box ruler-box-b" id="paragraph_count" readonly></textarea>
-    </div>    
+    </div>
     <div class="ruler-container-b">
         <textarea class="ruler-box" id="line_count" readonly></textarea>
     </div>

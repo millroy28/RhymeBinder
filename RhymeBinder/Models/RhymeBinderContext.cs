@@ -163,12 +163,12 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.EditWindowProperties)
                     .HasForeignKey(d => d.TextHeaderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EditWindo__TextH__06ED0088");
+                    .HasConstraintName("FK__EditWindo__TextH__19FFD4FC");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EditWindowProperties)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__EditWindo__UserI__05F8DC4F");
+                    .HasConstraintName("FK__EditWindo__UserI__190BB0C3");
             });
 
             modelBuilder.Entity<LnkTextSubmission>(entity =>

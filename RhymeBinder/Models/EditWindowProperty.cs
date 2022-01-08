@@ -12,6 +12,8 @@ namespace RhymeBinder.Models
         public int TextHeaderId { get; set; }
         public string ActiveElement { get; set; }
         public int? CursorPosition { get; set; }
+        public int? ShowLineCount { get; set; }
+        public int? ShowParagraphCount { get; set; }
 
         public virtual TextHeader TextHeader { get; set; }
         public virtual SimpleUser User { get; set; }

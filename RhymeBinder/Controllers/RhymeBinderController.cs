@@ -309,6 +309,8 @@ namespace RhymeBinder.Controllers
                 {
                     thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
                     thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
+                    thisEditWindowProperty.ShowLineCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowLineCount;
+                    thisEditWindowProperty.ShowParagraphCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowParagraphCount;
 
                     if (ModelState.IsValid)
                     {
@@ -567,6 +569,8 @@ namespace RhymeBinder.Controllers
                 newEditWindowProperty.TextHeaderId = textHeaderID;
                 newEditWindowProperty.CursorPosition = 0;
                 newEditWindowProperty.ActiveElement = "body_edit_field";
+                newEditWindowProperty.ShowLineCount = 1;
+                newEditWindowProperty.ShowParagraphCount = 1;
                 
                 if (ModelState.IsValid)
                 {

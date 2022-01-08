@@ -1,4 +1,4 @@
-﻿//Chaning tab behavior in text editor window so instead of changing focus we're insering a... tab character
+﻿//-----------Chaning tab behavior in text editor window so instead of changing focus we're insering a... tab character
 let input = document.getElementById('body_edit_field');
 
 input.addEventListener("keydown", (e) => {
@@ -9,8 +9,7 @@ input.addEventListener("keydown", (e) => {
 });
 
 
-//Code for drawers
-
+//-----------Code for drawers
 var drawer = function () {
 
     /**
@@ -165,7 +164,7 @@ var drawer = function () {
 
 drawer();
 
-//Code for LineCounter
+//-----------Code for LineCounter
 function get_characters_per_line() {
     var textBox = document.getElementById('body_edit_field');
     var checkBox = document.getElementById('textWidthSample');
@@ -198,11 +197,11 @@ function populate_count_rulers() {
         //If arrayline has no characters besides spaces, it is not a line
         //do with regex at some point?
 
-        console.log("textarea row: " + i + "; row length: " + arrayLineLength + "; max row length: " + charsInLine );
+        //console.log("textarea row: " + i + "; row length: " + arrayLineLength + "; max row length: " + charsInLine );
 
         //if text overruns line, don't count subsequent lines
         if (arrayLineLength > charsInLine) {
-            console.log('overrun line at ' + i);
+            //console.log('overrun line at ' + i);
             let overRunFactor = Math.floor(arrayLineLength / charsInLine);
             lineDisplayString += textLineNumber.toString();
             textLineNumber++;
@@ -223,7 +222,7 @@ function populate_count_rulers() {
 
         }
         if (arrayLineLength > 0 && arrayLineLength <= charsInLine) {
-            console.log('line exists at ' + i);
+            //console.log('line exists at ' + i);
             lineDisplayString += textLineNumber.toString();
             textLineNumber++;
 
@@ -260,8 +259,8 @@ textboxTyping.addEventListener('keyup', function (e) {
 });
 
 
-//Sync scroll of rulers with main text area
-function SyncScroll() {
+//-----------Sync scroll of rulers with main text area
+function sync_scroll() {
     var rulerA = document.getElementById('paragraph_count');
     var rulerB = document.getElementById('line_count');
     var textArea = document.getElementById('body_edit_field');
@@ -270,3 +269,66 @@ function SyncScroll() {
     rulerB.scrollTop = textArea.scrollTop;
 }
 
+//-----------Hide/show the rulers
+function toggle_hide_element(formElementID, clickElementID, hideableElementID, init) {
+/*takes in hidden form property id, clickable element id, and hideable area id.
+ *will toggle the value of that form property to be saved 
+ *will toggle the the label of the clickable element id to swap "hide" with "show"
+ *will toggle hidden status of the hideable area
+ */
+    var show = document.getElementById(formElementID).value;
+    var clickElementText = document.getElementById(clickElementID).innerText;
+
+    if (init == 'init') {
+        if (show == 0) {
+            let newClickElementText = clickElementText.replace('?', 'Show');
+            document.getElementById(clickElementID).innerText = newClickElementText;
+            document.getElementById(hideableElementID).hidden = true;
+        }
+        if (show == 1) {
+            let newClickElementText = clickElementText.replace('?', 'Hide');
+            document.getElementById(clickElementID).innerText = newClickElementText;
+            document.getElementById(hideableElementID).hidden = false;
+        }
+    } else {
+        if (show == 0) {
+            document.getElementById(formElementID).value = 1;
+            let newClickElementText = clickElementText.replace('Show', 'Hide');
+            document.getElementById(clickElementID).innerText = newClickElementText;
+            document.getElementById(hideableElementID).hidden = false;
+        }
+        if (show == 1) {
+            document.getElementById(formElementID).value = 0;
+            let newClickElementText = clickElementText.replace('Hide', 'Show');
+            document.getElementById(clickElementID).innerText = newClickElementText;
+            document.getElementById(hideableElementID).hidden = true;
+        }
+    }
+
+}
+
+function init_hide_element(formElementID, clickElementID, hideableElementID) {
+    /*takes in hidden form property id, clickable element id, and hideable area id.
+     *gets the value of that form property and uses that to determine if element should be hidden or shown
+     *will set the the label of the clickable element id to "hide" or "show"
+     *will set hidden status of the hideable area
+     */
+    console.log("init: " + formElementID + ', ' + clickElementID + ', ' + hideableElementID);
+    var show = document.getElementById(formElementID).value;
+    var clickElementText = document.getElementById(clickElementID).innerText;
+
+    if (show == 0) {
+        let newClickElementText = clickElementText.replace('?', 'Show');
+        document.getElementById(clickElementID).innerText = newClickElementText;
+        document.getElementById(hideableElementID).hidden = true;
+    }
+    if (show == 1) {
+        let newClickElementText = clickElementText.replace('?', 'Hide');
+        document.getElementById(clickElementID).innerText = newClickElementText;
+        document.getElementById(hideableElementID).hidden = false;
+    }
+
+}
+//-----------Initializing auto-hide elements
+toggle_hide_element('show_line_count', 'toggle_line_count', 'line_count', 'init');
+toggle_hide_element('show_paragraph_count', 'toggle_paragraph_count', 'paragraph_count', 'init');
