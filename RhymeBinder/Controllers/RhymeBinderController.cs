@@ -302,27 +302,26 @@ namespace RhymeBinder.Controllers
                 {
                     return View();  //!!insert error handlin?
                 }
-                //If we are coming from autosave, update that EditWindowStatus
+                //  update that EditWindowStatus to save the view preferences for this text header
                 EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == editedTextHeaderBodyUserRecord.User.UserId
                                                                                                 && x.TextHeaderId == editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId).First();
-                if (action == "EditText")
-                {
-                    thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
-                    thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
-                    thisEditWindowProperty.ShowLineCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowLineCount;
-                    thisEditWindowProperty.ShowParagraphCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowParagraphCount;
 
-                    if (ModelState.IsValid)
-                    {
-                        _context.Entry(thisEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(thisEditWindowProperty);
-                        _context.SaveChanges();
-                    }
-                    else
-                    {
-                        return View();  //!!insert error handlin?
-                    }
+                thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
+                thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
+                thisEditWindowProperty.ShowLineCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowLineCount;
+                thisEditWindowProperty.ShowParagraphCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowParagraphCount;
+
+                if (ModelState.IsValid)
+                {
+                    _context.Entry(thisEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                    _context.Update(thisEditWindowProperty);
+                    _context.SaveChanges();
                 }
+                else
+                {
+                    return View();  //!!insert error handlin?
+                }
+
             }
 
             //Where do we go from here?
