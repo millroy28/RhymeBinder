@@ -6,9 +6,14 @@
 }
 @model List<DisplayTextHeader>
 
-<h2>Compositions:</h2>
-
-<table class="table table-responsive">
+<div class="table-view-wrapper">
+<div class="list-texts-menu-bar-main">
+    <div class="menu-bar-title">
+        Your Binder:
+    </div>
+</div>
+    <div class="table-view-table-container">
+    <table>
     <tr>
         <th><a href="/RhymeBinder/ChangeListDisplay?change=title">Title</a></th>
         <th><a href="/RhymeBinder/ChangeListDisplay?change=lastModified">Last Modified</a></th>
@@ -22,7 +27,7 @@
     @foreach(var text in Model)
     {
         <tr>
-            <td><a href="/RhymeBinder/ReadText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
+            <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
             <td>@text.LastModified</td>
             <td>@text.ModifyByName</td>
             <td>@text.Created</td>
@@ -35,3 +40,5 @@
     }
 
 </table>
+</div>
+</div>

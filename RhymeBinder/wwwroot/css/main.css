@@ -132,6 +132,37 @@ body {
     background-color: #f4f5ef;
 }
 
+/*``[Table Pages]*/
+.table-view-wrapper {
+    display: grid;
+    grid-gap: 0px;
+    grid-template-columns: 2% 96% 2%;
+    grid-template-rows: 30px auto;
+    width: 100%;
+    box-sizing: border-box;
+    height: 90vh;
+}
+
+.table-view-table-container {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    align-self: flex-start;
+    font-size: small;
+}
+
+.list-texts-menu-bar-main {
+    grid-column: 1 / 4;
+    grid-row: 1 / 2;
+    gap: 12px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: space-around;
+    background-color: #d7e19d;
+    font-size: small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 /*``[Editor]*/
 /*using a grid: wrapper*/
 .editor-view-wrapper {
@@ -144,6 +175,7 @@ body {
     height: 90vh;
     justify-content: center;
 }
+
 
 /*``[Editor:Menu-Bar*/
 .menu-bar-main {
@@ -261,7 +293,7 @@ body {
     font-size: smaller;
     display: block;
 }
-    .menu-bar-dropdown-item:hover {
+.menu-bar-dropdown-item:hover {
         background-color: #8c9c30;
     }
 .menu-bar-dropdown:hover .menu-bar-dropdown-content {
@@ -440,9 +472,27 @@ body {
     border-image: initial;
 }
 
+table {
+    background-color: #eff3d8;
+    width: 100%;
+}
+th {
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom-style: double;
+    border-bottom-color: darkcyan;
+}
+
+
+td {
+    border-bottom-style: solid;
+    border-bottom-color: darkcyan;
+    border-width: thin;
+    padding: 0.5rem;
+}
+
 
 /*``[Drawer]*/
-
 .drawer {
     display: none;
 }
