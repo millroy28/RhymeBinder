@@ -475,21 +475,54 @@ body {
 table {
     background-color: #eff3d8;
     width: 100%;
+    border-collapse: collapse;
 }
 th {
     padding-top: 1rem;
     padding-bottom: 0.5rem;
     border-bottom-style: double;
-    border-bottom-color: darkcyan;
+    border-bottom-color: #2a4d6f;
 }
-
-
-td {
+    th a {
+        text-decoration: none;
+        color: black;
+    }
+    th a:visited{
+        text-decoration: none;
+    }
+        th a:hover {
+            text-decoration-line: underline;
+        }
+tr {
     border-bottom-style: solid;
-    border-bottom-color: darkcyan;
-    border-width: thin;
+    border-bottom-color: #575775;
+    border-width: 0.05rem;
     padding: 0.5rem;
 }
+    tr:nth-child(7n) {
+        border-bottom-color: #2a4d6f;
+        
+    }
+td{
+    padding: 3px;
+}
+td:nth-child(1) {
+        font-weight: 600;
+        border-right-style: double;
+        border-right-color: indianred;
+    }
+td:nth-child(1) a {
+        text-decoration: none;
+        color: black;
+    }
+    td:nth-child(1) a:visited {
+        text-decoration: none;
+        
+    }
+td:nth-child(1) a:hover {
+/*        background-color: #d7dac2;*/
+text-decoration-line: underline;
+    }
 
 
 /*``[Drawer]*/
