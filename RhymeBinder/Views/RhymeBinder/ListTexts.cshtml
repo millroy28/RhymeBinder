@@ -6,7 +6,7 @@
 }
 @model DisplayTextHeadersAndSavedView
 
-<form action="ListTexts" method="post" id="view">
+<form action="ListTexts" hidden method="post" id="view">
     <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />
     <input type="hidden" name="View.UserId" value="@Model.View.UserId" />
     <input type="hidden" name="View.SetValue" value="@Model.View.SetValue" id="view_set_value" />
@@ -41,10 +41,10 @@
                 View ▼
             </div>
             <div class="menu-bar-dropdown-content">
-                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('bttn_sub', 'LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Modified</a>
-                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('bttn_sub', 'LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Modified By</a>
-                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('bttn_sub', 'LastView','view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
-                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('bttn_sub', 'LastView','view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Modified</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Modified By</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView','view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView','view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
             </div>
 
         </div>
@@ -84,4 +84,5 @@
     window.onload = toggle_hide_element('view_last_modified_by', 'toggle_last_modified_by', 'last_modified_by_col', 'init');
     window.onload = toggle_hide_element('view_created', 'toggle_created', 'created_col', 'init');
     window.onload = toggle_hide_element('view_created_by', 'toggle_created_by', 'created_by_col', 'init');
+    window.onload = on_start_get_form_sub_button('bttn_sub');
 </script>
