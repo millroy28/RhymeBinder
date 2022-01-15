@@ -140,17 +140,26 @@ Descending BIT,
 ViewName VARCHAR(200),
 [Default] BIT,
 [Saved] BIT,
-[LastView] BIT
+[LastView] BIT,
+LastModified BIT,
+LastModifiedBy BIT,
+Created BIT,
+CreatedBy BIT,
+VisionNumber BIT,
+RevisionStatus BIT
 )
-
 
 CREATE TABLE EditWindowProperties (
 EditWindowPropertyID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
 ActiveElement VARCHAR(300),
-CursorPosition INT
+CursorPosition INT,
+ShowLineCount INT,
+ShowParagraphCount INT
 )
+
+
 
 INSERT INTO TextRevisionStatuses (TextRevisionStatus) VALUES
 ('Scraps'),

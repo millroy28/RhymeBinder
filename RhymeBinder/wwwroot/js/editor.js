@@ -269,66 +269,7 @@ function sync_scroll() {
     rulerB.scrollTop = textArea.scrollTop;
 }
 
-//-----------Hide/show the rulers
-function toggle_hide_element(formElementID, clickElementID, hideableElementID, init) {
-/*takes in hidden form property id, clickable element id, and hideable area id.
- *will toggle the value of that form property to be saved 
- *will toggle the the label of the clickable element id to swap "hide" with "show"
- *will toggle hidden status of the hideable area
- */
-    var show = document.getElementById(formElementID).value;
-    var clickElementText = document.getElementById(clickElementID).innerText;
 
-    if (init == 'init') {
-        if (show == 0) {
-            let newClickElementText = clickElementText.replace('?', 'Show');
-            document.getElementById(clickElementID).innerText = newClickElementText;
-            document.getElementById(hideableElementID).hidden = true;
-        }
-        if (show == 1) {
-            let newClickElementText = clickElementText.replace('?', 'Hide');
-            document.getElementById(clickElementID).innerText = newClickElementText;
-            document.getElementById(hideableElementID).hidden = false;
-        }
-    } else {
-        if (show == 0) {
-            document.getElementById(formElementID).value = 1;
-            let newClickElementText = clickElementText.replace('Show', 'Hide');
-            document.getElementById(clickElementID).innerText = newClickElementText;
-            document.getElementById(hideableElementID).hidden = false;
-        }
-        if (show == 1) {
-            document.getElementById(formElementID).value = 0;
-            let newClickElementText = clickElementText.replace('Hide', 'Show');
-            document.getElementById(clickElementID).innerText = newClickElementText;
-            document.getElementById(hideableElementID).hidden = true;
-        }
-    }
-
-}
-
-function init_hide_element(formElementID, clickElementID, hideableElementID) {
-    /*takes in hidden form property id, clickable element id, and hideable area id.
-     *gets the value of that form property and uses that to determine if element should be hidden or shown
-     *will set the the label of the clickable element id to "hide" or "show"
-     *will set hidden status of the hideable area
-     */
-    console.log("init: " + formElementID + ', ' + clickElementID + ', ' + hideableElementID);
-    var show = document.getElementById(formElementID).value;
-    var clickElementText = document.getElementById(clickElementID).innerText;
-
-    if (show == 0) {
-        let newClickElementText = clickElementText.replace('?', 'Show');
-        document.getElementById(clickElementID).innerText = newClickElementText;
-        document.getElementById(hideableElementID).hidden = true;
-    }
-    if (show == 1) {
-        let newClickElementText = clickElementText.replace('?', 'Hide');
-        document.getElementById(clickElementID).innerText = newClickElementText;
-        document.getElementById(hideableElementID).hidden = false;
-    }
-
-}
 //-----------Initializing auto-hide elements
 toggle_hide_element('show_line_count', 'toggle_line_count', 'line_count', 'init');
 toggle_hide_element('show_paragraph_count', 'toggle_paragraph_count', 'paragraph_count', 'init');

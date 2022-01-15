@@ -16,6 +16,12 @@ namespace RhymeBinder.Models
         public bool? Default { get; set; }
         public bool? Saved { get; set; }
         public bool? LastView { get; set; }
+        public bool? LastModified { get; set; }
+        public bool? LastModifiedBy { get; set; }
+        public bool? Created { get; set; }
+        public bool? CreatedBy { get; set; }
+        public bool? VisionNumber { get; set; }
+        public bool? RevisionStatus { get; set; }
 
         public virtual SimpleUser User { get; set; }
     }

@@ -90,10 +90,10 @@
         <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()">@Model.Text.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
-        <textarea class="ruler-box ruler-box-b" id="paragraph_count" readonly></textarea>
+        <textarea class="ruler-box ruler-box-b" id="paragraph_count" name="paragraph_count" readonly></textarea>
     </div>
     <div class="ruler-container-b">
-        <textarea class="ruler-box" id="line_count" readonly></textarea>
+        <textarea class="ruler-box" id="line_count" name="line_count" readonly></textarea>
     </div>
 
     <div class="left-sidebar">
@@ -144,12 +144,12 @@
     </section>
 }
 
-<div id="textWidthSample" class="text-sample" hidden>X</div>
+<div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
 
 
 <script language="Javascript" src="~/js/autosave.js"></script>
+<script language="Javascript" src="~/js/site.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>
-
 <br />
 
 

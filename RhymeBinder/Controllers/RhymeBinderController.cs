@@ -368,18 +368,95 @@ namespace RhymeBinder.Controllers
             return RedirectToAction("Index");
         }
         public IActionResult ListTextsNUID()
-        {
+        {   //grabs current user, then default view for that user, and sends viewID to ListTexts
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
-            return Redirect($"/RhymeBinder/ListTexts?userID={thisUser.UserId}");
+            SavedView thisView = _context.SavedViews.Where(x => x.UserId == thisUser.UserId &&
+                                                        x.Default == true).First();
+            return Redirect($"/RhymeBinder/ListTexts?viewID={thisView.SavedViewId}");
         }
-        public IActionResult ListTexts(int userID)
-        {
-            SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.LastView == true).First();
-                        
+        [HttpGet]
+        public IActionResult ListTexts(int viewID)
+        {/*
+          * current thang is user clicks column heading,
+          * that links to ChangeListDisplay with an input (string)
+          * and that toggles the sort
+          * ChangeListDisplay will then modify the view passed in, save it, and call ListTexts again
+          * 
+          */
+            /*So I'm about to leave this off for the night. My thoughts: create a new model 
+            --that has a SavedView and a list of DisplayTextHeader, right?
+            send that to ListTexts
+            have hidden form that has all the view values
+            any link or button that's re-arranging or changing the view will trigger a js function
+            that function will modify the values in the form
+            submit the form
+            the view is saved
+            re-load the page with that view
+            ++also... change ListTexts to take a viewID instead of a user id?
+            so links to the Binder itself will go to ListTextsNUID which will pull the default
+            how do we want to persist last view?
+             */
+            SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+            DisplayTextHeadersAndSavedView theseHeadersAndSavedView = new DisplayTextHeadersAndSavedView {
+                View = thisView,
+                TextHeaders = theseTextHeaders
+            };
+            return View(theseHeadersAndSavedView);
+        }
+        [HttpPost]
+        public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action)
+        {
+            
+            if (action == "SavedView")
+            {
 
-            return View(theseTextHeaders);
+            }
+            else
+            {
+                SavedView viewToUpdate = new SavedView(); 
+            
+                switch (action)
+                {
+                    case "LastView":
+                        viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.LastView == true).First();
+                        break;
+                    case "SaveDefault":
+                        viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.Default == true).First();
+                        break;
+                }
+
+                viewToUpdate.UserId = savedView.View.UserId;
+                viewToUpdate.SetValue = savedView.View.SetValue;
+                viewToUpdate.SortValue = savedView.View.SortValue;
+                viewToUpdate.Descending = (bool)savedView.View.Descending;
+                viewToUpdate.ViewName = savedView.View.ViewName;
+                viewToUpdate.Default = (bool)savedView.View.Default;
+                viewToUpdate.Saved = (bool)savedView.View.Saved;
+                viewToUpdate.LastModified = (bool)savedView.View.LastModified;
+                viewToUpdate.LastModifiedBy = (bool)savedView.View.LastModifiedBy;
+                viewToUpdate.Created = (bool)savedView.View.Created;
+                viewToUpdate.CreatedBy = (bool)savedView.View.CreatedBy;
+                viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
+                viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
+
+                if (ModelState.IsValid)
+                {
+                    _context.Entry(viewToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                    _context.Update(viewToUpdate);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return View();  //!!insert error handlin?
+                }
+
+                return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
+            }
+
+
+            return View();
         }
         public IActionResult ScrapStack(int userID)
         {
