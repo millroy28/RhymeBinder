@@ -377,26 +377,7 @@ namespace RhymeBinder.Controllers
         }
         [HttpGet]
         public IActionResult ListTexts(int viewID)
-        {/*
-          * current thang is user clicks column heading,
-          * that links to ChangeListDisplay with an input (string)
-          * and that toggles the sort
-          * ChangeListDisplay will then modify the view passed in, save it, and call ListTexts again
-          * 
-          */
-            /*So I'm about to leave this off for the night. My thoughts: create a new model 
-            --that has a SavedView and a list of DisplayTextHeader, right?
-            send that to ListTexts
-            have hidden form that has all the view values
-            any link or button that's re-arranging or changing the view will trigger a js function
-            that function will modify the values in the form
-            submit the form
-            the view is saved
-            re-load the page with that view
-            ++also... change ListTexts to take a viewID instead of a user id?
-            so links to the Binder itself will go to ListTextsNUID which will pull the default
-            how do we want to persist last view?
-             */
+        {
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
             DisplayTextHeadersAndSavedView theseHeadersAndSavedView = new DisplayTextHeadersAndSavedView {
@@ -405,6 +386,7 @@ namespace RhymeBinder.Controllers
             };
             return View(theseHeadersAndSavedView);
         }
+
         [HttpPost]
         public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action)
         {
@@ -771,55 +753,34 @@ namespace RhymeBinder.Controllers
             }
 
             //sort the list based on the sort values/descending value
-            if (thisView.Descending == false)
+            switch (thisView.SortValue)
             {
-                switch (thisView.SortValue)
-                {
-                    case "title":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Title).ToList();
-                        break;
-                    case "lastModified":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.LastModified).ToList();
-                        break;
-                    case "created":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Created).ToList();
-                        break;
-                    case "createdBy":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.CreatedByName).ToList();
-                        break;
-                    case "visionNumber":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.VisionNumber).ToList();
-                        break;
-                    case "revision":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
-                        break;
-                }
+                case "Title":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Title).ToList();
+                    break;
+                case "Last Modified":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.LastModified).ToList();
+                    break;
+                case "Last Modified By":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.ModifyByName).ToList();
+                    break;
+                case "Created":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Created).ToList();
+                    break;
+                case "Created By":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.CreatedByName).ToList();
+                    break;
+                case "Vision Number":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.VisionNumber).ToList();
+                    break;
+                case "Revision":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
+                    break;
             }
-            else
+            if (thisView.Descending == true)
             {
-                switch (thisView.SortValue)
-                {
-                    case "title":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.Title).ToList();
-                        break;
-                    case "lastModified":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.LastModified).ToList();
-                        break;
-                    case "created":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.Created).ToList();
-                        break;
-                    case "createdBy":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.CreatedByName).ToList();
-                        break;
-                    case "visionNumber":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.VisionNumber).ToList();
-                        break;
-                    case "revision":
-                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderByDescending(x => x.TextRevisionStatusId).ToList();
-                        break;
-                }
+                theseDisplayTextHeaders.Reverse();
             }
-
 
             return (theseDisplayTextHeaders);
         }

@@ -101,12 +101,56 @@ function col_header_sort_change(clickedHeaderID, currentSortValueID, currentSort
      * DESIRED BEHAVIOR:
      * If user clicks the same header that tables is currently sorted on, toggle the sort order
      * If user clicks on a different header, set the sort to that
-     * Mark the sort header with one of these to indicate to user which column is sorting and in which order: ▲/▼
      * BACK END NOTES:
-     * Will submit the form 
+     * Will submit the form using the button id grabbed on page load
      */
-}
+    let currentSort = document.getElementById(currentSortValueID);
+    let currentSortValue = currentSort.value;
+    let clickedSortValue = clickedHeaderID;
+    let currentSortOrder = document.getElementById(currentSortOrderValueID);
+    let currentSortOrderValue = currentSortOrder.value;
+    let newSortOrderValue = currentSortOrderValue;
+    let columnChange = 0;
 
+    if (currentSortValue != clickedSortValue) {
+        columnChange = 1;
+    }
+
+    if (columnChange == 0) {
+        if (currentSortOrderValue == 'True') {
+            newSortOrderValue = 'False';
+        } else {
+            newSortOrderValue = 'True';
+        }
+    }
+    
+    console.log('Changing sort from ' + currentSortValue + '/' + currentSortOrderValue + ' to ' + clickedSortValue + '/' + newSortOrderValue + '...');
+
+    currentSort.value = clickedSortValue;
+    currentSortOrder.value = newSortOrderValue;
+
+    let defaultSubmitAction = button.value;
+    sub_form(defaultSubmitAction);
+    return;
+}
+function on_start_mark_sorted_column(sortValueID, sortOrderValueID) {
+    // Mark the sort header with one of these to indicate to user which column is sorting and in which order: ▲/▼
+    // Depends on columnHeader IDs being the identical to the SortValues stored in the table. This will break if they are not
+    let sortValue = document.getElementById(sortValueID).value;
+    let newSortValue = sortValue;
+    let columnHeader = document.getElementById(sortValue);
+    let sortOrderValue = document.getElementById(sortOrderValueID).value;
+
+    if (sortOrderValue == 'True') {
+        newSortValue = newSortValue + ' ▼';
+    } else {
+        newSortValue = newSortValue + ' ▲';
+    }
+
+    columnHeader.innerHTML = '<a>' + newSortValue + '</a>';
+    console.log('Marking sort column :' + newSortValue);
+    return;
+}
 function on_start_get_form_sub_button(buttonID) {
     button = document.getElementById(buttonID);
     return;

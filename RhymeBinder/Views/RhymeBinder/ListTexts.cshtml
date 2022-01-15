@@ -25,9 +25,9 @@
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
-    <input type="submit" name="action" class="button" value="SaveDefault" id="bttn_sub" />
+    <input type="submit" name="action" class="button" value="LastView" id="bttn_sub" />
 </form>
-<p>testing @Model.View.LastModified.ToString()</p>
+
 <div class="table-view-wrapper">
     <div class="list-texts-menu-bar-main">
         <div class="menu-bar-title">
@@ -43,8 +43,10 @@
             <div class="menu-bar-dropdown-content">
                 <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Modified</a>
                 <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Modified By</a>
-                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView','view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
-                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView','view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
+                <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
             </div>
 
         </div>
@@ -52,13 +54,13 @@
     <div class="table-view-table-container">
         <table>
             <tr>
-                <th><a href="/RhymeBinder/ChangeListDisplay?change=title">Title</a></th>
-                <th name="last_modified_col"><a href="/RhymeBinder/ChangeListDisplay?change=lastModified">Last Modified</a></th>
-                <th name="last_modified_by_col"><a href="/RhymeBinder/ChangeListDisplay?change=lastModifiedBy">Last Modified By</a></th>
-                <th name="created_col"><a href="/RhymeBinder/ChangeListDisplay?change=created">Created</a></th>
-                <th name="created_by_col"><a href="/RhymeBinder/ChangeListDisplay?change=createdBy">Created By</a></th>
-                <th><a href="/RhymeBinder/ChangeListDisplay?change=visionNumber">Vision Number</a></th>
-                <th><a href="/RhymeBinder/ChangeListDisplay?change=revision">Revision Status</a></th>
+                <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
+                <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
+                <th name="last_modified_by_col" id="Last Modified By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified By</a></th>
+                <th name="created_col" id="Created" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created</a></th>
+                <th name="created_by_col" id="Created By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created By</a></th>
+                <th name="vision_col" id ="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
+                <th name="revision_col" id ="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
             </tr>
 
             @foreach (var text in Model.TextHeaders)
@@ -69,8 +71,8 @@
                     <td name="last_modified_by_col">@text.ModifyByName</td>
                     <td name="created_col">@text.Created</td>
                     <td name="created_by_col">@text.CreatedByName</td>
-                    <td>@text.VisionNumber</td>
-                    <td>@text.RevisionStatus</td>
+                    <td name="vision_col">@text.VisionNumber</td>
+                    <td name="revision_col">@text.RevisionStatus</td>
                 </tr>
 
             }
@@ -84,5 +86,8 @@
     window.onload = toggle_hide_element('view_last_modified_by', 'toggle_last_modified_by', 'last_modified_by_col', 'init');
     window.onload = toggle_hide_element('view_created', 'toggle_created', 'created_col', 'init');
     window.onload = toggle_hide_element('view_created_by', 'toggle_created_by', 'created_by_col', 'init');
+    window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
+    window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
+    window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
     window.onload = on_start_get_form_sub_button('bttn_sub');
 </script>

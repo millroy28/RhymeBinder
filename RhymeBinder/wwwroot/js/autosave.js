@@ -16,11 +16,11 @@ var previous_focus_element;
 var keyup_timer;
 
 function reset_autosave_timer() {
-    autosave_timer = 5; //seconds before autosaving
+    autosave_timer = 60; //seconds before autosaving
 }
 
 function reset_keyup_timer() {
-    keyup_timer = 3;    //seconds wait for pause in typing before autosave
+    keyup_timer = 5;    //seconds wait for pause in typing before autosave
 }
 
 
