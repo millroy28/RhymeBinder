@@ -38,7 +38,7 @@
         </div>
         <div class="menu-bar-dropdown">
             <div class="button menu-bar-button-dropdown">
-                View ▼
+                Columns ▼
             </div>
             <div class="menu-bar-dropdown-content">
                 <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Modified</a>
@@ -48,7 +48,26 @@
                 <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
                 <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
             </div>
-
+        </div>
+        <div class="menu-bar-dropdown">
+            <div class="button menu-bar-button-dropdown">
+                Groups ▼
+            </div>
+            <div class="menu-bar-dropdown-content">
+                <a class="menu-bar-dropdown-item">All</a>
+                <a class="menu-bar-dropdown-item">Active</a>
+                <a class="menu-bar-dropdown-item">Scrapped</a>
+            </div>
+        </div>
+        <div class="menu-bar-dropdown">
+            <div class="button menu-bar-button-dropdown">
+                Views ▼
+            </div>
+            <div class="menu-bar-dropdown-content">
+                <a class="menu-bar-dropdown-item">Default</a>
+                <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
+                <a class="menu-bar-dropdown-item">Add new...</a>
+            </div>
         </div>
     </div>
     <div class="table-view-table-container">

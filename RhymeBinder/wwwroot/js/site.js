@@ -133,6 +133,7 @@ function col_header_sort_change(clickedHeaderID, currentSortValueID, currentSort
     sub_form(defaultSubmitAction);
     return;
 }
+
 function on_start_mark_sorted_column(sortValueID, sortOrderValueID) {
     // Mark the sort header with one of these to indicate to user which column is sorting and in which order: ▲/▼
     // Depends on columnHeader IDs being the identical to the SortValues stored in the table. This will break if they are not
