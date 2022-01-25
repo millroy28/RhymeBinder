@@ -86,6 +86,12 @@ function hidden_view_form_submit(actionValue, formElementID, clickElementID, hid
     sub_form(actionValue);
     return;
 }
+function grouping_view_form_submit(actionValue, formElementID, groupingElementID) {
+    let groupingValue = document.getElementById(groupingElementID).innerHTML;
+    document.getElementById(formElementID).value = groupingValue;
+    sub_form(actionValue);
+    return;
+}
 //--------MISC UTILITIES----------------------------------------------------------------
 function sub_form(actionValue) {
     console.log("submitting form with value: " + actionValue);

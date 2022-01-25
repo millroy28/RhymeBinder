@@ -101,7 +101,7 @@ header {
     display: block;
     font-weight: 700;
     color: black;
-    cursor: pointer !important;
+    cursor: default !important;
     background-color: transparent;
     border-color: transparent;
     padding: 6px 12px !important;
@@ -114,7 +114,7 @@ header {
         display: block;
         font-weight: 700;
         color: black;
-        cursor: pointer !important;
+        cursor: default !important;
         background-color: #c6c9b6;
         border-color: transparent;
         padding: 6px 12px !important;
@@ -299,8 +299,9 @@ body {
     font-size: smaller;
     display: block;
 }
-.menu-bar-dropdown-item:hover {
+    .menu-bar-dropdown-item:hover {
         background-color: #c6c9b6;
+        cursor: default;
     }
 .menu-bar-dropdown:hover .menu-bar-dropdown-content {
     display: block;
@@ -309,6 +310,7 @@ body {
     background-color: #c6c9b6;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
+    cursor: default;
 }
 
 
@@ -488,10 +490,12 @@ th {
     padding-bottom: 0.5rem;
     border-bottom-style: double;
     border-bottom-color: #2a4d6f;
+    
 }
     th a {
         text-decoration: none;
         color: black;
+        cursor: pointer;
     }
     th a:visited{
         text-decoration: none;

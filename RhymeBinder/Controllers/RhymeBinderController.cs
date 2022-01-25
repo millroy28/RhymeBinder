@@ -705,18 +705,18 @@ namespace RhymeBinder.Controllers
             //Populate list of TextHeaders
             switch (thisView.SetValue)
             {
-                case "active":
+                case "Active":
                     theseTextHeaders =  _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                   x.Top == true &&
                                                                   x.Deleted == false).ToList();
                     break;
 
-                case "deleted":
+                case "Scrapped":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                   x.Deleted == true).ToList();
                     break;
 
-                case "all":
+                case "All":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId).ToList();
                     break;
             }
