@@ -110,33 +110,16 @@ namespace RhymeBinder.Controllers
         }
 
         [HttpGet]
-        public IActionResult StartNewTextGroup()
+        public IActionResult StartNewText()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult StartNewTextGroup(string title)
+        public IActionResult StartNewText(string title)
         {
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
-
-            //start by creating a new TextGroup
-            TextGroup newTextGroup = new TextGroup();
-           
-            newTextGroup.GroupTitle = title;
-            newTextGroup.OwnerId = thisUser.UserId;
-
-            if (ModelState.IsValid)
-            {
-                _context.TextGroups.Add(newTextGroup);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
-            int newTextGroupID = newTextGroup.TextGroupId;
 
             //create a new blank Text
             Text newText = new Text();
@@ -153,11 +136,9 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-
             //create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             TextHeader newTextHeader = new TextHeader();
             
-            newTextHeader.TextGroupId = newTextGroupID;
             newTextHeader.Title = title;
             newTextHeader.Created = DateTime.Now;
             newTextHeader.CreatedBy = thisUser.UserId;
@@ -390,10 +371,9 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action)
         {
-            
             if (action == "SavedView")
             {
-
+                //TO DO
             }
             else
             {
@@ -436,8 +416,6 @@ namespace RhymeBinder.Controllers
 
                 return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
             }
-
-
             return View();
         }
         public IActionResult ScrapStack(int userID)
@@ -493,7 +471,6 @@ namespace RhymeBinder.Controllers
             newTextHeader.Top = true;
             newTextHeader.TextId = oldTextHeader.TextId;
             newTextHeader.Title = oldTextHeader.Title;
-            newTextHeader.TextGroupId = oldTextHeader.TextGroupId;
             newTextHeader.VersionOf = oldTextHeader.TextHeaderId;
             newTextHeader.VisionNumber = oldTextHeader.VisionNumber + 1;
             newTextHeader.TextRevisionStatusId = oldTextHeader.TextRevisionStatusId;
@@ -567,6 +544,57 @@ namespace RhymeBinder.Controllers
 
 
             return Redirect($"/RhymeBinder/ListTexts?userID={thisView.UserId}");
+        }
+        public IActionResult Manage()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult ManageGroups()
+        {
+            int userID = GetCurrentSimpleUserID();
+            List<TextGroup> textGroups = new List<TextGroup>();
+            List<TextGroupCount> textGroupCounts = new List<TextGroupCount>();
+            try
+            {
+                textGroups = _context.TextGroups.Where(x => x.OwnerId == userID).ToList();
+                foreach (var group in textGroups)
+                {
+                    textGroupCounts.Add(new TextGroupCount{
+                        GroupTitle = group.GroupTitle,
+                        TextGroupId = group.TextGroupId,
+                        OwnerId = group.OwnerId,
+                        Count = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == group.TextGroupId).Count()
+                    }
+                    );
+                }
+            }
+            catch
+            {
+
+            }
+            return View(textGroupCounts);
+        }
+        [HttpPost]
+        public IActionResult ManageGroups(TextGroup group, string action)
+        {
+            TextGroup newGroup = new TextGroup();
+            int userID = GetCurrentSimpleUserID();
+
+            newGroup.GroupTitle = group.GroupTitle;
+            newGroup.OwnerId = userID;
+
+            if (ModelState.IsValid)
+            {
+                _context.TextGroups.Add(newGroup);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            return View();
         }
 
         //Utility Methods:
@@ -646,7 +674,10 @@ namespace RhymeBinder.Controllers
 
             try
             {
-                previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
+
+                previousTextHeaders = GetPreviousVisions(textHeaderID, previousTextHeaders);
+
+                //previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
                 foreach(var textHeader in previousTextHeaders)
                 {
                     previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
@@ -696,7 +727,6 @@ namespace RhymeBinder.Controllers
 
             return (thisTextHeaderBodyUserRecord);
         }
-
         public List<DisplayTextHeader> GetTextHeaders (int savedViewID)
         {
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
@@ -784,7 +814,21 @@ namespace RhymeBinder.Controllers
 
             return (theseDisplayTextHeaders);
         }
-
+        public List<TextHeader> GetPreviousVisions(int textHeaderID, List<TextHeader> prevTextHeaders)
+        {
+            //Recursively build out list of prevision visions for a given header
+            try
+            {
+                int prevTextHeaderID = (int) _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderID).First().VersionOf;
+                prevTextHeaders.Add(_context.TextHeaders.Where(x => x.TextHeaderId == prevTextHeaderID).First());
+                GetPreviousVisions(prevTextHeaderID, prevTextHeaders);
+            }
+            catch
+            {
+                return (prevTextHeaders);
+            }
+            return (prevTextHeaders);
+        }
         public bool TextComparitor (string originalText, string textToCompare)
         {
             //I don't know if it will be quicker to convert the text to a unique (or semi-unique) numeric value,
@@ -800,6 +844,12 @@ namespace RhymeBinder.Controllers
             }
 
             return same;
+        }
+        public int GetCurrentSimpleUserID()
+        {
+            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            int thisUserID = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First().UserId;
+            return (thisUserID);
         }
     }
 }

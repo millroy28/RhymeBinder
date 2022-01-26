@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewData["Title"] = "Manage Binder: Groups";
+}
+@model List<TextGroupCount>
+<div class="menu-bar-main">
+    <div class="menu-bar-title">
+        Manage Binder: Groups:
+    </div>
+</div>
+
+<table>
+    <thead>
+        <th>Name:</th>
+        <th>Items:</th>
+    </thead>
+    
+</table>
+
+@foreach(var group in Model)
+            {
+                <td>@group.GroupTitle</td>
+                <td>@group.Count</td>
+            }
+
+<p>Add a new group:</p>
+<form action="ManageGroups" method="post">
+    <input type="text" name="GroupTitle" />
+    <input type="hidden" name="GroupID" />
+    <input type="hidden" name="OwnerID" />
+    <input type="submit" name="action" class="button" value="Add" id="bttn_sub" />
+</form>

@@ -11,13 +11,13 @@ namespace RhymeBinder.Models
         {
             EditWindowProperties = new HashSet<EditWindowProperty>();
             InverseVersionOfNavigation = new HashSet<TextHeader>();
+            LnkTextHeadersTextGroups = new HashSet<LnkTextHeadersTextGroup>();
             LnkTextSubmissions = new HashSet<LnkTextSubmission>();
             Submissions = new HashSet<Submission>();
             TextRecords = new HashSet<TextRecord>();
         }
 
         public int TextHeaderId { get; set; }
-        public int TextGroupId { get; set; }
         public int? TextId { get; set; }
         public string Title { get; set; }
         public DateTime? Created { get; set; }
@@ -37,11 +37,11 @@ namespace RhymeBinder.Models
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser LastReadByNavigation { get; set; }
         public virtual Text Text { get; set; }
-        public virtual TextGroup TextGroup { get; set; }
         public virtual TextRevisionStatus TextRevisionStatus { get; set; }
         public virtual TextHeader VersionOfNavigation { get; set; }
         public virtual ICollection<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual ICollection<TextHeader> InverseVersionOfNavigation { get; set; }
+        public virtual ICollection<LnkTextHeadersTextGroup> LnkTextHeadersTextGroups { get; set; }
         public virtual ICollection<LnkTextSubmission> LnkTextSubmissions { get; set; }
         public virtual ICollection<Submission> Submissions { get; set; }
         public virtual ICollection<TextRecord> TextRecords { get; set; }

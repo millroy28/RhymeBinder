@@ -9,7 +9,7 @@ namespace RhymeBinder.Models
     {
         public TextGroup()
         {
-            TextHeaders = new HashSet<TextHeader>();
+            LnkTextHeadersTextGroups = new HashSet<LnkTextHeadersTextGroup>();
         }
 
         public int TextGroupId { get; set; }
@@ -17,6 +17,6 @@ namespace RhymeBinder.Models
         public int? OwnerId { get; set; }
 
         public virtual SimpleUser Owner { get; set; }
-        public virtual ICollection<TextHeader> TextHeaders { get; set; }
+        public virtual ICollection<LnkTextHeadersTextGroup> LnkTextHeadersTextGroups { get; set; }
     }
 }
