@@ -15,5 +15,7 @@ namespace RhymeBinder.Models
 
         public string RevisionStatus { get; set; }
 
+        public bool Selected { get; set; }
+
     }
 }

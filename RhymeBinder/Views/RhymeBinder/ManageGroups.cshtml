@@ -15,13 +15,15 @@
         <th>Items:</th>
     </thead>
     
-</table>
 
 @foreach(var group in Model)
             {
+            <tr>
                 <td>@group.GroupTitle</td>
                 <td>@group.Count</td>
+            </tr>
             }
+</table>
 
 <p>Add a new group:</p>
 <form action="ManageGroups" method="post">

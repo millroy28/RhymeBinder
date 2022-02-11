@@ -92,6 +92,13 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
     sub_form(actionValue);
     return;
 }
+//--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
+function selected_action_form_submit(actionValue) {
+
+
+    sub_form(actionValue);
+}
+
 //--------MISC UTILITIES----------------------------------------------------------------
 function sub_form(actionValue) {
     console.log("submitting form with value: " + actionValue);
