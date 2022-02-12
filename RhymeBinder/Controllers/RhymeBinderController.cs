@@ -361,62 +361,53 @@ namespace RhymeBinder.Controllers
         {
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+            List<TextGroup> groups = GetTextGroups();
             DisplayTextHeadersAndSavedView theseHeadersAndSavedView = new DisplayTextHeadersAndSavedView {
                 View = thisView,
-                TextHeaders = theseTextHeaders
+                TextHeaders = theseTextHeaders,
+                Groups = groups
             };
             return View(theseHeadersAndSavedView);
         }
 
         [HttpPost]
-        public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action)
+        public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action, int groupID)
         {
-            if (action == "SavedView")
+            SavedView viewToUpdate = new SavedView(); 
+
+            switch (action)
             {
-                //TO DO
+                case "LastView":
+                    viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.LastView == true).First();
+                    UpdateView(viewToUpdate, savedView);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
+                    break;
+                case "SaveDefault":
+                    viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.Default == true).First();
+                    UpdateView(viewToUpdate, savedView);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
+                    break;
+                case "Scrap":
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    break;
+                case "GroupAdd":
+                    AddRemoveHeadersFromGroups(savedView, groupID, true);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    break;
+                case "GroupRemove":
+                    AddRemoveHeadersFromGroups(savedView, groupID, false);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+
+                    break;
+                default:
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    break;
             }
-            else
-            {
-                SavedView viewToUpdate = new SavedView(); 
+
+                
+
+
             
-                switch (action)
-                {
-                    case "LastView":
-                        viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.LastView == true).First();
-                        break;
-                    case "SaveDefault":
-                        viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.Default == true).First();
-                        break;
-                }
-
-                viewToUpdate.UserId = savedView.View.UserId;
-                viewToUpdate.SetValue = savedView.View.SetValue;
-                viewToUpdate.SortValue = savedView.View.SortValue;
-                viewToUpdate.Descending = (bool)savedView.View.Descending;
-                viewToUpdate.ViewName = savedView.View.ViewName;
-                viewToUpdate.Default = (bool)savedView.View.Default;
-                viewToUpdate.Saved = (bool)savedView.View.Saved;
-                viewToUpdate.LastModified = (bool)savedView.View.LastModified;
-                viewToUpdate.LastModifiedBy = (bool)savedView.View.LastModifiedBy;
-                viewToUpdate.Created = (bool)savedView.View.Created;
-                viewToUpdate.CreatedBy = (bool)savedView.View.CreatedBy;
-                viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
-                viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
-
-                if (ModelState.IsValid)
-                {
-                    _context.Entry(viewToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                    _context.Update(viewToUpdate);
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    return View();  //!!insert error handlin?
-                }
-
-                return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
-            }
-            return View();
         }
         public IActionResult ScrapStack(int userID)
         {
@@ -597,7 +588,105 @@ namespace RhymeBinder.Controllers
             return View();
         }
 
-        //Utility Methods:
+        //---------------------------------UTILITY METHODS:
+        public void UpdateView (SavedView viewToUpdate, DisplayTextHeadersAndSavedView savedView)
+        {
+
+            viewToUpdate.UserId = savedView.View.UserId;
+            viewToUpdate.SetValue = savedView.View.SetValue;
+            viewToUpdate.SortValue = savedView.View.SortValue;
+            viewToUpdate.Descending = (bool)savedView.View.Descending;
+            viewToUpdate.ViewName = savedView.View.ViewName;
+            viewToUpdate.Default = (bool)savedView.View.Default;
+            viewToUpdate.Saved = (bool)savedView.View.Saved;
+            viewToUpdate.LastModified = (bool)savedView.View.LastModified;
+            viewToUpdate.LastModifiedBy = (bool)savedView.View.LastModifiedBy;
+            viewToUpdate.Created = (bool)savedView.View.Created;
+            viewToUpdate.CreatedBy = (bool)savedView.View.CreatedBy;
+            viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
+            viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
+
+            if (ModelState.IsValid)
+            {
+                _context.Entry(viewToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(viewToUpdate);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return;  //!!insert error handlin?
+            }
+            return;
+        }
+        public void AddRemoveHeadersFromGroups (DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
+        {   //Get a list of all the headerIDs that we're going to update:
+            List<int> headerIDsToUpdate = new List<int>();
+
+            foreach(var header in savedView.TextHeaders)
+            {
+                if (header.Selected)
+                {
+                    headerIDsToUpdate.Add(header.TextHeaderId);
+                }
+            }
+
+            List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.ToList();
+
+            if (add)
+            {
+                LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
+                bool exists = true;
+
+                foreach(int headerID in headerIDsToUpdate)
+                {
+                    exists = links.Any(x => x.TextHeaderId == headerID &&
+                                           x.TextGroupId == groupID);
+
+                    if (!exists)
+                    {
+                        newLink.TextGroupId = groupID;
+                        newLink.TextHeaderId = headerID;
+
+                        if (ModelState.IsValid)
+                        {
+                            _context.LnkTextHeadersTextGroups.Add(newLink);
+                            _context.SaveChanges();
+                        }
+                        else
+                        {
+                            return;  //!!insert error handlin?
+                        }
+
+                    }
+                }
+            }
+
+            if (!add)
+            {
+                LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
+
+                foreach (int headerID in headerIDsToUpdate)
+                {
+                    linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
+                                                                                x.TextGroupId == groupID).First();
+
+                    if (ModelState.IsValid)
+                    {
+                        _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        return;  //!!insert error handlin?
+                    }
+
+                }
+            }
+
+          
+
+            return;
+        }
         public TextHeaderBodyUserRecord BuildTextHeaderBodyUserRecord(int textHeaderID)
         {
             //build up a TextHeaderBodyUserRecord to pass into a view:
@@ -726,6 +815,12 @@ namespace RhymeBinder.Controllers
             };
 
             return (thisTextHeaderBodyUserRecord);
+        }
+        public List<TextGroup> GetTextGroups()
+        {
+            int userID = GetCurrentSimpleUserID();
+            List<TextGroup> groups = _context.TextGroups.Where(x => x.OwnerId == userID).ToList();
+            return (groups);
         }
         public List<DisplayTextHeader> GetTextHeaders (int savedViewID)
         {

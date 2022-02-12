@@ -175,9 +175,9 @@ namespace RhymeBinder.Models
             modelBuilder.Entity<LnkTextHeadersTextGroup>(entity =>
             {
                 entity.HasKey(e => e.LnkHeaderGroupId)
-                    .HasName("PK__lnkTextH__F316D0744FB1ADE8");
+                    .HasName("PK__lnkTextH__F316D0747BD4CEF5");
 
-                entity.ToTable("lnkTextHeaders_TextGroups");
+                entity.ToTable("lnkTextHeadersTextGroups");
 
                 entity.Property(e => e.LnkHeaderGroupId).HasColumnName("lnkHeaderGroupID");
 
@@ -188,12 +188,12 @@ namespace RhymeBinder.Models
                 entity.HasOne(d => d.TextGroup)
                     .WithMany(p => p.LnkTextHeadersTextGroups)
                     .HasForeignKey(d => d.TextGroupId)
-                    .HasConstraintName("FK__lnkTextHe__TextG__2C1E8537");
+                    .HasConstraintName("FK__lnkTextHe__TextG__43F60EC8");
 
                 entity.HasOne(d => d.TextHeader)
                     .WithMany(p => p.LnkTextHeadersTextGroups)
                     .HasForeignKey(d => d.TextHeaderId)
-                    .HasConstraintName("FK__lnkTextHe__TextH__2D12A970");
+                    .HasConstraintName("FK__lnkTextHe__TextH__4301EA8F");
             });
 
             modelBuilder.Entity<LnkTextSubmission>(entity =>

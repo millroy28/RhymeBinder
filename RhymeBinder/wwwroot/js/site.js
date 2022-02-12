@@ -93,9 +93,9 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
     return;
 }
 //--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
-function selected_action_form_submit(actionValue) {
-
-
+function selected_action_form_submit(actionValue, groupID) {
+    // group Id value stored in form under id 'group_id'
+    document.getElementById("group_id").value = groupID;
     sub_form(actionValue);
 }
 

@@ -27,7 +27,7 @@
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
-
+    <input type="hidden" name="groupID" value="-1" id="group_id" />
 
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
@@ -73,9 +73,17 @@
                     Actions ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Scrap')">Move to Scrap Stack</a>
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('AddToGroup');">Add to Group</a>
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('RemoveFromGroup');">Remove from Group</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Scrap', '-1')">Move to Scrap Stack</a>
+                    <a class="menu-bar-dropdown-item">Add to Group... </a>
+                    @foreach (var group in Model.Groups)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
+                    }
+                    <a class="menu-bar-dropdown-item">Remove from Group... </a>
+                    @foreach (var group in Model.Groups)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
+                    }
                 </div>
             </div>
         </div>
@@ -100,7 +108,6 @@
                         <td>
                             <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
-                            @*<input type="checkbox" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId"/>*@
                         </td>
                         <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td name="last_modified_col">@text.LastModified</td>
