@@ -104,8 +104,8 @@ Locked BIT,
 
 CREATE TABLE lnkTextHeadersTextGroups (
 lnkHeaderGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-TextGroupID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID),
-TextHeaderID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID)
+TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID),
+TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID)
 )
 
 CREATE TABLE TextRecord (
