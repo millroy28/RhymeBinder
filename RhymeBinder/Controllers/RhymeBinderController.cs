@@ -605,6 +605,7 @@ namespace RhymeBinder.Controllers
             viewToUpdate.CreatedBy = (bool)savedView.View.CreatedBy;
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
+            viewToUpdate.Groups = (bool)savedView.View.Groups;
 
             if (ModelState.IsValid)
             {
@@ -850,8 +851,38 @@ namespace RhymeBinder.Controllers
             List<DisplayTextHeader> theseDisplayTextHeaders = new List<DisplayTextHeader>();
 
             //doing this manually cause I'm a dum-dum what can't get the cast/convert right
+            int userID = GetCurrentSimpleUserID();
+            List<TextGroup> selectedGroups = new List<TextGroup>();
+            List<TextGroup> groups = _context.TextGroups.Where(x => x.OwnerId == userID).ToList();
+            List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.ToList();
+
+            selectedGroups = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroup in links
+                              join TextGroup textGroup in groups
+                                on lnkTextHeadersTextGroup.TextGroupId equals textGroup.TextGroupId
+                              join TextHeader joinTextHeader in theseTextHeaders
+                                on lnkTextHeadersTextGroup.TextHeaderId equals joinTextHeader.TextHeaderId
+                            select new TextGroup
+                                 {
+                                     GroupTitle = textGroup.GroupTitle,
+                                     TextGroupId = textGroup.TextGroupId
+                                 }
+                                  ).ToList();
+
             foreach (TextHeader textHeader in theseTextHeaders)
             {
+                selectedGroups = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroup in links
+                                  join TextGroup textGroup in groups
+                                    on lnkTextHeadersTextGroup.TextGroupId equals textGroup.TextGroupId
+                                  join TextHeader joinTextHeader in theseTextHeaders
+                                    on lnkTextHeadersTextGroup.TextHeaderId equals joinTextHeader.TextHeaderId
+                                 where lnkTextHeadersTextGroup.TextHeaderId == textHeader.TextHeaderId
+                                  select new TextGroup
+                                  {
+                                      GroupTitle = textGroup.GroupTitle,
+                                      TextGroupId = textGroup.TextGroupId
+                                  }
+                      ).ToList();
+
                 theseDisplayTextHeaders.Add(new DisplayTextHeader
                 {
                     TextHeaderId = textHeader.TextHeaderId,
@@ -864,7 +895,8 @@ namespace RhymeBinder.Controllers
                     VisionNumber = textHeader.VisionNumber,
                     Created = textHeader.Created,
                     LastModified = textHeader.LastModified,
-                    LastRead = textHeader.LastRead
+                    LastRead = textHeader.LastRead,
+                    Groups =  selectedGroups
                 }
                     );
             }

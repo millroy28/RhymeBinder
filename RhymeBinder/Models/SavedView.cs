@@ -22,6 +22,7 @@ namespace RhymeBinder.Models
         public bool? CreatedBy { get; set; }
         public bool? VisionNumber { get; set; }
         public bool? RevisionStatus { get; set; }
+        public bool? Groups { get; set; }
 
         public virtual SimpleUser User { get; set; }
     }

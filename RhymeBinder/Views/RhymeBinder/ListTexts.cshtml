@@ -23,6 +23,7 @@
     <input type="hidden" name="View.CreatedBy" value="@Model.View.CreatedBy.ToString()" id="view_created_by" />
     <input type="hidden" name="View.VisionNumber" value="@Model.View.VisionNumber.ToString()" id="view_vision_number" />
     <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
+    <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
@@ -46,6 +47,8 @@
                     <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
                     <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
                     <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_groups', this.id, 'groups_col')" id="toggle_groups">? Groups</a>
+
                 </div>
             </div>
             <div class="menu-bar-dropdown">
@@ -98,6 +101,7 @@
                     <th name="created_by_col" id="Created By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created By</a></th>
                     <th name="vision_col" id="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
                     <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
+                    <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
                 </tr>
 
                 @foreach (var text in Model.TextHeaders)
@@ -116,6 +120,14 @@
                         <td name="created_by_col">@text.CreatedByName</td>
                         <td name="vision_col">@text.VisionNumber</td>
                         <td name="revision_col">@text.RevisionStatus</td>
+                        <td name="groups_col">
+                            @foreach(var group in text.Groups)
+                                {
+                            <a href="/RhymeBinder/ManageGroup?groupID=@group.TextGroupId">
+                                <span style="padding-right:5px">@group.GroupTitle</span>
+                            </a>
+                                }
+                        </td>
                     </tr>
                     { index++; }
                 }
@@ -133,6 +145,7 @@
     window.onload = toggle_hide_element('view_created_by', 'toggle_created_by', 'created_by_col', 'init');
     window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
     window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
+    window.onload = toggle_hide_element('view_groups', 'toggle_revision', 'groups_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
     window.onload = on_start_get_form_sub_button('bttn_sub');
 </script>

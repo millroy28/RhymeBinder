@@ -14,7 +14,7 @@ namespace RhymeBinder.Models
         public string ReadByName { get; set; }
 
         public string RevisionStatus { get; set; }
-        public string GroupMembershipNames { get; set; }
+        public List<TextGroup> Groups { get; set; }
         public bool Selected { get; set; }
 
     }

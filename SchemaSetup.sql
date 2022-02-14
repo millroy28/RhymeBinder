@@ -151,7 +151,8 @@ LastModifiedBy BIT,
 Created BIT,
 CreatedBy BIT,
 VisionNumber BIT,
-RevisionStatus BIT
+RevisionStatus BIT,
+Groups BIT
 )
 
 CREATE TABLE EditWindowProperties (
