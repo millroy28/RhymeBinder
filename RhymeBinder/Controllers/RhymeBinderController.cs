@@ -632,11 +632,10 @@ namespace RhymeBinder.Controllers
             }
 
             List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.ToList();
+            bool exists = true;
 
             if (add)
             {
-                LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
-                bool exists = true;
 
                 foreach(int headerID in headerIDsToUpdate)
                 {
@@ -645,6 +644,8 @@ namespace RhymeBinder.Controllers
 
                     if (!exists)
                     {
+                        LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
+                        
                         newLink.TextGroupId = groupID;
                         newLink.TextHeaderId = headerID;
 
@@ -664,28 +665,31 @@ namespace RhymeBinder.Controllers
 
             if (!add)
             {
-                LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
 
                 foreach (int headerID in headerIDsToUpdate)
                 {
-                    linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
-                                                                                x.TextGroupId == groupID).First();
+                    exists = links.Any(x => x.TextHeaderId == headerID &&
+                                           x.TextGroupId == groupID);
 
-                    if (ModelState.IsValid)
+                    if (exists)
                     {
-                        _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
-                        _context.SaveChanges();
-                    }
-                    else
-                    {
-                        return;  //!!insert error handlin?
-                    }
+                        LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
+                        
+                        linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
+                                                                                    x.TextGroupId == groupID).First();
 
+                        if (ModelState.IsValid)
+                        {
+                            _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
+                            _context.SaveChanges();
+                        }
+                        else
+                        {
+                            return;  //!!insert error handlin?
+                        }
+                    }
                 }
             }
-
-          
-
             return;
         }
         public TextHeaderBodyUserRecord BuildTextHeaderBodyUserRecord(int textHeaderID)
