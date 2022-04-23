@@ -80,8 +80,12 @@ TextRevisionStatus VARCHAR(100)
 CREATE TABLE TextGroups (
 TextGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 GroupTitle VARCHAR(1000),
-OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
+OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+Notes VARCHAR(Max),
+Locked BIT,
+[Hidden] BIT
 )
+
 
 CREATE TABLE TextHeaders (
 TextHeaderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
@@ -165,7 +169,30 @@ ShowLineCount INT,
 ShowParagraphCount INT
 )
 
+CREATE TABLE GroupActions (
+GroupActionID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+GroupAction VARCHAR(100)
+)
 
+CREATE TABLE GroupHistory (
+GroupHistoryLogID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID),
+TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID),
+GroupActionID INT FOREIGN KEY REFERENCES GroupActions(GroupActionID),
+DateLogged DATETIME
+)
+
+INSERT INTO GroupActions (GroupAction) VALUES 
+('Added'),
+('Removed'),
+('Group Created'),
+('Group Modified'),
+('Group Deleted'),
+('Group Locked'),
+('Group Unlocked'),
+('Group Hidden'),
+('Group UnHidden')
 
 INSERT INTO TextRevisionStatuses (TextRevisionStatus) VALUES
 ('Scraps'),

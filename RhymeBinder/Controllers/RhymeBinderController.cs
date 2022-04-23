@@ -569,23 +569,39 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult ManageGroups(TextGroup group, string action)
         {
-            TextGroup newGroup = new TextGroup();
-            int userID = GetCurrentSimpleUserID();
-
-            newGroup.GroupTitle = group.GroupTitle;
-            newGroup.OwnerId = userID;
-
-            if (ModelState.IsValid)
+            if (action == "Add")
             {
-                _context.TextGroups.Add(newGroup);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
+                TextGroup newGroup = new TextGroup();
+                int userID = GetCurrentSimpleUserID();
+
+                newGroup.GroupTitle = group.GroupTitle;
+                newGroup.OwnerId = userID;
+                newGroup.Hidden = false;
+                newGroup.Locked = false;
+                newGroup.Notes = "notes";
+
+                if (!ModelState.IsValid)
+                {
+                    _context.TextGroups.Add(newGroup);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    //string msg = "ManageGroups: invalid TextGroup model?";
+                    //return Redirect($"/RhymeBinder/ErrorPage?msgID=1");
+                    return RedirectToAction("ErrorPage");
+                    //!!insert error handlin?
+                }
             }
 
             return View();
+        }
+
+        public IActionResult ErrorPage()
+        {
+            string msg = "ManageGroups: invalid TextGroup model?";
+
+            return View(msg);
         }
 
         //---------------------------------UTILITY METHODS:

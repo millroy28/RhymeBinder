@@ -1,0 +1,30 @@
+﻿
+@{
+    ViewData["Title"] = "Manage Binder: Groups: Edit Group:";
+}
+@model DisplayTextGroup
+<div class="menu-bar-main">
+    <div class="menu-bar-title">
+        Manage Binder: Groups: Edit Group:
+    </div>
+</div>
+
+Group Name:
+
+<table>
+    <thead>
+    <th>Name:</th>
+    <th>Items:</th>
+    </thead>
+
+
+
+</table>
+
+<p>Add a new group:</p>
+<form action="ManageGroups" method="post">
+    <input type="text" name="GroupTitle" />
+    <input type="hidden" name="GroupID" />
+    <input type="hidden" name="OwnerID" />
+    <input type="submit" name="action" class="button" value="Add" id="bttn_sub" />
+</form>

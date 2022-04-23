@@ -25,6 +25,8 @@ namespace RhymeBinder.Models
         public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual DbSet<EditWindowProperty> EditWindowProperties { get; set; }
+        public virtual DbSet<GroupAction> GroupActions { get; set; }
+        public virtual DbSet<GroupHistory> GroupHistories { get; set; }
         public virtual DbSet<LnkTextHeadersTextGroup> LnkTextHeadersTextGroups { get; set; }
         public virtual DbSet<LnkTextSubmission> LnkTextSubmissions { get; set; }
         public virtual DbSet<Publication> Publications { get; set; }
@@ -170,6 +172,56 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.EditWindowProperties)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__EditWindo__UserI__190BB0C3");
+            });
+
+            modelBuilder.Entity<GroupAction>(entity =>
+            {
+                entity.Property(e => e.GroupActionId).HasColumnName("GroupActionID");
+
+                entity.Property(e => e.GroupAction1)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("GroupAction");
+            });
+
+            modelBuilder.Entity<GroupHistory>(entity =>
+            {
+                entity.HasKey(e => e.GroupHistoryLogId)
+                    .HasName("PK__GroupHis__85BD91A4142A3085");
+
+                entity.ToTable("GroupHistory");
+
+                entity.Property(e => e.GroupHistoryLogId).HasColumnName("GroupHistoryLogID");
+
+                entity.Property(e => e.DateLogged).HasColumnType("datetime");
+
+                entity.Property(e => e.GroupActionId).HasColumnName("GroupActionID");
+
+                entity.Property(e => e.TextGroupId).HasColumnName("TextGroupID");
+
+                entity.Property(e => e.TextHeaderId).HasColumnName("TextHeaderID");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.HasOne(d => d.GroupAction)
+                    .WithMany(p => p.GroupHistories)
+                    .HasForeignKey(d => d.GroupActionId)
+                    .HasConstraintName("FK__GroupHist__Group__627A95E8");
+
+                entity.HasOne(d => d.TextGroup)
+                    .WithMany(p => p.GroupHistories)
+                    .HasForeignKey(d => d.TextGroupId)
+                    .HasConstraintName("FK__GroupHist__TextG__618671AF");
+
+                entity.HasOne(d => d.TextHeader)
+                    .WithMany(p => p.GroupHistories)
+                    .HasForeignKey(d => d.TextHeaderId)
+                    .HasConstraintName("FK__GroupHist__TextH__60924D76");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.GroupHistories)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK__GroupHist__UserI__5F9E293D");
             });
 
             modelBuilder.Entity<LnkTextHeadersTextGroup>(entity =>
@@ -378,6 +430,8 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.GroupTitle)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Notes).IsUnicode(false);
 
                 entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
 
