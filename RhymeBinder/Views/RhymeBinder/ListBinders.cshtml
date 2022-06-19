@@ -1,39 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "ListTexts";
+    ViewData["Title"] = "ListBinders";
 }
 
 @{
 }
-@model DisplayTextHeadersAndSavedView
+@model List<DisplayBinder>
 @{ int index = 0; } 
 
 <form action="ListTexts" method="post" id="view">
-    <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />
-    <input type="hidden" name="View.UserId" value="@Model.View.UserId" />
-    <input type="hidden" name="View.SetValue" value="@Model.View.SetValue" id="view_set_value" />
-    <input type="hidden" name="View.SortValue" value="@Model.View.SortValue" id="view_sort_value" />
-    <input type="hidden" name="View.Descending" value="@Model.View.Descending.ToString()" id="view_descending" />
-    <input type="hidden" name="View.ViewName" value="@Model.View.ViewName" id="view_view_name" />
-    <input type="hidden" name="View.Default" value="@Model.View.Default.ToString()" id="view_default" />
-    <input type="hidden" name="View.Saved" value="@Model.View.Saved.ToString()" id="view_saved" />
-    <input type="hidden" name="View.LastView" value="@Model.View.LastView.ToString()" id="view_last_view" />
-    <input type="hidden" name="View.LastModified" value="@Model.View.LastModified.ToString()" id="view_last_modified" />
-    <input type="hidden" name="View.LastModifiedBy" value="@Model.View.LastModifiedBy.ToString()" id="view_last_modified_by" />
-    <input type="hidden" name="View.Created" value="@Model.View.Created.ToString()" id="view_created" />
-    <input type="hidden" name="View.CreatedBy" value="@Model.View.CreatedBy.ToString()" id="view_created_by" />
-    <input type="hidden" name="View.VisionNumber" value="@Model.View.VisionNumber.ToString()" id="view_vision_number" />
-    <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
-    <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
-    <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
-    <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
-    <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
+@*    <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />*@
+@*    <input type="hidden" name="View.UserId" value="@Model.View.UserId" />*@
+@*    <input type="hidden" name="View.SetValue" value="@Model.View.SetValue" id="view_set_value" />*@
+@*    <input type="hidden" name="View.SortValue" value="@Model.View.SortValue" id="view_sort_value" />*@
+@*    <input type="hidden" name="View.Descending" value="@Model.View.Descending.ToString()" id="view_descending" />*@
+@*    <input type="hidden" name="View.ViewName" value="@Model.View.ViewName" id="view_view_name" />*@
+@*    <input type="hidden" name="View.Default" value="@Model.View.Default.ToString()" id="view_default" />*@
+@*    <input type="hidden" name="View.Saved" value="@Model.View.Saved.ToString()" id="view_saved" />*@
+@*    <input type="hidden" name="View.LastView" value="@Model.View.LastView.ToString()" id="view_last_view" />*@
+@*    <input type="hidden" name="View.LastModified" value="@Model.View.LastModified.ToString()" id="view_last_modified*@" />
+@*    <input type="hidden" name="View.LastModifiedBy" value="@Model.View.LastModifiedBy.ToString()" id="view_last_modi*@fied_by" />
+@*    <input type="hidden" name="View.Created" value="@Model.View.Created.ToString()" id="view_created" />*@
+@*    <input type="hidden" name="View.CreatedBy" value="@Model.View.CreatedBy.ToString()" id="view_created_by" />*@
+@*    <input type="hidden" name="View.VisionNumber" value="@Model.View.VisionNumber.ToString()" id="view_vision_number*@" />
+@*    <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_statu*@s" />
+@*    <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />*@
+@*    <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />*@
+@*    <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />*@
+@*    <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />*@
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
     <input type="hidden" name="groupID" value="-1" id="group_id" />
 
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
-                Your Binder:
+                Your Binders:
             </div>
 
             <div class="menu-bar-dropdown">
@@ -78,7 +78,7 @@
                 <div class="menu-bar-dropdown-content">
                     <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Scrap', '-1')">Move to Scrap Stack</a>
                     <a class="menu-bar-dropdown-item">Add to Group... </a>
-                    @foreach (var group in Model.Groups)
+@*                    @foreach (var group in Model.Groups)
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
                     }
@@ -86,7 +86,7 @@
                     @foreach (var group in Model.Groups)
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
-                    }
+                    }*@
                 </div>
             </div>
         </div>
@@ -94,40 +94,33 @@
             <table>
                 <tr>
                     <th name="selected_col" id="Selected"></th>
-                    <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
+                    <th name="name_col" id="Name" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Name</a></th>
+                    <th name="text_count_col" id="Text Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Text Count</a></th>
+                    <th name="group_count_col" id="Group Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Group Count</a></th>
                     <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
                     <th name="last_modified_by_col" id="Last Modified By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified By</a></th>
                     <th name="created_col" id="Created" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created</a></th>
                     <th name="created_by_col" id="Created By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created By</a></th>
-                    <th name="vision_col" id="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
-                    <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
-                    <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
+                    <th name="description_col" id="Description" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Description</a></th>
                 </tr>
 
-                @foreach (var text in Model.TextHeaders)
+                @foreach (var binder in Model)
                 {
 
                     <tr>
 
                         <td>
-                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
-                            <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
+                            <input type="hidden" name="Binder[@index].BinderId" value="@binder.BinderId" />
+                            <input type="checkbox" name="Binder[@index].Selected" value="true" />
                         </td>
-                        <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
-                        <td name="last_modified_col">@text.LastModified</td>
-                        <td name="last_modified_by_col">@text.ModifyByName</td>
-                        <td name="created_col">@text.Created</td>
-                        <td name="created_by_col">@text.CreatedByName</td>
-                        <td name="vision_col">@text.VisionNumber</td>
-                        <td name="revision_col">@text.RevisionStatus</td>
-                        <td name="groups_col">
-                            @foreach(var group in text.Groups)
-                                {
-                            <a href="/RhymeBinder/ManageGroup?groupID=@group.TextGroupId">
-                                <span style="padding-right:5px">@group.GroupTitle</span>
-                            </a>
-                                }
-                        </td>
+                        <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">@binder.Name</a></td>
+                        <td name="text_count_col">@binder.PageCount</td>
+                        <td name="group_count_col">@binder.GroupCount</td>
+                        <td name="last_modified_col">@binder.LastModified</td>
+                        <td name="last_modified_by_col">@binder.LastModifiedBy</td>
+                        <td name="created_col">@binder.Created</td>
+                        <td name="created_by_col">@binder.CreatedBy</td>
+                        <td name="description_col">@binder.Description</td>
                     </tr>
                     { index++; }
                 }

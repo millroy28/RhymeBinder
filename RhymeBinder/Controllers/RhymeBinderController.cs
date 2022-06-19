@@ -94,11 +94,24 @@ namespace RhymeBinder.Controllers
                 LastView = false
             };
 
+            Binder defaultBinder = new Binder()
+            {
+                UserId = newUser.UserId,
+                Name = "Loose Pages",
+                Description = "Texts not in any other binders.",
+                Created = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = newUser.UserId,
+                LastModifiedBy = newUser.UserId,
+                Hidden = true
+            };
 
             if (ModelState.IsValid)
             {
                 _context.SavedViews.Add(newSavedView);
                 _context.SavedViews.Add(lastSavedView);
+                _context.SavedViews.Add(deleted);
+                _context.Binders.Add(defaultBinder);
                 _context.SaveChanges();
             }
             else
@@ -597,6 +610,19 @@ namespace RhymeBinder.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult ListBinders()
+        {
+            List<DisplayBinder> binders = GetBinders();
+            return View(binders);
+        }
+        [HttpPost]
+        public IActionResult ListBinders(int placeholder)
+        {
+            return View();
+        }
+
+
         public IActionResult ErrorPage()
         {
             string msg = "ManageGroups: invalid TextGroup model?";
@@ -836,6 +862,56 @@ namespace RhymeBinder.Controllers
             };
 
             return (thisTextHeaderBodyUserRecord);
+        }
+        public List<DisplayBinder> GetBinders()
+        {
+            int userID = GetCurrentSimpleUserID();
+
+            List<Binder> binders = _context.Binders.Where(x => x.UserId == userID && x.Hidden == false).ToList();
+            List<LnkTextHeadersBinder> headerLinks = _context.LnkTextHeadersBinders.ToList();
+            List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID 
+                                                                        && x.Top == true 
+                                                                        && x.Deleted == false).ToList();
+            List<LnkTextHeadersTextGroup> groupLinks = _context.LnkTextHeadersTextGroups.ToList();
+            List<TextGroup> textGroups = _context.TextGroups.Where(x => x.Owner.UserId == userID
+                                                                     && x.Hidden == false).ToList();
+
+
+            List<DisplayBinder> displayBinders = new List<DisplayBinder>();
+            int textCount;
+            int groupCount;
+
+
+            foreach (var binder in binders)
+            {
+                textCount = (from LnkTextHeadersBinder lnkTextHeadersBinders in headerLinks
+                             join TextHeader header in textHeaders
+                               on lnkTextHeadersBinders.TextHeaderId equals header.TextHeaderId
+                           select lnkTextHeadersBinders).Count();
+
+                groupCount = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroups in groupLinks
+                              join TextHeader header in textHeaders
+                                on lnkTextHeadersTextGroups.TextHeaderId equals header.TextHeaderId
+                            select lnkTextHeadersTextGroups).Count();
+
+                displayBinders.Add(new DisplayBinder
+                {
+                    BinderId = binder.BinderId,
+                    UserId = binder.UserId,
+                    Created = binder.Created,
+                    CreatedBy = binder.CreatedBy,
+                    LastModified = binder.LastModified,
+                    LastModifiedBy = binder.LastModifiedBy,
+                    Hidden = binder.Hidden,
+                    Name = binder.Name,
+                    Description = binder.Description,
+                    PageCount = textCount,
+                    GroupCount = groupCount
+                }) ;
+
+            }
+
+            return (displayBinders);
         }
         public List<TextGroup> GetTextGroups()
         {
