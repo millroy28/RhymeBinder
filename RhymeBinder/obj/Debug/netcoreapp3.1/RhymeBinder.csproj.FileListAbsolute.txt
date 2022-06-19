@@ -59,7 +59,6 @@ C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Rhym
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.RazorAssemblyInfo.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\staticwebassets\RhymeBinder.StaticWebAssets.Manifest.cache
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\staticwebassets\RhymeBinder.StaticWebAssets.xml
-C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\scopedcss\bundle\RhymeBinder.styles.css
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.TagHelpers.input.cache
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.TagHelpers.output.cache
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\RhymeBinder.RazorCoreGenerate.cache

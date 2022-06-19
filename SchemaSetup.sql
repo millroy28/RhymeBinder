@@ -120,6 +120,23 @@ UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 Recorded DATETIME
 )
 
+CREATE TABLE Binders(
+BinderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+Created DATETIME,
+CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+LastModified DATETIME,
+LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+[Hidden] BIT,
+[Name] VARCHAR(1000),
+[Description] VARCHAR(MAX)
+)
+
+CREATE TABLE lnkTextHeadersBinders(
+lnkTextHeadersBindersID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID),
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
+)
 
 CREATE TABLE Submissions (
 SubmissionID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
