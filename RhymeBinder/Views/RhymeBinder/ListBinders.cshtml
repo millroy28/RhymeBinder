@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "ListTexts";
+}
+
+@{
+}
+@model DisplayTextHeadersAndSavedView
+@{ int index = 0; } 
+
+<form action="ListTexts" method="post" id="view">
+    <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />
+    <input type="hidden" name="View.UserId" value="@Model.View.UserId" />
+    <input type="hidden" name="View.SetValue" value="@Model.View.SetValue" id="view_set_value" />
+    <input type="hidden" name="View.SortValue" value="@Model.View.SortValue" id="view_sort_value" />
+    <input type="hidden" name="View.Descending" value="@Model.View.Descending.ToString()" id="view_descending" />
+    <input type="hidden" name="View.ViewName" value="@Model.View.ViewName" id="view_view_name" />
+    <input type="hidden" name="View.Default" value="@Model.View.Default.ToString()" id="view_default" />
+    <input type="hidden" name="View.Saved" value="@Model.View.Saved.ToString()" id="view_saved" />
+    <input type="hidden" name="View.LastView" value="@Model.View.LastView.ToString()" id="view_last_view" />
+    <input type="hidden" name="View.LastModified" value="@Model.View.LastModified.ToString()" id="view_last_modified" />
+    <input type="hidden" name="View.LastModifiedBy" value="@Model.View.LastModifiedBy.ToString()" id="view_last_modified_by" />
+    <input type="hidden" name="View.Created" value="@Model.View.Created.ToString()" id="view_created" />
+    <input type="hidden" name="View.CreatedBy" value="@Model.View.CreatedBy.ToString()" id="view_created_by" />
+    <input type="hidden" name="View.VisionNumber" value="@Model.View.VisionNumber.ToString()" id="view_vision_number" />
+    <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
+    <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
+    <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
+    <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
+    <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
+    <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
+    <input type="hidden" name="groupID" value="-1" id="group_id" />
+
+    <div class="table-view-wrapper">
+        <div class="list-texts-menu-bar-main">
+            <div class="menu-bar-title" id="menu_bar_title">
+                Your Binder:
+            </div>
+
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    Columns ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Modified</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Modified By</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_groups', this.id, 'groups_col')" id="toggle_groups">? Groups</a>
+
+                </div>
+            </div>
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    Groups ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_all">All</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_active">Active</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_scrapped">Scrapped</a>
+                </div>
+            </div>
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    Views ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item">Default</a>
+                    <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
+                    <a class="menu-bar-dropdown-item">Add new...</a>
+                </div>
+            </div>
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    Actions ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Scrap', '-1')">Move to Scrap Stack</a>
+                    <a class="menu-bar-dropdown-item">Add to Group... </a>
+                    @foreach (var group in Model.Groups)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
+                    }
+                    <a class="menu-bar-dropdown-item">Remove from Group... </a>
+                    @foreach (var group in Model.Groups)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="table-view-table-container">
+            <table>
+                <tr>
+                    <th name="selected_col" id="Selected"></th>
+                    <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
+                    <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
+                    <th name="last_modified_by_col" id="Last Modified By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified By</a></th>
+                    <th name="created_col" id="Created" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created</a></th>
+                    <th name="created_by_col" id="Created By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created By</a></th>
+                    <th name="vision_col" id="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
+                    <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
+                    <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
+                </tr>
+
+                @foreach (var text in Model.TextHeaders)
+                {
+
+                    <tr>
+
+                        <td>
+                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
+                            <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
+                        </td>
+                        <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
+                        <td name="last_modified_col">@text.LastModified</td>
+                        <td name="last_modified_by_col">@text.ModifyByName</td>
+                        <td name="created_col">@text.Created</td>
+                        <td name="created_by_col">@text.CreatedByName</td>
+                        <td name="vision_col">@text.VisionNumber</td>
+                        <td name="revision_col">@text.RevisionStatus</td>
+                        <td name="groups_col">
+                            @foreach(var group in text.Groups)
+                                {
+                            <a href="/RhymeBinder/ManageGroup?groupID=@group.TextGroupId">
+                                <span style="padding-right:5px">@group.GroupTitle</span>
+                            </a>
+                                }
+                        </td>
+                    </tr>
+                    { index++; }
+                }
+
+            </table>
+        </div>
+    </div>
+</form>
+
+<script language="Javascript" src="~/js/site.js"></script>
+<script language="Javascript">
+    window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');
+    window.onload = toggle_hide_element('view_last_modified_by', 'toggle_last_modified_by', 'last_modified_by_col', 'init');
+    window.onload = toggle_hide_element('view_created', 'toggle_created', 'created_col', 'init');
+    window.onload = toggle_hide_element('view_created_by', 'toggle_created_by', 'created_by_col', 'init');
+    window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
+    window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
+    window.onload = toggle_hide_element('view_groups', 'toggle_revision', 'groups_col', 'init');
+    window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
+    window.onload = on_start_get_form_sub_button('bttn_sub');
+</script>

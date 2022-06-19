@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "lcPkxKBAxBB5tii3D26fGpyKtjPGxnwrEkn82qfAz6vW3BYa+fdOVjzhlpiVQBqn6yM2ShdXTStdZKUxGDvS7A==",
+  "dgSpecHash": "pJ9R77LpIrH07ELT/Gn/wvgVhKwkW/UPo0qJFzACFTPA4ZvXtMyDV11XdCsJHz7FhtnZDxRMEGFLLM4uMAfj+A==",
   "success": true,
   "projectFilePath": "C:\\Users\\millr\\source\\repos\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
   "expectedPackageFiles": [
@@ -105,8 +105,7 @@
     "C:\\Users\\millr\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\millr\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\millr\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\millr\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
-    "C:\\Users\\millr\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.26\\microsoft.netcore.app.host.win-x64.3.1.26.nupkg.sha512"
+    "C:\\Users\\millr\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512"
   ],
   "logs": []
 }
