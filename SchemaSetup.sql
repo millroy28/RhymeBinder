@@ -129,7 +129,8 @@ LastModified DATETIME,
 LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Hidden] BIT,
 [Name] VARCHAR(1000),
-[Description] VARCHAR(MAX)
+[Description] VARCHAR(MAX),
+[Selected] BIT
 )
 
 CREATE TABLE lnkTextHeadersBinders(
@@ -173,8 +174,11 @@ Created BIT,
 CreatedBy BIT,
 VisionNumber BIT,
 RevisionStatus BIT,
-Groups BIT
+Groups BIT,
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 )
+
+
 
 CREATE TABLE EditWindowProperties (
 EditWindowPropertyID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,

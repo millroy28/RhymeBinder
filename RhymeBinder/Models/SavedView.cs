@@ -23,7 +23,9 @@ namespace RhymeBinder.Models
         public bool? VisionNumber { get; set; }
         public bool? RevisionStatus { get; set; }
         public bool? Groups { get; set; }
+        public int? BinderId { get; set; }
 
+        public virtual Binder Binder { get; set; }
         public virtual SimpleUser User { get; set; }
     }
 }

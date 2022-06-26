@@ -386,6 +386,8 @@ namespace RhymeBinder.Models
             {
                 entity.Property(e => e.SavedViewId).HasColumnName("SavedViewID");
 
+                entity.Property(e => e.BinderId).HasColumnName("BinderID");
+
                 entity.Property(e => e.SetValue)
                     .HasMaxLength(20)
                     .IsUnicode(false);
@@ -399,6 +401,11 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.ViewName)
                     .HasMaxLength(200)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.Binder)
+                    .WithMany(p => p.SavedViews)
+                    .HasForeignKey(d => d.BinderId)
+                    .HasConstraintName("FK__SavedView__Binde__76818E95");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.SavedViews)

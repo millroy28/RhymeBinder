@@ -94,6 +94,7 @@ namespace RhymeBinder.Controllers
                 LastView = false
             };
 
+            //create default binder
             Binder defaultBinder = new Binder()
             {
                 UserId = newUser.UserId,
@@ -103,7 +104,8 @@ namespace RhymeBinder.Controllers
                 LastModified = DateTime.Now,
                 CreatedBy = newUser.UserId,
                 LastModifiedBy = newUser.UserId,
-                Hidden = true
+                Hidden = true,
+                Selected = false
             };
 
             if (ModelState.IsValid)
@@ -610,16 +612,15 @@ namespace RhymeBinder.Controllers
             return View();
         }
 
-        [HttpGet]
         public IActionResult ListBinders()
         {
             List<DisplayBinder> binders = GetBinders();
             return View(binders);
         }
-        [HttpPost]
-        public IActionResult ListBinders(int placeholder)
+
+        public IActionResult EditBinder(int binderID)
         {
-            return View();
+            return RedirectToAction("ListBinders");
         }
 
 
@@ -906,7 +907,8 @@ namespace RhymeBinder.Controllers
                     Name = binder.Name,
                     Description = binder.Description,
                     PageCount = textCount,
-                    GroupCount = groupCount
+                    GroupCount = groupCount,
+                    Selected = binder.Selected
                 }) ;
 
             }

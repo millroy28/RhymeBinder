@@ -10,6 +10,7 @@ namespace RhymeBinder.Models
         public Binder()
         {
             LnkTextHeadersBinders = new HashSet<LnkTextHeadersBinder>();
+            SavedViews = new HashSet<SavedView>();
         }
 
         public int BinderId { get; set; }
@@ -21,10 +22,12 @@ namespace RhymeBinder.Models
         public bool? Hidden { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool? Selected { get; set; }
 
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser User { get; set; }
         public virtual ICollection<LnkTextHeadersBinder> LnkTextHeadersBinders { get; set; }
+        public virtual ICollection<SavedView> SavedViews { get; set; }
     }
 }
