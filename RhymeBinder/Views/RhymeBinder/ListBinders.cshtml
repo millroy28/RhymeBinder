@@ -45,10 +45,14 @@
                     
                         @if (binder.Selected == true)
                         {
-                            <td> ► </td>
+                            <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
+                                ► 
+                            </td>
                         }
                         else{
-                            <td></td>
+                            <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
+                                <a href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">Open </a>
+                            </td>
                         }
 
                     

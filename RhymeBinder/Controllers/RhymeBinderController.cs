@@ -363,10 +363,38 @@ namespace RhymeBinder.Controllers
 
             return RedirectToAction("Index");
         }
+        public IActionResult OpenBinder(int binderID)
+        {   
+            //un-mark previously selected binder
+            int userID = GetCurrentSimpleUserID();
+            Binder prevSelectedBinder = _context.Binders.Where(x => x.UserId == userID 
+                                                                 && x.Selected==true).FirstOrDefault();
+            prevSelectedBinder.Selected = false;
+
+            //Mark selected binder as selected
+            Binder selectedBinder = _context.Binders.Where(x => x.BinderId == binderID).FirstOrDefault();
+            selectedBinder.Selected = true;
+
+            //Save changes
+            if (ModelState.IsValid)
+            {
+                _context.Entry(prevSelectedBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Entry(selectedBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(prevSelectedBinder);
+                _context.Update(selectedBinder);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+            return RedirectToAction("ListTextsNUID");
+
+        }
         public IActionResult ListTextsNUID()
         {   //grabs current user, then default view for that user, and sends viewID to ListTexts
-            string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
+            int userID = GetCurrentSimpleUserID();
+            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.UserId == userID).First();
             SavedView thisView = _context.SavedViews.Where(x => x.UserId == thisUser.UserId &&
                                                         x.Default == true).First();
             return Redirect($"/RhymeBinder/ListTexts?viewID={thisView.SavedViewId}");
