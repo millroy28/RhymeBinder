@@ -394,9 +394,8 @@ namespace RhymeBinder.Controllers
         public IActionResult ListTextsNUID()
         {   //grabs current user, then default view for that user, and sends viewID to ListTexts
             int userID = GetCurrentSimpleUserID();
-            SimpleUser thisUser = _context.SimpleUsers.Where(x => x.UserId == userID).First();
-            SavedView thisView = _context.SavedViews.Where(x => x.UserId == thisUser.UserId &&
-                                                        x.Default == true).First();
+            SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID 
+                                                             && x.LastView == true).First();
             return Redirect($"/RhymeBinder/ListTexts?viewID={thisView.SavedViewId}");
         }
         [HttpGet]
@@ -951,6 +950,9 @@ namespace RhymeBinder.Controllers
         }
         public List<DisplayTextHeader> GetTextHeaders (int savedViewID)
         {
+            int binderID = GetCurrentBinder();
+            List<LnkTextHeadersBinder> theseLnkTextHeaderBinders = _context.LnkTextHeadersBinders.Where(x => x.BinderId == binderID).ToList();
+
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == savedViewID).First();
 
@@ -972,6 +974,28 @@ namespace RhymeBinder.Controllers
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId).ToList();
                     break;
             }
+
+            theseTextHeaders = (from LnkTextHeadersBinder lnkTextHeadersBinder in theseLnkTextHeaderBinders
+                                join TextHeader textHeaders in theseTextHeaders
+                                on lnkTextHeadersBinder.TextHeaderId equals textHeaders.TextHeaderId
+                                select new TextHeader 
+                                {
+                                    TextHeaderId = textHeaders.TextHeaderId,
+                                    TextId = textHeaders.TextId,
+                                    Title = textHeaders.Title,
+                                    Created = textHeaders.Created,
+                                    CreatedBy = textHeaders.CreatedBy,
+                                    LastModified = textHeaders.LastModified,
+                                    LastModifiedBy = textHeaders.LastModifiedBy,
+                                    LastRead = textHeaders.LastRead,
+                                    LastReadBy = textHeaders.LastReadBy,
+                                    TextRevisionStatusId = textHeaders.TextRevisionStatusId,
+                                    VisionNumber = textHeaders.VisionNumber,
+                                    VersionOf = textHeaders.VersionOf,
+                                    Deleted = textHeaders.Deleted,
+                                    Locked = textHeaders.Locked,
+                                    Top = textHeaders.Top
+                                }).ToList();
 
             //make a list of DisplayTextHeaders and populate the written names/statuses
             List<DisplayTextHeader> theseDisplayTextHeaders = new List<DisplayTextHeader>();
@@ -1103,6 +1127,13 @@ namespace RhymeBinder.Controllers
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             int thisUserID = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First().UserId;
             return (thisUserID);
+        }
+        public int GetCurrentBinder()
+        {
+            int userID = GetCurrentSimpleUserID();
+            Binder currentBinder = _context.Binders.Where(x => x.UserId == userID
+                                                         && x.Selected == true).FirstOrDefault();
+            return currentBinder.BinderId;
         }
     }
 }
