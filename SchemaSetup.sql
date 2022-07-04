@@ -17,6 +17,9 @@ DROP TABLE TextRevisionStatuses
 DROP TABLE Submissions
 DROP TABLE SavedViews
 
+
+
+lnkTextHeadersBinders
 */
 /*
 Example of organization:
@@ -54,6 +57,19 @@ PublicationTypeID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 PublicationType VARCHAR(100)
 )
 
+CREATE TABLE Binders(
+BinderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+Created DATETIME,
+CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+LastModified DATETIME,
+LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+[Hidden] BIT,
+[Name] VARCHAR(1000),
+[Description] VARCHAR(MAX),
+[Selected] BIT
+)
+
 CREATE TABLE PublicationRatings(
 PublicationRatingID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 PublicationRating VARCHAR(2000)
@@ -83,7 +99,8 @@ GroupTitle VARCHAR(1000),
 OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 Notes VARCHAR(Max),
 Locked BIT,
-[Hidden] BIT
+[Hidden] BIT,
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 )
 
 
@@ -102,7 +119,8 @@ VisionNumber INT,
 VersionOf INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID), --parent id
 Deleted BIT,
 Locked BIT,
-[Top] BIT
+[Top] BIT,
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 )
 
 
@@ -156,8 +174,11 @@ Created BIT,
 CreatedBy BIT,
 VisionNumber BIT,
 RevisionStatus BIT,
-Groups BIT
+Groups BIT,
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 )
+
+
 
 CREATE TABLE EditWindowProperties (
 EditWindowPropertyID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,

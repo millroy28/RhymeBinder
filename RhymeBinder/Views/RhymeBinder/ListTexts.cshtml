@@ -33,7 +33,7 @@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
-                Your Binder:
+                Open: @Model.Binder.Name
             </div>
 
             <div class="menu-bar-dropdown">
@@ -56,6 +56,10 @@
                     Groups ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
+                    @foreach(var group in Model.Groups)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.TextGroupId>@group.GroupTitle</a>
+                    }
                     <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_all">All</a>
                     <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_active">Active</a>
                     <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_scrapped">Scrapped</a>

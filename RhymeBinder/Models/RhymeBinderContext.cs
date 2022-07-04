@@ -24,6 +24,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
+        public virtual DbSet<Binder> Binders { get; set; }
         public virtual DbSet<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual DbSet<GroupAction> GroupActions { get; set; }
         public virtual DbSet<GroupHistory> GroupHistories { get; set; }
@@ -148,6 +149,38 @@ namespace RhymeBinder.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserTokens)
                     .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<Binder>(entity =>
+            {
+                entity.Property(e => e.BinderId).HasColumnName("BinderID");
+
+                entity.Property(e => e.Created).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.LastModified).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.BinderCreatedByNavigations)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK__Binders__Created__664B26CC");
+
+                entity.HasOne(d => d.LastModifiedByNavigation)
+                    .WithMany(p => p.BinderLastModifiedByNavigations)
+                    .HasForeignKey(d => d.LastModifiedBy)
+                    .HasConstraintName("FK__Binders__LastMod__673F4B05");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.BinderUsers)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK__Binders__UserID__65570293");
             });
 
             modelBuilder.Entity<EditWindowProperty>(entity =>
@@ -328,6 +361,8 @@ namespace RhymeBinder.Models
             {
                 entity.Property(e => e.SavedViewId).HasColumnName("SavedViewID");
 
+                entity.Property(e => e.BinderId).HasColumnName("BinderID");
+
                 entity.Property(e => e.SetValue)
                     .HasMaxLength(20)
                     .IsUnicode(false);
@@ -341,6 +376,11 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.ViewName)
                     .HasMaxLength(200)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.Binder)
+                    .WithMany(p => p.SavedViews)
+                    .HasForeignKey(d => d.BinderId)
+                    .HasConstraintName("FK__SavedView__Binde__76818E95");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.SavedViews)
@@ -427,6 +467,8 @@ namespace RhymeBinder.Models
             {
                 entity.Property(e => e.TextGroupId).HasColumnName("TextGroupID");
 
+                entity.Property(e => e.BinderId).HasColumnName("BinderID");
+
                 entity.Property(e => e.GroupTitle)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
@@ -434,6 +476,11 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.Notes).IsUnicode(false);
 
                 entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
+
+                entity.HasOne(d => d.Binder)
+                    .WithMany(p => p.TextGroups)
+                    .HasForeignKey(d => d.BinderId)
+                    .HasConstraintName("FK__TextGroup__Binde__0A888742");
 
                 entity.HasOne(d => d.Owner)
                     .WithMany(p => p.TextGroups)
@@ -444,6 +491,8 @@ namespace RhymeBinder.Models
             modelBuilder.Entity<TextHeader>(entity =>
             {
                 entity.Property(e => e.TextHeaderId).HasColumnName("TextHeaderID");
+
+                entity.Property(e => e.BinderId).HasColumnName("BinderID");
 
                 entity.Property(e => e.Created).HasColumnType("datetime");
 
@@ -458,6 +507,11 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.Title)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.Binder)
+                    .WithMany(p => p.TextHeaders)
+                    .HasForeignKey(d => d.BinderId)
+                    .HasConstraintName("FK__TextHeade__Binde__09946309");
 
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.TextHeaderCreatedByNavigations)
