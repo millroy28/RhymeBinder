@@ -92,6 +92,7 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
     sub_form(actionValue);
     return;
 }
+
 //--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
 function selected_action_form_submit(actionValue, groupID) {
     // group Id value stored in form under id 'group_id'
