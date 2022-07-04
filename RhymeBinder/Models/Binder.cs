@@ -9,8 +9,9 @@ namespace RhymeBinder.Models
     {
         public Binder()
         {
-            LnkTextHeadersBinders = new HashSet<LnkTextHeadersBinder>();
             SavedViews = new HashSet<SavedView>();
+            TextGroups = new HashSet<TextGroup>();
+            TextHeaders = new HashSet<TextHeader>();
         }
 
         public int BinderId { get; set; }
@@ -27,7 +28,8 @@ namespace RhymeBinder.Models
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser User { get; set; }
-        public virtual ICollection<LnkTextHeadersBinder> LnkTextHeadersBinders { get; set; }
         public virtual ICollection<SavedView> SavedViews { get; set; }
+        public virtual ICollection<TextGroup> TextGroups { get; set; }
+        public virtual ICollection<TextHeader> TextHeaders { get; set; }
     }
 }

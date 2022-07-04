@@ -59,7 +59,6 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-
             //create default saved view for user
             SavedView newSavedView = new SavedView()
             {
@@ -404,10 +403,12 @@ namespace RhymeBinder.Controllers
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
             List<TextGroup> groups = GetTextGroups();
+            DisplayBinder binder = GetDisplayBinder();
             DisplayTextHeadersAndSavedView theseHeadersAndSavedView = new DisplayTextHeadersAndSavedView {
                 View = thisView,
                 TextHeaders = theseTextHeaders,
-                Groups = groups
+                Groups = groups,
+                Binder = binder
             };
             return View(theseHeadersAndSavedView);
         }
@@ -441,6 +442,7 @@ namespace RhymeBinder.Controllers
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
 
                     break;
+                    //>> here's where to add group selection
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
@@ -638,19 +640,15 @@ namespace RhymeBinder.Controllers
 
             return View();
         }
-
         public IActionResult ListBinders()
         {
-            List<DisplayBinder> binders = GetBinders();
+            List<DisplayBinder> binders = GetDisplayBinders();
             return View(binders);
         }
-
         public IActionResult EditBinder(int binderID)
         {
             return RedirectToAction("ListBinders");
         }
-
-
         public IActionResult ErrorPage()
         {
             string msg = "ManageGroups: invalid TextGroup model?";
@@ -891,31 +889,27 @@ namespace RhymeBinder.Controllers
 
             return (thisTextHeaderBodyUserRecord);
         }
-        public List<DisplayBinder> GetBinders()
+        public List<DisplayBinder> GetDisplayBinders()
         {
             int userID = GetCurrentSimpleUserID();
 
             List<Binder> binders = _context.Binders.Where(x => x.UserId == userID && x.Hidden == false).ToList();
-            List<LnkTextHeadersBinder> headerLinks = _context.LnkTextHeadersBinders.ToList();
+           
             List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID 
                                                                         && x.Top == true 
                                                                         && x.Deleted == false).ToList();
+
             List<LnkTextHeadersTextGroup> groupLinks = _context.LnkTextHeadersTextGroups.ToList();
             List<TextGroup> textGroups = _context.TextGroups.Where(x => x.Owner.UserId == userID
                                                                      && x.Hidden == false).ToList();
-
 
             List<DisplayBinder> displayBinders = new List<DisplayBinder>();
             int textCount;
             int groupCount;
 
-
             foreach (var binder in binders)
             {
-                textCount = (from LnkTextHeadersBinder lnkTextHeadersBinders in headerLinks
-                             join TextHeader header in textHeaders
-                               on lnkTextHeadersBinders.TextHeaderId equals header.TextHeaderId
-                           select lnkTextHeadersBinders).Count();
+                textCount = textHeaders.Where(x => x.BinderId == binder.BinderId).Count();
 
                 groupCount = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroups in groupLinks
                               join TextHeader header in textHeaders
@@ -939,24 +933,58 @@ namespace RhymeBinder.Controllers
                 }) ;
 
             }
-
             return (displayBinders);
+        }
+        public DisplayBinder GetDisplayBinder()
+        {
+            int userID = GetCurrentSimpleUserID();
+            int binderID = GetCurrentBinderID();
+
+            Binder binder = _context.Binders.Where(x => x.BinderId == binderID).FirstOrDefault();
+
+            int textCount = _context.TextHeaders.Where(x => x.Top == true
+                                                         && x.Deleted == false
+                                                         && x.BinderId == binderID).Count();
+                      
+            int groupCount = _context.TextGroups.Where(x => x.Hidden == false
+                                                         && x.BinderId == binderID).Count();
+
+            DisplayBinder displayBinder = new DisplayBinder()
+            {
+                BinderId=binder.BinderId,
+                UserId=binder.UserId,
+                Created=binder.Created,
+                CreatedBy=binder.CreatedBy,
+                LastModified=binder.LastModified,
+                LastModifiedBy=binder.LastModifiedBy,
+                Hidden=binder.Hidden,
+                Name=binder.Name,
+                Description=binder.Description,
+                Selected=binder.Selected,
+                GroupCount=groupCount,
+                PageCount=textCount,
+            };
+                        
+            return (displayBinder);
         }
         public List<TextGroup> GetTextGroups()
         {
             int userID = GetCurrentSimpleUserID();
-            List<TextGroup> groups = _context.TextGroups.Where(x => x.OwnerId == userID).ToList();
+            int binderID = GetCurrentBinderID();
+            List<TextGroup> groups = _context.TextGroups.Where(x => x.OwnerId == userID
+                                                                 && x.BinderId == binderID).ToList();
             return (groups);
         }
         public List<DisplayTextHeader> GetTextHeaders (int savedViewID)
         {
-            int binderID = GetCurrentBinder();
-            List<LnkTextHeadersBinder> theseLnkTextHeaderBinders = _context.LnkTextHeadersBinders.Where(x => x.BinderId == binderID).ToList();
-
+            int binderID = GetCurrentBinderID();
+            
+            //Get all text headers for this view
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
-            SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == savedViewID).First();
+            SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == savedViewID
+                                                             && x.BinderId == binderID).First();
 
-            //Populate list of TextHeaders
+            //Populate a list of TextHeaders based on these hard-coded categories
             switch (thisView.SetValue)
             {
                 case "Active":
@@ -973,30 +1001,21 @@ namespace RhymeBinder.Controllers
                 case "All":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId).ToList();
                     break;
+                default:
+                    TextGroup thisGroup = _context.TextGroups.Where(x => x.GroupTitle == thisView.SetValue).FirstOrDefault();
+                    List<LnkTextHeadersTextGroup> groupLinks = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == thisGroup.TextGroupId).ToList();
+                    theseTextHeaders = (from theseHeaders in _context.TextHeaders
+                                       join theseGroupLinks in groupLinks
+                                       on theseHeaders.TextHeaderId equals theseGroupLinks.TextHeaderId
+                                       where theseHeaders.Top == true && theseHeaders.CreatedBy == thisView.UserId && theseHeaders.Deleted == false
+                                       select theseHeaders).ToList();
+                    break;
+                    //>> make list of groups in drop down for view
+                    //and add view for that and add code that 
+                    //and add code that adds view for the group when a group is created
+                    //and delete when the group is deleted
             }
-
-            theseTextHeaders = (from LnkTextHeadersBinder lnkTextHeadersBinder in theseLnkTextHeaderBinders
-                                join TextHeader textHeaders in theseTextHeaders
-                                on lnkTextHeadersBinder.TextHeaderId equals textHeaders.TextHeaderId
-                                select new TextHeader 
-                                {
-                                    TextHeaderId = textHeaders.TextHeaderId,
-                                    TextId = textHeaders.TextId,
-                                    Title = textHeaders.Title,
-                                    Created = textHeaders.Created,
-                                    CreatedBy = textHeaders.CreatedBy,
-                                    LastModified = textHeaders.LastModified,
-                                    LastModifiedBy = textHeaders.LastModifiedBy,
-                                    LastRead = textHeaders.LastRead,
-                                    LastReadBy = textHeaders.LastReadBy,
-                                    TextRevisionStatusId = textHeaders.TextRevisionStatusId,
-                                    VisionNumber = textHeaders.VisionNumber,
-                                    VersionOf = textHeaders.VersionOf,
-                                    Deleted = textHeaders.Deleted,
-                                    Locked = textHeaders.Locked,
-                                    Top = textHeaders.Top
-                                }).ToList();
-
+                       
             //make a list of DisplayTextHeaders and populate the written names/statuses
             List<DisplayTextHeader> theseDisplayTextHeaders = new List<DisplayTextHeader>();
 
@@ -1128,7 +1147,7 @@ namespace RhymeBinder.Controllers
             int thisUserID = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First().UserId;
             return (thisUserID);
         }
-        public int GetCurrentBinder()
+        public int GetCurrentBinderID()
         {
             int userID = GetCurrentSimpleUserID();
             Binder currentBinder = _context.Binders.Where(x => x.UserId == userID
