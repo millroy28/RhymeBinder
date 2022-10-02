@@ -152,6 +152,7 @@ namespace RhymeBinder.Controllers
             }
 
             //create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
+            int binderId = GetCurrentBinderID();
             TextHeader newTextHeader = new TextHeader();
             
             newTextHeader.Title = title;
@@ -167,6 +168,7 @@ namespace RhymeBinder.Controllers
             newTextHeader.LastRead = DateTime.Now;
             newTextHeader.LastReadBy = thisUser.UserId;
             newTextHeader.TextId = newText.TextId;
+            newTextHeader.BinderId = binderId;
 
             if (ModelState.IsValid)
             {
@@ -477,6 +479,7 @@ namespace RhymeBinder.Controllers
             newTextHeader.VersionOf = oldTextHeader.TextHeaderId;
             newTextHeader.VisionNumber = oldTextHeader.VisionNumber + 1;
             newTextHeader.TextRevisionStatusId = oldTextHeader.TextRevisionStatusId;
+            newTextHeader.BinderId = oldTextHeader.BinderId;
 
             oldTextHeader.Top = false;
             oldTextHeader.Locked = true;
@@ -995,6 +998,7 @@ namespace RhymeBinder.Controllers
                                 on lnkTextHeadersTextGroups.TextHeaderId equals header.TextHeaderId
                               join TextGroup textGroup in textGroups
                                 on lnkTextHeadersTextGroups.TextGroupId equals textGroup.TextGroupId
+                             where header.BinderId == binder.BinderId
                             select textGroup.TextGroupId).Distinct().Count();
 
                 displayBinders.Add(new DisplayBinder
