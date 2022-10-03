@@ -60,46 +60,26 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-            //create default saved view for user
-            SavedView newSavedView = new SavedView()
-            {
-                UserId = newUser.UserId,
-                SetValue = "active",
-                SortValue = "title",
-                Descending = false,
-                Default = true,
-                Saved = false,
-                LastView = false
-            };
-            //create artificial last saved view for user
-            SavedView lastSavedView = new SavedView()
-            {
-                UserId = newUser.UserId,
-                SetValue = "active",
-                SortValue = "title",
-                Descending = false,
-                Default = false,
-                Saved = false,
-                LastView = true
-            };
-            //create artificial last saved view for user
-            SavedView deleted = new SavedView()
-            {
-                UserId = newUser.UserId,
-                SetValue = "deleted",
-                SortValue = "title",
-                Descending = false,
-                Default = false,
-                Saved = false,
-                LastView = false
-            };
-
             //create default binder
             Binder defaultBinder = new Binder()
             {
                 UserId = newUser.UserId,
-                Name = "Loose Pages",
-                Description = "Texts not in any other binders.",
+                Name = "Your Binder",
+                Description = "Welcome to your first binder!",
+                Created = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = newUser.UserId,
+                LastModifiedBy = newUser.UserId,
+                Hidden = false,
+                Selected = true
+            };
+
+            //create default binder
+            Binder trashBinder = new Binder()
+            {
+                UserId = newUser.UserId,
+                Name = "Trash",
+                Description = "Texts that have been deleted.",
                 Created = DateTime.Now,
                 LastModified = DateTime.Now,
                 CreatedBy = newUser.UserId,
@@ -110,10 +90,57 @@ namespace RhymeBinder.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.SavedViews.Add(newSavedView);
-                _context.SavedViews.Add(lastSavedView);
-                _context.SavedViews.Add(deleted);
                 _context.Binders.Add(defaultBinder);
+                _context.Binders.Add(trashBinder);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return View();  //!!insert error handlin?
+            }
+
+            //create default saved view for user
+            SavedView newSavedView = new SavedView()
+            {
+                UserId = newUser.UserId,
+                SetValue = "Active",
+                SortValue = "title",
+                Descending = false,
+                Default = true,
+                Saved = false,
+                LastView = true,
+                BinderId = defaultBinder.BinderId
+            };
+            //create artificial last saved view for user
+            //SavedView lastSavedView = new SavedView()
+            //{
+            //    UserId = newUser.UserId,
+            //    SetValue = "Active",
+            //    SortValue = "title",
+            //    Descending = false,
+            //    Default = false,
+            //    Saved = false,
+            //    LastView = true
+            //};
+            //create artificial last saved view for user
+            SavedView deleted = new SavedView()
+            {
+                UserId = newUser.UserId,
+                SetValue = "Deleted",
+                SortValue = "title",
+                Descending = false,
+                Default = false,
+                Saved = false,
+                LastView = false,
+                BinderId = trashBinder.BinderId
+            };
+
+            if (ModelState.IsValid)
+            {
+                _context.SavedViews.Add(newSavedView);
+                //_context.SavedViews.Add(lastSavedView);
+                _context.SavedViews.Add(deleted);
+
                 _context.SaveChanges();
             }
             else
