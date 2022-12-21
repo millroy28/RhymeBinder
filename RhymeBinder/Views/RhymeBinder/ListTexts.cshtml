@@ -7,6 +7,13 @@
 @model DisplayTextHeadersAndSavedView
 @{ int index = 0; } 
 
+
+<script language="Javascript" src="~/js/site.js"></script>
+
+
+
+
+
 <form action="ListTexts" method="post" id="view">
     <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />
     <input type="hidden" name="View.UserId" value="@Model.View.UserId" />
@@ -60,9 +67,9 @@
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.TextGroupId>@group.GroupTitle</a>
                     }
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_all">All</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_active">Active</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_scrapped">Scrapped</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_all">All</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_active">Active</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_scrapped">Scrapped</a>
                 </div>
             </div>
             <div class="menu-bar-dropdown">
@@ -139,10 +146,8 @@
             </table>
         </div>
     </div>
-</form>
-
-<script language="Javascript" src="~/js/site.js"></script>
-<script language="Javascript">
+    <script language="Javascript">
+    window.onload = on_start_get_form_sub_button('bttn_sub');
     window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');
     window.onload = toggle_hide_element('view_last_modified_by', 'toggle_last_modified_by', 'last_modified_by_col', 'init');
     window.onload = toggle_hide_element('view_created', 'toggle_created', 'created_col', 'init');
@@ -151,5 +156,7 @@
     window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
     window.onload = toggle_hide_element('view_groups', 'toggle_revision', 'groups_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
-    window.onload = on_start_get_form_sub_button('bttn_sub');
 </script>
+</form>
+
+

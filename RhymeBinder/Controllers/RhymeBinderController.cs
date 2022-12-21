@@ -60,108 +60,7 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
-            //create default binder
-            Binder defaultBinder = new Binder()
-            {
-                UserId = newUser.UserId,
-                Name = "Your Binder",
-                Description = "Welcome to your first binder!",
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                CreatedBy = newUser.UserId,
-                LastModifiedBy = newUser.UserId,
-                Hidden = false,
-                Selected = true
-            };
-
-            //create trash binder
-            Binder trashBinder = new Binder()
-            {
-                UserId = newUser.UserId,
-                Name = "Trash",
-                Description = "Texts that have been deleted.",
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                CreatedBy = newUser.UserId,
-                LastModifiedBy = newUser.UserId,
-                Hidden = true,
-                Selected = false
-            };
-
-            //create loose pages binder
-            Binder loosePages = new Binder()
-            {
-                UserId = newUser.UserId,
-                Name = "Loose Pages",
-                Description = "Texts that were in a binder that has been deleted.",
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                CreatedBy = newUser.UserId,
-                LastModifiedBy = newUser.UserId,
-                Hidden = true,
-                Selected = false
-            };
-
-            if (ModelState.IsValid)
-            {
-                _context.Binders.Add(defaultBinder);
-                _context.Binders.Add(trashBinder);
-                _context.Binders.Add(loosePages);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
-
-            //create default saved view for user
-            SavedView newSavedView = new SavedView()
-            {
-                UserId = newUser.UserId,
-                SetValue = "Active",
-                SortValue = "title",
-                Descending = false,
-                Default = true,
-                Saved = false,
-                LastView = true,
-                BinderId = defaultBinder.BinderId
-            };
-            //create artificial last saved view for user
-            //SavedView lastSavedView = new SavedView()
-            //{
-            //    UserId = newUser.UserId,
-            //    SetValue = "Active",
-            //    SortValue = "title",
-            //    Descending = false,
-            //    Default = false,
-            //    Saved = false,
-            //    LastView = true
-            //};
-            //create artificial last saved view for user
-            SavedView deleted = new SavedView()
-            {
-                UserId = newUser.UserId,
-                SetValue = "Deleted",
-                SortValue = "title",
-                Descending = false,
-                Default = false,
-                Saved = false,
-                LastView = false,
-                BinderId = trashBinder.BinderId
-            };
-
-            if (ModelState.IsValid)
-            {
-                _context.SavedViews.Add(newSavedView);
-                //_context.SavedViews.Add(lastSavedView);
-                _context.SavedViews.Add(deleted);
-
-                _context.SaveChanges();
-            }
-            else
-            {
-                return View();  //!!insert error handlin?
-            }
+            int defaultBinderId = CreateNewUserBinderSet(newUser.UserId);
 
             return RedirectToAction("Index");
         }
@@ -419,9 +318,17 @@ namespace RhymeBinder.Controllers
         public IActionResult ListTexts(int viewID)
         {
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
-            List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
             List<TextGroup> groups = GetTextGroups();
             DisplayBinder binder = GetDisplayBinder();
+            List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+            if(theseTextHeaders.Count == 0)
+            {
+                theseTextHeaders.Add(new DisplayTextHeader()
+                {
+                    BinderId = binder.BinderId,
+                    
+                });
+            }
             DisplayTextHeadersAndSavedView theseHeadersAndSavedView = new DisplayTextHeadersAndSavedView {
                 View = thisView,
                 TextHeaders = theseTextHeaders,
@@ -438,9 +345,9 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "LastView":
-                    // Don't know why I'm doing it this way. Is it now vestigal? Are we not always passing in a saved view?
-                    // viewToUpdate = _context.SavedViews.Where(x => x.UserId == savedView.View.UserId && x.LastView == true).First();
-                    // Changing to use the saved view ID passed in here and in the other options:
+                    // -> TO DO: fix bug. If a group filter is currently selected, then you select All, or Active, or Scrapped...
+                    //           then it over-writes the Set Value in the savedView (the view for that group) with the All/Active/Scrapped that's passed in
+
                     viewToUpdate = _context.SavedViews.Where(x => x.SavedViewId == savedView.View.SavedViewId).First();
                     UpdateView(viewToUpdate, savedView);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
@@ -463,7 +370,16 @@ namespace RhymeBinder.Controllers
                     break;
                 case "GroupFilter":
                     TextGroup group = _context.TextGroups.Where(x => x.TextGroupId == groupID).FirstOrDefault();
-                    viewToUpdate = _context.SavedViews.Where(x => x.SetValue == group.GroupTitle).FirstOrDefault();
+                    if (groupID == -1)
+                    {
+                        viewToUpdate = _context.SavedViews.Where(x => x.SetValue == savedView.View.SetValue
+                                                                   && x.UserId == savedView.View.UserId
+                                                                   && x.BinderId == savedView.Binder.BinderId).FirstOrDefault();
+                    }
+                    else
+                    {
+                        viewToUpdate = _context.SavedViews.Where(x => x.SetValue == group.GroupTitle).FirstOrDefault();
+                    }
                     return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
                     break;
                     //>> here's where to add group selection
@@ -560,7 +476,7 @@ namespace RhymeBinder.Controllers
             return View(theseTextHeaders);
         }
         public IActionResult ChangeListDisplay (string change)
-        {
+        {   //NOT SURE THIS IS BEING USED --- DROP?
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
 
@@ -708,7 +624,7 @@ namespace RhymeBinder.Controllers
         public IActionResult CreateBinder(Binder newBinder)
         {
             int userId = GetCurrentSimpleUserID();
-
+                        
             newBinder.UserId = userId;
             newBinder.Name = newBinder.Name;
             newBinder.Description = newBinder.Description;
@@ -716,6 +632,8 @@ namespace RhymeBinder.Controllers
             newBinder.CreatedBy = userId;
             newBinder.Hidden = false;
             newBinder.Selected = false;
+
+
             
             if (ModelState.IsValid)
             {
@@ -727,9 +645,12 @@ namespace RhymeBinder.Controllers
                 return View();  //!!insert error handlin?
             }
 
+            // Create a new saved view for this binder
+            CreateNewBinderViewSet(newBinder.BinderId, userId);
+
             //Set this new binder as the selected binder.
             OpenBinder(newBinder.BinderId);
-
+                       
             return RedirectToAction("ListTextsNUID");
 
         }
@@ -917,6 +838,165 @@ namespace RhymeBinder.Controllers
         }
 
         //---------------------------------UTILITY METHODS:
+        public int CreateNewUserBinderSet(int newUserId)
+        {
+            //create default binder
+            Binder defaultBinder = new Binder()
+            {
+                UserId = newUserId,
+                Name = "Your Binder",
+                Description = "Welcome to your first binder!",
+                Created = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = newUserId,
+                LastModifiedBy = newUserId,
+                Hidden = false,
+                Selected = true
+            };
+
+            //create trash binder
+            Binder trashBinder = new Binder()
+            {
+                UserId = newUserId,
+                Name = "Trash",
+                Description = "Texts that have been deleted.",
+                Created = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = newUserId,
+                LastModifiedBy = newUserId,
+                Hidden = true,
+                Selected = false
+            };
+
+            //create loose pages binder
+            Binder loosePages = new Binder()
+            {
+                UserId = newUserId,
+                Name = "Loose Pages",
+                Description = "Texts that were in a binder that has been deleted.",
+                Created = DateTime.Now,
+                LastModified = DateTime.Now,
+                CreatedBy = newUserId,
+                LastModifiedBy = newUserId,
+                Hidden = true,
+                Selected = false
+            };
+
+            if (ModelState.IsValid)
+            {
+                _context.Binders.Add(defaultBinder);
+                _context.Binders.Add(trashBinder);
+                _context.Binders.Add(loosePages);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return -1;  //!!insert error handlin?
+            }
+
+            //Create views for each new binder
+            CreateNewBinderViewSet(defaultBinder.BinderId, newUserId);
+            CreateNewBinderViewSet(trashBinder.BinderId, newUserId);
+            CreateNewBinderViewSet(loosePages.BinderId, newUserId);
+
+            return defaultBinder.BinderId;
+        }
+        public void CreateNewBinderViewSet(int binderId, int userId)
+        {
+            //NOTES: revised intentions on binder / view organization and behavior:
+            /*
+             * Each binder will have 3 views created for it:
+             *  Active
+             *  All
+             *  Trash
+             *  
+             *  Active = not deleted
+             *  Trash = "deleted"
+             *  All = both Active & Trash
+             * 
+             * Texts can be moved to a "deleted" state within a binder and they are effectively hidden from view
+             * They can also be removed from the binder and sent to the trash binder.
+             * 
+             * 
+             */
+
+            //create default saved view for user
+            SavedView defaultView = new SavedView()
+            {
+                UserId = userId,
+                SetValue = "Active",
+                SortValue = "title",
+                ViewName = "Active - AutoCreated",
+                Descending = false,
+                Default = true,
+                Saved = false,
+                LastView = true,
+                Created = true,
+                CreatedBy = false,
+                LastModified = false,
+                LastModifiedBy = false,
+                VisionNumber = false,
+                RevisionStatus = false,
+                Groups = false,
+                BinderId = binderId,
+
+            };
+
+            SavedView trashView = new SavedView()
+            {
+                UserId = userId,
+                SetValue = "Trash",
+                SortValue = "title",
+                ViewName = "Trash - AutoCreated",
+                Descending = false,
+                Default = false,
+                Saved = false,
+                LastView = false,
+                Created = true,
+                CreatedBy = false,
+                LastModified = false,
+                LastModifiedBy = false,
+                VisionNumber = false,
+                RevisionStatus = false,
+                Groups = false,
+                BinderId = binderId
+            };
+
+            SavedView loosePagesView = new SavedView()
+            {
+                UserId = userId,
+                SetValue = "All",
+                SortValue = "title",
+                ViewName = "All - AutoCreated",
+                Descending = false,
+                Default = false,
+                Saved = false,
+                LastView = false,
+                Created = true,
+                CreatedBy = false,
+                LastModified = false,
+                LastModifiedBy = false,
+                VisionNumber = false,
+                RevisionStatus = false,
+                Groups = false,
+                BinderId = binderId
+            };
+
+
+            if (ModelState.IsValid)
+            {
+                _context.SavedViews.Add(defaultView);
+                _context.SavedViews.Add(trashView);
+                _context.SavedViews.Add(loosePagesView);
+
+                _context.SaveChanges();
+            }
+            else
+            {
+                return;   //!!insert error handlin?
+            }
+            return;
+        }
         public void UpdateView (SavedView viewToUpdate, DisplayTextHeadersAndSavedView savedView)
         {
 
@@ -1388,7 +1468,7 @@ namespace RhymeBinder.Controllers
                     Created = textHeader.Created,
                     LastModified = textHeader.LastModified,
                     LastRead = textHeader.LastRead,
-                    Groups =  selectedGroups
+                    Groups = selectedGroups
                 }
                     );
             }
@@ -1399,6 +1479,20 @@ namespace RhymeBinder.Controllers
                 textHeader.ModifyByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastModifiedBy).First().UserName;
                 textHeader.ReadByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastReadBy).First().UserName;
                 textHeader.RevisionStatus = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1;
+            }
+
+            //fudge a blank if there are no results
+            if(theseDisplayTextHeaders.Count == 0)
+            {
+                DisplayTextHeader blankTextHeader = new DisplayTextHeader()
+                {
+                    BinderId = binderID,
+                    Groups = new List<TextGroup> { new TextGroup
+                    {
+                        BinderId = binderID
+                    } }
+                };
+                theseDisplayTextHeaders.Add(blankTextHeader);
             }
 
             //sort the list based on the sort values/descending value
