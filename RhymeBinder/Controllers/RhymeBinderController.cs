@@ -373,12 +373,12 @@ namespace RhymeBinder.Controllers
                     if (groupID == -1)
                     {
                         viewToUpdate = _context.SavedViews.Where(x => x.SetValue == savedView.View.SetValue
-                                                                   && x.UserId == savedView.View.UserId
-                                                                   && x.BinderId == savedView.Binder.BinderId).FirstOrDefault();
+                                                                   && x.BinderId == savedView.View.BinderId).FirstOrDefault();
                     }
                     else
                     {
-                        viewToUpdate = _context.SavedViews.Where(x => x.SetValue == group.GroupTitle).FirstOrDefault();
+                        viewToUpdate = _context.SavedViews.Where(x => x.SetValue == group.GroupTitle
+                                                                   && x.BinderId == savedView.View.BinderId).FirstOrDefault();
                     }
                     return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
                     break;
@@ -1399,7 +1399,7 @@ namespace RhymeBinder.Controllers
                                                                         x.BinderId == binderID).ToList();
                     break;
 
-                case "Scrapped":
+                case "Trash":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                        x.Deleted == true &&
                                                                        x.BinderId == binderID).ToList();

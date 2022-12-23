@@ -32,6 +32,7 @@
     <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
     <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
+    <input type="hidden" name="View.BinderId" value="@Model.View.BinderId" />
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
@@ -60,7 +61,7 @@
             </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
-                    Groups ▼
+                    Views ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
                     @foreach(var group in Model.Groups)
@@ -69,25 +70,15 @@
                     }
                     <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_all">All</a>
                     <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_active">Active</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_scrapped">Scrapped</a>
-                </div>
-            </div>
-            <div class="menu-bar-dropdown">
-                <div class="menu-bar-button-dropdown">
-                    Views ▼
-                </div>
-                <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item">Default</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_scrapped">Trash</a>
                     <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
-                    <a class="menu-bar-dropdown-item">Add new...</a>
                 </div>
             </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
-                    Actions ▼
+                    + / - Groups ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Scrap', '-1')">Move to Scrap Stack</a>
                     <a class="menu-bar-dropdown-item">Add to Group... </a>
                     @foreach (var group in Model.Groups)
                     {
@@ -98,6 +89,19 @@
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
                     }
+
+                </div>
+            </div>
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    Actions ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Trash', '-1')">Delete (hide in binder)</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Trash', '-1')">Restore (unhide in binder)</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('x', '-1')">Transfer To Binder</a>
+
+
                 </div>
             </div>
         </div>
@@ -154,7 +158,7 @@
     window.onload = toggle_hide_element('view_created_by', 'toggle_created_by', 'created_by_col', 'init');
     window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
     window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
-    window.onload = toggle_hide_element('view_groups', 'toggle_revision', 'groups_col', 'init');
+    window.onload = toggle_hide_element('view_groups', 'toggle_groups', 'groups_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
 </script>
 </form>
