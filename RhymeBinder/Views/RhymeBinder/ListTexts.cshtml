@@ -97,10 +97,18 @@
                     Actions ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Trash', '-1')">Delete (hide in binder)</a>
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Trash', '-1')">Restore (unhide in binder)</a>
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('x', '-1')">Transfer To Binder</a>
-
+                    @if(Model.Binder.Name == "Trash")
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
+                    } else
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Trash', '-1')">Hide (hide in binder)</a>
+                    }
+                    <a class="menu-bar-dropdown-item" >Transfer To Binder...</a>
+                    @foreach(var binder in Model.UserBinders)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
+                    }
 
                 </div>
             </div>

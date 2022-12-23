@@ -42,18 +42,25 @@
 
                 <tr>
 
-                    
+                    @if (binder.Name != "Trash" && binder.Name != "Loose Pages")
+                    {
                         @if (binder.Selected == true)
-                        {
-                            <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
-                                ► 
-                            </td>
-                        }
-                        else{
-                            <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
+                            {
+                                <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
+                                    ► 
+                                </td>
+                            }
+                            else{
+                                <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
 
-                            </td>
+                                </td>
                         }
+
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
 
                     
                         <td><a href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binder.Name</a></td>

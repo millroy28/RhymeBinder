@@ -321,6 +321,8 @@ namespace RhymeBinder.Controllers
             List<TextGroup> groups = GetTextGroups();
             DisplayBinder binder = GetDisplayBinder();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+            List<Binder> userBinders = _context.Binders.Where(x => x.UserId == GetCurrentSimpleUserID() 
+                                                                && x.Hidden == false).ToList();
             if(theseTextHeaders.Count == 0)
             {
                 theseTextHeaders.Add(new DisplayTextHeader()
@@ -333,7 +335,8 @@ namespace RhymeBinder.Controllers
                 View = thisView,
                 TextHeaders = theseTextHeaders,
                 Groups = groups,
-                Binder = binder
+                Binder = binder,
+                UserBinders = userBinders
             };
             return View(theseHeadersAndSavedView);
         }
@@ -382,7 +385,10 @@ namespace RhymeBinder.Controllers
                     }
                     return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
                     break;
-                    //>> here's where to add group selection
+                case "Transfer":
+                    TransferHeadersAcrossBinders(savedView, groupID);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    break;
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
@@ -859,12 +865,12 @@ namespace RhymeBinder.Controllers
             {
                 UserId = newUserId,
                 Name = "Trash",
-                Description = "Texts that have been deleted.",
+                Description = "Texts that have been deleted (but they never go away completely).",
                 Created = DateTime.Now,
                 LastModified = DateTime.Now,
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
-                Hidden = true,
+                Hidden = false,
                 Selected = false
             };
 
@@ -873,12 +879,12 @@ namespace RhymeBinder.Controllers
             {
                 UserId = newUserId,
                 Name = "Loose Pages",
-                Description = "Texts that were in a binder that has been deleted.",
+                Description = "Texts without a home otherwise.",
                 Created = DateTime.Now,
                 LastModified = DateTime.Now,
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
-                Hidden = true,
+                Hidden = false,
                 Selected = false
             };
 
@@ -1025,6 +1031,29 @@ namespace RhymeBinder.Controllers
             {
                 return;  //!!insert error handlin?
             }
+            return;
+        }
+        public void TransferHeadersAcrossBinders(DisplayTextHeadersAndSavedView savedView, int newBinderId)
+        {
+
+            foreach(var header in savedView.TextHeaders)
+            {
+                if (header.Selected)
+                {
+                    TextHeader thisTextHeader = _context.TextHeaders.Where(x => x.TextHeaderId == header.TextHeaderId).First();
+                    thisTextHeader.BinderId = newBinderId;
+                    if (ModelState.IsValid)
+                    {
+                        _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                        _context.Update(thisTextHeader);
+                        _context.SaveChanges();
+                    }
+                
+                }
+            }
+
+            //Save changes
+           
             return;
         }
         public void AddRemoveHeadersFromGroups (DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
