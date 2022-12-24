@@ -7,6 +7,13 @@
 @model DisplayTextHeadersAndSavedView
 @{ int index = 0; } 
 
+
+<script language="Javascript" src="~/js/site.js"></script>
+
+
+
+
+
 <form action="ListTexts" method="post" id="view">
     <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />
     <input type="hidden" name="View.UserId" value="@Model.View.UserId" />
@@ -25,6 +32,7 @@
     <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
     <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
+    <input type="hidden" name="View.BinderId" value="@Model.View.BinderId" />
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
@@ -33,7 +41,7 @@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
-                Open: @Model.Binder.Name
+                Open: @Model.Binder.Name - @Model.View.SetValue
             </div>
 
             <div class="menu-bar-dropdown">
@@ -53,26 +61,44 @@
             </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
-                    Groups ▼
+                    Views ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    @foreach(var group in Model.Groups)
+                    @if(Model.Groups.Count > 0)
                     {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.TextGroupId>@group.GroupTitle</a>
+                        @foreach(var group in Model.Groups)
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.TextGroupId>@group.GroupTitle</a>
+                        }
+                        <a class="menu-bar-dropdown-item" >――――――――</a>
                     }
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_all">All</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_active">Active</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('LastView', 'view_set_value', this.id)" id="set_value_scrapped">Scrapped</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_all">All</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_active">Active</a>
+                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_scrapped">Hidden</a>
+                    <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
                 </div>
             </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
-                    Views ▼
+                    +/- Groups ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item">Default</a>
-                    <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
-                    <a class="menu-bar-dropdown-item">Add new...</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Manage Groups</a>
+                    @if(Model.Groups.Count > 0)
+                    {
+                        <a class="menu-bar-dropdown-item" >――――――――</a>
+                        <a class="menu-bar-dropdown-item">Add to Group... </a>
+                        @foreach (var group in Model.Groups)
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
+                        }
+                        <a class="menu-bar-dropdown-item">Remove from Group... </a>
+                        @foreach (var group in Model.Groups)
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
+                        }                        
+                    }
+
                 </div>
             </div>
             <div class="menu-bar-dropdown">
@@ -80,17 +106,21 @@
                     Actions ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Scrap', '-1')">Move to Scrap Stack</a>
-                    <a class="menu-bar-dropdown-item">Add to Group... </a>
-                    @foreach (var group in Model.Groups)
+                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Trash")
                     {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
-                    }
-                    <a class="menu-bar-dropdown-item">Remove from Group... </a>
-                    @foreach (var group in Model.Groups)
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
+                    } 
+                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Trash" && Model.View.SetValue != "All")
                     {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
                     }
+                    <a class="menu-bar-dropdown-item" >――――――――</a>
+                    <a class="menu-bar-dropdown-item" >Transfer To Binder...</a>
+                    @foreach(var binder in Model.UserBinders)
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
+                    }
+
                 </div>
             </div>
         </div>
@@ -139,17 +169,17 @@
             </table>
         </div>
     </div>
-</form>
-
-<script language="Javascript" src="~/js/site.js"></script>
-<script language="Javascript">
+    <script language="Javascript">
+    window.onload = on_start_get_form_sub_button('bttn_sub');
     window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');
     window.onload = toggle_hide_element('view_last_modified_by', 'toggle_last_modified_by', 'last_modified_by_col', 'init');
     window.onload = toggle_hide_element('view_created', 'toggle_created', 'created_col', 'init');
     window.onload = toggle_hide_element('view_created_by', 'toggle_created_by', 'created_by_col', 'init');
     window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
     window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
-    window.onload = toggle_hide_element('view_groups', 'toggle_revision', 'groups_col', 'init');
+    window.onload = toggle_hide_element('view_groups', 'toggle_groups', 'groups_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
-    window.onload = on_start_get_form_sub_button('bttn_sub');
 </script>
+</form>
+
+
