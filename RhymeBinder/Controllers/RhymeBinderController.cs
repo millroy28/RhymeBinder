@@ -322,7 +322,8 @@ namespace RhymeBinder.Controllers
             DisplayBinder binder = GetDisplayBinder();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
             List<Binder> userBinders = _context.Binders.Where(x => x.UserId == GetCurrentSimpleUserID() 
-                                                                && x.Hidden == false).ToList();
+                                                                && x.Hidden == false
+                                                                && x.BinderId != binder.BinderId).ToList();
             if(theseTextHeaders.Count == 0)
             {
                 theseTextHeaders.Add(new DisplayTextHeader()
@@ -360,9 +361,13 @@ namespace RhymeBinder.Controllers
                     UpdateView(viewToUpdate, savedView);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={viewToUpdate.SavedViewId}");
                     break;
-                case "Scrap":
+                case "Hide":
+                    ToggleHideSelectedHeaders(savedView, true);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
+                case "Restore":
+                    ToggleHideSelectedHeaders(savedView, false);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                 case "GroupAdd":
                     AddRemoveHeadersFromGroups(savedView, groupID, true);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
@@ -389,6 +394,8 @@ namespace RhymeBinder.Controllers
                     TransferHeadersAcrossBinders(savedView, groupID);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
+                case "ManageGroups":
+                    return RedirectToAction("ManageGroups");
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
@@ -951,9 +958,9 @@ namespace RhymeBinder.Controllers
             SavedView trashView = new SavedView()
             {
                 UserId = userId,
-                SetValue = "Trash",
+                SetValue = "Hidden",
                 SortValue = "title",
-                ViewName = "Trash - AutoCreated",
+                ViewName = "Hidden - AutoCreated",
                 Descending = false,
                 Default = false,
                 Saved = false,
@@ -1042,6 +1049,8 @@ namespace RhymeBinder.Controllers
                 {
                     TextHeader thisTextHeader = _context.TextHeaders.Where(x => x.TextHeaderId == header.TextHeaderId).First();
                     thisTextHeader.BinderId = newBinderId;
+                    thisTextHeader.Deleted = false; // deleted == hidden, and I don't want transferred headers to be hidden even if they were previously
+
                     if (ModelState.IsValid)
                     {
                         _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
@@ -1124,6 +1133,24 @@ namespace RhymeBinder.Controllers
                         {
                             return;  //!!insert error handlin?
                         }
+                    }
+                }
+            }
+            return;
+        }
+        public void ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
+        {
+            foreach(var header in savedView.TextHeaders)
+            {
+                if (header.Selected)
+                {
+                    TextHeader thisTextHeader = _context.TextHeaders.Where(x => x.TextHeaderId == header.TextHeaderId).First();
+                    thisTextHeader.Deleted = hide;
+                    if (ModelState.IsValid)
+                    {
+                        _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                        _context.Update(thisTextHeader);
+                        _context.SaveChanges();
                     }
                 }
             }
@@ -1428,7 +1455,7 @@ namespace RhymeBinder.Controllers
                                                                         x.BinderId == binderID).ToList();
                     break;
 
-                case "Trash":
+                case "Hidden":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == thisView.UserId &&
                                                                        x.Deleted == true &&
                                                                        x.BinderId == binderID).ToList();
@@ -1452,9 +1479,10 @@ namespace RhymeBinder.Controllers
             List<DisplayTextHeader> theseDisplayTextHeaders = new List<DisplayTextHeader>();
 
             //doing this manually cause I'm a dum-dum what can't get the cast/convert right
-            int userID = GetCurrentSimpleUserID();
+            int userID = GetCurrentSimpleUserID(); int binderId = GetCurrentBinderID();
             List<TextGroup> selectedGroups = new List<TextGroup>();
-            List<TextGroup> groups = _context.TextGroups.Where(x => x.OwnerId == userID).ToList();
+            List<TextGroup> groups = _context.TextGroups.Where(x => x.OwnerId == userID
+                                                                 && x.BinderId == binderId ).ToList();
             List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.ToList();
 
             selectedGroups = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroup in links
