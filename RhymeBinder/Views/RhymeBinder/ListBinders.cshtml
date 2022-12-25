@@ -26,15 +26,15 @@
         <div class="table-view-table-container">
             <table>
                 <tr>
-                    <th name="selected_col" id="Selected">Current</th>
-                    <th name="name_col" id="Name" ><a>Name</a></th>
-                    <th name="text_count_col" id="Text Count" ><a>Text Count</a></th>
-                    <th name="group_count_col" id="Group Count" ><a>Group Count</a></th>
-                    <th name="last_modified_col" id="Last Modified"><a>Last Modified</a></th>
-                    <th name="last_modified_by_col" id="Last Modified By" ><a>Last Modified By</a></th>
-                    <th name="created_col" id="Created"><a>Created</a></th>
-                    <th name="created_by_col" id="Created By" ><a>Created By</a></th>
-                    <th name="description_col" id="Description"><a>Description</a></th>
+                    <th name="selected_col" id="Selected" align="center">Current</th>
+                    <th name="name_col" id="Name" align="center"><a>Name</a></th>
+                    <th name="text_count_col" id="Text Count" align="center"><a>Text Count</a></th>
+                    <th name="group_count_col" id="Group Count" align="center"><a>Group Count</a></th>
+                    <th name="last_modified_col" id="Last Modified" align="center"><a>Last Modified</a></th>
+                    <th name="last_modified_by_col" id="Last Modified By" align="center" ><a>Last Modified By</a></th>
+                    <th name="created_col" id="Created" align="center"><a>Created</a></th>
+                    <th name="created_by_col" id="Created By" align="center"><a>Created By</a></th>
+                    <th name="description_col" id="Description" align="center"><a>Description</a></th>
                 </tr>
 
                 @foreach (var binder in Model)
@@ -64,12 +64,12 @@
 
                     
                         <td><a href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binder.Name</a></td>
-                        <td name="text_count_col">@binder.PageCount</td>
-                        <td name="group_count_col">@binder.GroupCount</td>
-                        <td name="last_modified_col">@binder.LastModified</td>
-                        <td name="last_modified_by_col">@binder.LastModifiedBy</td>
-                        <td name="created_col">@binder.Created</td>
-                        <td name="created_by_col">@binder.CreatedBy</td>
+                        <td name="text_count_col" align="center">@binder.PageCount</td>
+                        <td name="group_count_col" align="center">@binder.GroupCount</td>
+                        <td name="last_modified_col "align="center">@binder.LastModified</td>
+                        <td name="last_modified_by_col" align="center">@binder.LastModifiedBy</td>
+                        <td name="created_col" align="center">@binder.Created</td>
+                        <td name="created_by_col" align="center">@binder.CreatedBy</td>
                         <td name="description_col">@binder.Description</td>
                     </tr>
                     { index++; }

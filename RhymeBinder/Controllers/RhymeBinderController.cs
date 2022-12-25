@@ -317,11 +317,12 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult ListTexts(int viewID)
         {
+            int userID = GetCurrentSimpleUserID();
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
             List<TextGroup> groups = GetTextGroups();
             DisplayBinder binder = GetDisplayBinder();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
-            List<Binder> userBinders = _context.Binders.Where(x => x.UserId == GetCurrentSimpleUserID() 
+            List<Binder> userBinders = _context.Binders.Where(x => x.UserId == userID 
                                                                 && x.Hidden == false
                                                                 && x.BinderId != binder.BinderId).ToList();
             if(theseTextHeaders.Count == 0)
@@ -339,6 +340,9 @@ namespace RhymeBinder.Controllers
                 Binder = binder,
                 UserBinders = userBinders
             };
+
+            //Update last accessed field in current binder
+            UpdateBinderLastAccessed(binder.BinderId, userID);
             return View(theseHeadersAndSavedView);
         }
         [HttpPost]
@@ -1010,6 +1014,24 @@ namespace RhymeBinder.Controllers
             }
             return;
         }
+        public void UpdateBinderLastAccessed(int binderId, int userId)
+        {
+            Binder thisBinder = _context.Binders.Where(x => x.BinderId == binderId).FirstOrDefault();
+            thisBinder.LastAccessed = DateTime.Now;
+            thisBinder.LastAccessedBy = userId;
+            if (ModelState.IsValid)
+            {
+                _context.Entry(thisBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisBinder);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return;  //!!insert error handlin?
+            }
+            return;
+
+        }
         public void UpdateView (SavedView viewToUpdate, DisplayTextHeadersAndSavedView savedView)
         {
 
@@ -1289,7 +1311,7 @@ namespace RhymeBinder.Controllers
         {
             int userID = GetCurrentSimpleUserID();
 
-            List<Binder> binders = _context.Binders.Where(x => x.UserId == userID && x.Hidden == false).ToList();
+            List<Binder> binders = _context.Binders.Where(x => x.UserId == userID && x.Hidden == false).OrderByDescending(x => x.LastAccessed).ToList();
            
             List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID 
                                                                         && x.Top == true 
@@ -1469,10 +1491,7 @@ namespace RhymeBinder.Controllers
                     TextGroup thisGroup = _context.TextGroups.Where(x => x.GroupTitle == thisView.SetValue).FirstOrDefault();
                     theseTextHeaders = GetTextHeadersInGroup(thisGroup.TextGroupId);
                     break;
-                    //>> make list of groups in drop down for view
-                    //and add view for that and add code that 
-                    //and add code that adds view for the group when a group is created
-                    //and delete when the group is deleted
+
             }
                        
             //make a list of DisplayTextHeaders and populate the written names/statuses
