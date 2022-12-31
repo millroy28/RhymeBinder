@@ -2,29 +2,82 @@
 @{
     ViewData["Title"] = "Manage Binder: Groups: Edit Group:";
 }
-@model DisplayTextGroup
+@model TextGroup
 <div class="menu-bar-main">
     <div class="menu-bar-title">
-        Manage Binder: Groups: Edit Group:
+        Manage Binder: Groups: Edit Group: @Model.GroupTitle
     </div>
 </div>
 
-Group Name:
 
-<table>
-    <thead>
-    <th>Name:</th>
-    <th>Items:</th>
-    </thead>
+<form action="EditGroup" method="post" class="form-wrapper">
+    <input type="hidden" name="TextGroupId" value="@Model.TextGroupId"/>
 
+    <div class="form-item-title">
+        Name:
+    </div>
+    <div class="form-item-large-entry">
+        <input type="text" name="GroupTitle" value=@Model.GroupTitle />
+    </div>
 
+    <div class="form-item-title">
+        Notes:
+    </div>
+    <div class="form-item-large-entry">
+        <input type="text" name="Notes" value=@Model.Notes />
+    </div>
 
-</table>
+    <div class="form-item-title">
+        Locked:
+    </div>
+    <div class="form-item-descriptor-one">
+        Prevents addition and removal of texts while group set to locked.
+    </div>
+    <div class="form-item-descriptor-two">
+        <input id="Locked" name="Locked" type="checkbox" value="true" />
+    </div>
 
-<p>Add a new group:</p>
-<form action="ManageGroups" method="post">
-    <input type="text" name="GroupTitle" />
-    <input type="hidden" name="GroupID" />
-    <input type="hidden" name="OwnerID" />
-    <input type="submit" name="action" class="button" value="Add" id="bttn_sub" />
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Submit Changes"/>
+    </div>
+    <div class="form-divider"><hr /></div>
+    <div class="form-item-title">
+        Clear Group:
+    </div>
+    <div class="form-item-descriptor-one">
+        Removes all associated texts from this group.
+    </div>
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Clear" />
+    </div>
+    <div class="form-item-verify-prompt">
+        Are you sure?
+    </div>
+    <div class="form-item-far-right-entry">
+        <input type="checkbox" name="verifyClear" />
+    </div>
+
+    <div class="form-item-title">
+        Delete Group:
+    </div>
+    <div class="form-item-descriptor-one">
+        Deletes this group. Texts will remain in the binder as they are.
+    </div>
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Delete Group" />
+    </div>
+    <div class="form-item-verify-prompt">
+        Are you sure?
+    </div>
+    <div class="form-item-far-right-entry">
+        <input type="checkbox" name="verifyDeleteGroup" />
+    </div>
+
 </form>
+
+
+
+    
+
+
+
