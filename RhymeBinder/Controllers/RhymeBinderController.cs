@@ -602,43 +602,6 @@ namespace RhymeBinder.Controllers
         {
             return View();
         }
-        [HttpGet]
-        public IActionResult ManageGroups()
-        {
-            int userID = GetCurrentSimpleUserID();
-            int binderID = GetCurrentBinderID();
-            Binder thisBinder = _context.Binders.Where(x => x.BinderId == binderID).FirstOrDefault();
-
-            List<TextGroup> textGroups = new List<TextGroup>();
-            List<TextGroupCount> textGroupCounts = new List<TextGroupCount>();
-            try
-            {
-                textGroups = _context.TextGroups.Where(x => x.OwnerId == userID
-                                                         && x.BinderId == binderID).ToList();
-                foreach (var group in textGroups)
-                {
-                    textGroupCounts.Add(new TextGroupCount{
-                        GroupTitle = group.GroupTitle,
-                        TextGroupId = group.TextGroupId,
-                        OwnerId = group.OwnerId,
-                        Count = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == group.TextGroupId).Count()
-                    }
-                    );
-                }
-            }
-            catch
-            {
-
-            }
-            DisplayBinderTextGroup displayBinderTextGroup = new DisplayBinderTextGroup()
-            {
-                BinderId = thisBinder.BinderId,
-                Name = thisBinder.Name,
-                GroupCount = textGroupCounts
-            };
-            return View(displayBinderTextGroup);
-        }
-        [HttpPost]
         public IActionResult ManageGroups(TextGroup group, string action)
         {
             if (action == "Add")

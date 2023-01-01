@@ -90,12 +90,18 @@
                         <a class="menu-bar-dropdown-item">Add to Group... </a>
                         @foreach (var group in Model.Groups)
                         {
+                            if (!group.Locked)
+                            {
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
+                            }
                         }
                         <a class="menu-bar-dropdown-item">Remove from Group... </a>
                         @foreach (var group in Model.Groups)
                         {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
+                            if (!group.Locked)
+                            {
+                                <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
+                            }
                         }                        
                     }
 

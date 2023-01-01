@@ -1,11 +1,7 @@
 ﻿@{
     ViewData["Title"] = "ListGroups";
 }
-
-@{
-}
-@model List<DisplayTextGroup>
-
+@model List<DisplayTextGroup>;
 
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
@@ -13,29 +9,23 @@
                 Open: @Model.First().Binder.Name - Manage Groups
             </div>
         </div>
-        <div class="table-view-table-container">
-            <table>
+        <table class="table-view-table-container">
+            <tr>
+                <th id="Name"><a>Group Name</a></th>
+                <th id="TextCount"><a>Texts In Group</a></th>
+                <th id="Locked"><a>Is Locked</a></th>
+                <th id="Notes"><a>Notes</a></th>
+            </tr>
+            
+            @foreach (var group in Model)
+            {
                 <tr>
-                    <th id="Name"><a>Group Name</a></th>
-                    <th id="TextCount"><a>Texts In Group</a></th>
-                    <th id="Locked"><a>Is Locked</a></th>
-                    <th id="Notes"><a>Notes</a></th>
+                    <td align="right"><a href="/RhymeBinder/EditGroup?groupID=@group.TextGroupId">@group.GroupTitle</a></td>
+                    <td align="center">@group.HeaderCount</td>
+                    @if(group.Locked == true){<td align="center">Locked</td>} else {<td></td>};
+                    <td>@group.Notes</td>
                 </tr>
-
-                @foreach (var group in Model)
-                {
-                    <tr>
-                        <td><a href="/RhymeBinder/EditGroup?groupID=@group.TextGroupId">@group.GroupTitle</a></td>
-                        <td>@group.HeaderCount</td>
-                        @if(group.Locked == true){<td>Locked</td>} else {<td></td>};
-                        <td>@group.Notes</td>
-
-                    </tr>
-                 
-                }
-
-            </table>
-        </div>
+             
+            }
+        </table>
     </div>
-
-
