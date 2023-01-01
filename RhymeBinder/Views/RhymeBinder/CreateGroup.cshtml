@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewData["Title"] = "Manage Binder: Groups: Create Group:";
+}
+@model int
+<div class="menu-bar-main">
+    <div class="menu-bar-title">
+        Manage Binder: Groups: Create Group
+    </div>
+</div>
+
+
+<form action="CreateGroup" method="post" class="form-wrapper">
+     <input type="hidden" name="BinderId" value="@Model"/>
+
+    <div class="form-item-title">
+        Name:
+    </div>
+    <div class="form-item-large-entry">
+        <textarea name="GroupTitle" class="form-single-line-box"></textarea> 
+    </div>
+
+    <div class="form-item-title">
+        Notes:
+    </div>
+    <div class="form-item-large-entry">
+        <textarea name="Notes" class="form-multi-line-box"></textarea> 
+    </div>
+
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Submit Changes"/>
+    </div>
+
+</form>
+

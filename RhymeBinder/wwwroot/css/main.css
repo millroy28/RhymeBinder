@@ -695,3 +695,31 @@ text-decoration-line: underline;
 .form-divider{
     grid-column: 1/6;
 }
+.form-single-line-box {
+    text-align: left;
+    font-family: Courier New, Courier, monospace;
+    width: 100%;
+    height: 2rem;
+    box-sizing: border-box;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+    resize: none;
+    padding-top: 8px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+.form-multi-line-box {
+    text-align: left;
+    font-family: Courier New, Courier, monospace;
+    width: 100%;
+    height: 6rem;
+    box-sizing: border-box;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+    resize: none;
+    padding-top: 8px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}

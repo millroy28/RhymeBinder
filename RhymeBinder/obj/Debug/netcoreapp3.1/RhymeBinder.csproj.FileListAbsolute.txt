@@ -108,3 +108,4 @@ C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razo
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\CreateBinder.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\EditBinder.cshtml.g.cs
 C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\ListGroups.cshtml.g.cs
+C:\Users\millr\source\repos\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\CreateGroup.cshtml.g.cs

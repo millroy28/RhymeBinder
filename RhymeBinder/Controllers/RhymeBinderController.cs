@@ -400,6 +400,8 @@ namespace RhymeBinder.Controllers
                     break;
                 case "ManageGroups":
                     return RedirectToAction("ListGroups");
+                case "CreateGroup":
+                    return Redirect($"/RhymeBinder/CreateGroup?binderID={savedView.View.BinderId}");
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
@@ -554,7 +556,27 @@ namespace RhymeBinder.Controllers
             }
             return RedirectToAction("ListGroups");
         }
-       
+
+        [HttpGet]
+        public IActionResult CreateGroup(int binderID)
+        {
+            return View(binderID);
+        }
+        [HttpPost] 
+        public IActionResult CreateGroup(TextGroup newGroup)
+        {
+            newGroup.OwnerId = GetCurrentSimpleUserID();
+            newGroup.Hidden = false;
+            newGroup.Locked = false;
+
+            if (ModelState.IsValid)
+            {
+                _context.TextGroups.Add(newGroup);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("ListGroups");
+        }
         public IActionResult ChangeListDisplay (string change)
         {   //NOT SURE THIS IS BEING USED --- DROP?
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
