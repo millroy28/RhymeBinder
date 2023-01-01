@@ -17,9 +17,9 @@ namespace RhymeBinder.Models
         public string GroupTitle { get; set; }
         public int? OwnerId { get; set; }
         public string Notes { get; set; }
-        public bool? Locked { get; set; }
-        public bool? Hidden { get; set; }
-        public int? BinderId { get; set; }
+        public bool Locked { get; set; }
+        public bool Hidden { get; set; }
+        public int BinderId { get; set; }
 
         public virtual Binder Binder { get; set; }
         public virtual SimpleUser Owner { get; set; }
