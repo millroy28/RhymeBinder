@@ -67,7 +67,9 @@ LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Hidden] BIT,
 [Name] VARCHAR(1000),
 [Description] VARCHAR(MAX),
-[Selected] BIT
+[Selected] BIT,
+LastAccessed DATETIME,
+LastAccessedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
 
 CREATE TABLE PublicationRatings(

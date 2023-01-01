@@ -630,3 +630,68 @@ text-decoration-line: underline;
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
 }
+
+/*``[TextStyles]*/
+.label-title {
+    font: bold;
+}
+.label-descriptor{
+    font: italic;
+}
+.label-warning {
+    color: red;
+    font: small-caps;
+}
+
+/*``[FormContainers]*/
+.form-wrapper {
+    display: grid;
+    grid-gap: 15px 5px;
+    /* grid-template-columns: 10% 50% 30% 15% 5%; */
+    grid-template-rows: auto;
+    width: 80%;
+    box-sizing: border-box;
+    align-items: center;
+}
+.form-item-title {
+    grid-column: 1/2;
+    font-size: small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 700;
+    justify-self: flex-end;
+}
+.form-item-descriptor-one {
+    grid-column: 2/3;
+    font-size: small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    justify-self: safe center;
+}
+.form-item-descriptor-two {
+    grid-column: 3/4;
+    font-size: small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.form-item-descriptor-large {
+    grid-column: 2/4;
+    font-size: small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.form-item-large-entry {
+    grid-column: 2/5;
+}
+.form-item-verify-prompt {
+    grid-column: 4/5;
+    font-size: small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-decoration: underline;
+    justify-self: flex-end;
+}
+.form-item-right-entry{
+    grid-column: 4/5;
+}
+.form-item-far-right-entry{
+    grid-column: 5/6;
+}
+.form-divider{
+    grid-column: 1/6;
+}

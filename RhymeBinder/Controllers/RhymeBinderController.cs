@@ -317,11 +317,12 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult ListTexts(int viewID)
         {
+            int userID = GetCurrentSimpleUserID();
             SavedView thisView = _context.SavedViews.Where(x => x.SavedViewId == viewID).First();
             List<TextGroup> groups = GetTextGroups();
             DisplayBinder binder = GetDisplayBinder();
             List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
-            List<Binder> userBinders = _context.Binders.Where(x => x.UserId == GetCurrentSimpleUserID() 
+            List<Binder> userBinders = _context.Binders.Where(x => x.UserId == userID 
                                                                 && x.Hidden == false
                                                                 && x.BinderId != binder.BinderId).ToList();
             if(theseTextHeaders.Count == 0)
@@ -339,6 +340,9 @@ namespace RhymeBinder.Controllers
                 Binder = binder,
                 UserBinders = userBinders
             };
+
+            //Update last accessed field in current binder
+            UpdateBinderLastAccessed(binder.BinderId, userID);
             return View(theseHeadersAndSavedView);
         }
         [HttpPost]
@@ -395,7 +399,7 @@ namespace RhymeBinder.Controllers
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
                 case "ManageGroups":
-                    return RedirectToAction("ManageGroups");
+                    return RedirectToAction("ListGroups");
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
                     break;
@@ -480,14 +484,77 @@ namespace RhymeBinder.Controllers
             return Redirect($"/RhymeBinder/EditText?textHeaderID={newTextHeader.TextHeaderId}");
         }
         //-------GROUP:
-        public IActionResult ScrapStack(int userID)
+        public IActionResult ListGroups()
         {
-            SavedView thisView = _context.SavedViews.Where(x => x.UserId == userID && x.SetValue == "deleted").First();
-            
-            List<DisplayTextHeader> theseTextHeaders = GetTextHeaders(thisView.SavedViewId);
+            int userID = GetCurrentSimpleUserID();
+            int currentBinderID = GetCurrentBinderID();
+            List<TextGroup> theseGroups = _context.TextGroups.Where(x => x.BinderId == currentBinderID).ToList();
+            List<DisplayTextGroup> displayTextGroups = new List<DisplayTextGroup>();
 
-            return View(theseTextHeaders);
+            foreach(var group in theseGroups)
+            {
+                displayTextGroups.Add(new DisplayTextGroup()
+                {
+                    TextGroupId = group.TextGroupId,
+                    BinderId = group.BinderId,
+                    Binder = group.Binder,
+                    GroupTitle = group.GroupTitle,
+                    Notes = group.Notes,
+                    Locked = group.Locked,
+                    HeaderCount = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == group.TextGroupId).Count()
+                }) ;
+            }
+
+            return View(displayTextGroups);
         }
+        [HttpGet]
+        public IActionResult EditGroup(int groupID)
+        {
+            TextGroup groupToEdit = _context.TextGroups.Where(x => x.TextGroupId == groupID).First();
+            return View(groupToEdit);
+        }
+
+        [HttpPost]
+        public IActionResult EditGroup(TextGroup editedGroup, string action, string verifyDeleteGroup, string verifyDeleteAll, string verifyClear)
+        {
+            TextGroup groupToEdit = _context.TextGroups.Where(x => x.TextGroupId == editedGroup.TextGroupId).First();
+            List<LnkTextHeadersTextGroup> groupHeaderLinks = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == editedGroup.TextGroupId).ToList();
+            List<TextHeader> textHeaders = GetTextHeadersInGroup(groupToEdit.TextGroupId);
+            
+            switch (action)
+            {
+                case "Submit Changes":
+                    groupToEdit.Locked = (editedGroup.Locked == null) ? false : editedGroup.Locked;
+                    groupToEdit.GroupTitle = editedGroup.GroupTitle;
+                    groupToEdit.Notes = editedGroup.Notes;
+
+                    if (ModelState.IsValid)
+                    {
+                        _context.Entry(groupToEdit).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                        _context.Update(groupToEdit);
+                        _context.SaveChanges();
+                    }
+                    break;
+                case "Clear":
+                    if (verifyClear != null)
+                    {                        
+                        _context.LnkTextHeadersTextGroups.RemoveRange(groupHeaderLinks);
+                        _context.SaveChanges();
+                    }
+                    break;
+                case "Delete Group":
+                    if (verifyDeleteGroup != null)
+                    {
+                        _context.LnkTextHeadersTextGroups.RemoveRange(groupHeaderLinks);
+                        _context.TextGroups.Remove(groupToEdit);
+                        _context.SaveChanges();
+                    }
+                    break;
+
+            }
+            return RedirectToAction("ListGroups");
+        }
+       
         public IActionResult ChangeListDisplay (string change)
         {   //NOT SURE THIS IS BEING USED --- DROP?
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -1010,6 +1077,24 @@ namespace RhymeBinder.Controllers
             }
             return;
         }
+        public void UpdateBinderLastAccessed(int binderId, int userId)
+        {
+            Binder thisBinder = _context.Binders.Where(x => x.BinderId == binderId).FirstOrDefault();
+            thisBinder.LastAccessed = DateTime.Now;
+            thisBinder.LastAccessedBy = userId;
+            if (ModelState.IsValid)
+            {
+                _context.Entry(thisBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisBinder);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return;  //!!insert error handlin?
+            }
+            return;
+
+        }
         public void UpdateView (SavedView viewToUpdate, DisplayTextHeadersAndSavedView savedView)
         {
 
@@ -1055,16 +1140,15 @@ namespace RhymeBinder.Controllers
                     {
                         _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                         _context.Update(thisTextHeader);
-                        _context.SaveChanges();
+                  
                     }
                 
                 }
             }
 
-            //Save changes
-           
             return;
         }
+       
         public void AddRemoveHeadersFromGroups (DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
         {   //Get a list of all the headerIDs that we're going to update:
             List<int> headerIDsToUpdate = new List<int>();
@@ -1136,6 +1220,7 @@ namespace RhymeBinder.Controllers
                     }
                 }
             }
+
             return;
         }
         public void ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
@@ -1289,7 +1374,7 @@ namespace RhymeBinder.Controllers
         {
             int userID = GetCurrentSimpleUserID();
 
-            List<Binder> binders = _context.Binders.Where(x => x.UserId == userID && x.Hidden == false).ToList();
+            List<Binder> binders = _context.Binders.Where(x => x.UserId == userID && x.Hidden == false).OrderByDescending(x => x.LastAccessed).ToList();
            
             List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userID 
                                                                         && x.Top == true 
@@ -1469,10 +1554,7 @@ namespace RhymeBinder.Controllers
                     TextGroup thisGroup = _context.TextGroups.Where(x => x.GroupTitle == thisView.SetValue).FirstOrDefault();
                     theseTextHeaders = GetTextHeadersInGroup(thisGroup.TextGroupId);
                     break;
-                    //>> make list of groups in drop down for view
-                    //and add view for that and add code that 
-                    //and add code that adds view for the group when a group is created
-                    //and delete when the group is deleted
+
             }
                        
             //make a list of DisplayTextHeaders and populate the written names/statuses

@@ -25,6 +25,9 @@ namespace RhymeBinder.Models
         public string Description { get; set; }
         public bool? Selected { get; set; }
 
+        public DateTime? LastAccessed { get; set; }
+        public int? LastAccessedBy { get; set; }
+
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser User { get; set; }
