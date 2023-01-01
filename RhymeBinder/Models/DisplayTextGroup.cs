@@ -7,6 +7,8 @@ namespace RhymeBinder.Models
 {
     public class DisplayTextGroup : TextGroup
     {
-        List<DisplayTextHeader> TextHeaders { get; set; }
+        public int HeaderCount { get; set; }
+
+
     }
 }
