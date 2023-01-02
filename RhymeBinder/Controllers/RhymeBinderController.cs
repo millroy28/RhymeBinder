@@ -759,7 +759,7 @@ namespace RhymeBinder.Controllers
             return View(binder);
         }
         [HttpPost]
-        public IActionResult EditBinder(DisplayBinder editedBinder, string action)
+        public IActionResult EditBinder(DisplayBinder editedBinder, string action, string verifyClear, string verifyDelete, string verifyDeleteAll)
         {
             int userId = GetCurrentSimpleUserID();
 
@@ -780,6 +780,9 @@ namespace RhymeBinder.Controllers
 
                 case "Clear":
                     {
+                        if(verifyClear != null)
+                        {
+
                         Binder loosePagesBinder = _context.Binders.Where(x => x.UserId == userId
                                                                        && x.Name == "Loose Pages").FirstOrDefault();
 
@@ -805,10 +808,14 @@ namespace RhymeBinder.Controllers
                         
                         _context.Entry(binderGroups).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
                         _context.Update(binderGroups);
+                        }
                     }
                         break;
                 case "Delete":
                     {
+                        if(verifyDelete != null)
+                        {
+
                         Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
                         binderToUpdate.Hidden = true;
 
@@ -843,10 +850,14 @@ namespace RhymeBinder.Controllers
                         _context.Entry(binderHeaders).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
                         _context.Update(binderHeaders);
 
+                        }
                     }
                     break;
                 case "DeleteAll":
                     {
+                        if(verifyDeleteAll != null)
+                        {
+
                         Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
                         binderToUpdate.Hidden = true;
 
@@ -876,6 +887,7 @@ namespace RhymeBinder.Controllers
 
                         _context.Entry(binderHeaders).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
                         _context.Update(binderHeaders);
+                        }
                     }
                     break;
                 default:

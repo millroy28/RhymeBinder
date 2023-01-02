@@ -8,34 +8,102 @@
     </div>
 </div>
 
-<h1>@Model.Name:</h1>
-<ul>
-<li>Created: @Model.Created</li>
-<li>Created By: @Model.CreatedBy</li>
-<li>Last Modified: @Model.LastModified</li>
-<li>Last Modified By: @Model.LastModifiedBy</li>
-<li>Number of Pages: @Model.PageCount </li>
-<li>Number of Groups: @Model.GroupCount</li>
-</ul>
-<form action="EditBinder" method="post">
-    Binder Name:
-    <input type="text" name="Name" placeholder="@Model.Name" />
-    Description:
-    <input type="text" name="Desription" placeholder="@Model.Description"/>
+<form action="EditBinder" method="post" class="form-wrapper">
     <input type="hidden" name="BinderId" value="@Model.BinderId" />
-    <input type="submit" name="action" class="button" value="Edit" id="bttn_sub" />
-    <hr />
-    <p>
-    Clear Binder: <i>This will remove all groups and pages from the binder. Pages will appear in 'Loose Pages' Binder.</i>
-    <input type="submit" name="action" class="button" value="Clear" id="bttn_sub" />
-    </p>
-    <p>
-    Delete Binder: <i>This will remove this binder. Pages will appear in 'Loose Pages' Binder.</i>
-    <input type="submit" name="action" class="button" value="Delete" id="bttn_sub" />
-    </p>
-    <p>
-    Delete Binder and all Contents: <i>This will remove this binder AND delete all pages!</i>
-    <input type="submit" name="action" class="button" value="DeleteAll" id="bttn_sub" />
-    </p>
+    
+    <div class="form-item-title">
+        Binder Name:
+    </div>
+    <div class="form-item-large-entry">
+        <textarea name="Name" class="form-single-line-box">@Model.Name</textarea>
+    </div>
+
+    <div class="form-item-title">
+        Description:
+    </div>
+    <div class="form-item-large-entry">
+        <textarea name="Description" class="form-multi-line-box">@Model.Description</textarea>
+    </div>
+
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Submit Changes"/>
+    </div>
+
+    <div class="form-divider"><hr /></div>
+
+    <div class="form-item-title">
+        Created:
+    </div>
+    <div class="form-item-descriptor-one">
+        @Model.Created
+    </div>
+    <div class="form-item-title">
+        Last Modified:
+    </div>
+    <div class="form-item-descriptor-one">
+        @Model.LastModified
+    </div>
+    <div class="form-item-title">
+        Number of Texts:
+    </div>
+    <div class="form-item-descriptor-one">
+        @Model.PageCount
+    </div>
+    <div class="form-item-title">
+        Number of Groups:
+    </div>
+    <div class="form-item-descriptor-one">
+        @Model.GroupCount
+    </div>
+
+    <div class="form-divider"><hr /></div>
+
+    <div class="form-item-title">
+        Clear Binder:
+    </div>
+    <div class="form-item-descriptor-one">
+        Remove all groups and pages from the binder. Pages will appear in 'Loose Pages' Binder.
+    </div>
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Clear" />
+    </div>
+    <div class="form-item-verify-prompt">
+        Are you sure?
+    </div>
+    <div class="form-item-far-right-entry">
+        <input type="checkbox" name="verifyClear" />
+    </div>
+
+    <div class="form-item-title">
+        Delete Binder:
+    </div>
+    <div class="form-item-descriptor-one">
+        Delete this binder. Pages will appear in 'Loose Pages' Binder.
+    </div>
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Delete" />
+    </div>
+    <div class="form-item-verify-prompt">
+        Are you sure?
+    </div>
+    <div class="form-item-far-right-entry">
+        <input type="checkbox" name="verifyDelete" />
+    </div>
+
+    <div class="form-item-title">
+        Delete Binder and Texts:
+    </div>
+    <div class="form-item-descriptor-one">
+        Delete this binder as well as all texts within.
+    </div>
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="DeleteAll" />
+    </div>
+    <div class="form-item-verify-prompt">
+        Are you sure?
+    </div>
+    <div class="form-item-far-right-entry">
+        <input type="checkbox" name="verifyDeleteAll" />
+    </div>
 
 </form>

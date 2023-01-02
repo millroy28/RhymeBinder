@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "ListGroups";
 }
+@{
+}
 @model List<DisplayTextGroup>
 
 
@@ -8,7 +10,7 @@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
-                Open: @Model.First().Binder.Name - Manage Groups
+                Binder: @Model.First().Binder.Name - Manage Groups
             </div>
 
             <div class="menu-bar-dropdown">
@@ -20,12 +22,14 @@
                 </div>
             </div>
         </div>
-        <table class="table-view-table-container">
+
+        <div class="table-view-table-container">
+            <table>
             <tr>
-                <th id="Name"><a>Group Name</a></th>
-                <th id="TextCount"><a>Texts In Group</a></th>
-                <th id="Locked"><a>Is Locked</a></th>
-                <th id="Notes"><a>Notes</a></th>
+                <th id="Name" align="center"><a>Group Name</a></th>
+                <th id="TextCount" align="center"><a>Texts In Group</a></th>
+                <th id="Locked" align="center"><a>Is Locked</a></th>
+                <th id="Notes" align="center"><a>Notes</a></th>
             </tr>
             
             @foreach (var group in Model)
@@ -38,5 +42,6 @@
                 </tr>
              
             }
-        </table>
+            </table>
+        </div>
     </div>
