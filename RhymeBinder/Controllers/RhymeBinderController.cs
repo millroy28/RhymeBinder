@@ -765,7 +765,7 @@ namespace RhymeBinder.Controllers
 
             switch (action)
             {
-                case "Edit":
+                case "Submit Changes":
                     {
                         Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
 
@@ -783,31 +783,29 @@ namespace RhymeBinder.Controllers
                         if(verifyClear != null)
                         {
 
-                        Binder loosePagesBinder = _context.Binders.Where(x => x.UserId == userId
-                                                                       && x.Name == "Loose Pages").FirstOrDefault();
+                            Binder loosePagesBinder = _context.Binders.Where(x => x.UserId == userId
+                                                                           && x.Name == "Loose Pages").FirstOrDefault();
 
-                        List<TextHeader> binderHeaders = _context.TextHeaders.Where(x => x.BinderId == editedBinder.BinderId).ToList();
-                        foreach (var header in binderHeaders)
-                        {
-                            header.BinderId = loosePagesBinder.BinderId;
-                        }
-                        if (binderHeaders.Count > 0)
-                        {
-                            loosePagesBinder.Hidden = false;
-                        }
-                        _context.Entry(binderHeaders).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderHeaders);
-                        _context.Entry(loosePagesBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(loosePagesBinder);
+                            List<TextHeader> binderHeaders = _context.TextHeaders.Where(x => x.BinderId == editedBinder.BinderId).ToList();
+                            foreach (var header in binderHeaders)
+                            {
+                                header.BinderId = loosePagesBinder.BinderId;
+                            }
+                            if (binderHeaders.Count > 0)
+                            {
+                                loosePagesBinder.Hidden = false;
+                            }
+                            _context.TextHeaders.UpdateRange(binderHeaders);
 
-                        List<TextGroup> binderGroups = _context.TextGroups.Where(x => x.BinderId == editedBinder.BinderId).ToList();
-                        foreach (var group in binderGroups)
-                        {
-                            group.BinderId = loosePagesBinder.BinderId;
-                        }
-                        
-                        _context.Entry(binderGroups).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderGroups);
+                            _context.Entry(loosePagesBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                            _context.Update(loosePagesBinder);
+
+                            List<TextGroup> binderGroups = _context.TextGroups.Where(x => x.BinderId == editedBinder.BinderId).ToList();
+                            foreach (var group in binderGroups)
+                            {
+                                group.BinderId = loosePagesBinder.BinderId;
+                            }
+                            _context.TextGroups.UpdateRange(binderGroups);
                         }
                     }
                         break;
@@ -816,40 +814,38 @@ namespace RhymeBinder.Controllers
                         if(verifyDelete != null)
                         {
 
-                        Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
-                        binderToUpdate.Hidden = true;
+                            Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
+                            binderToUpdate.Hidden = true;
 
-                        Binder loosePagesBinder = _context.Binders.Where(x => x.UserId == userId
-                                                                       && x.Name == "Loose Pages").FirstOrDefault();
+                            Binder loosePagesBinder = _context.Binders.Where(x => x.UserId == userId
+                                                                           && x.Name == "Loose Pages").FirstOrDefault();
 
 
-                        List<TextHeader> binderHeaders = _context.TextHeaders.Where(x => x.BinderId == editedBinder.BinderId).ToList();
-                        foreach (var header in binderHeaders)
-                        {
-                            header.BinderId = loosePagesBinder.BinderId;
-                        }
-                        if (binderHeaders.Count > 0)
-                        {
-                            loosePagesBinder.Hidden = false;
-                        }
+                            List<TextHeader> binderHeaders = _context.TextHeaders.Where(x => x.BinderId == editedBinder.BinderId).ToList();
+                            foreach (var header in binderHeaders)
+                            {
+                                header.BinderId = loosePagesBinder.BinderId;
+                            }
+                            if (binderHeaders.Count > 0)
+                            {
+                                loosePagesBinder.Hidden = false;
+                            }
 
-                        List<TextGroup> binderGroups = _context.TextGroups.Where(x => x.BinderId == editedBinder.BinderId).ToList();
-                        foreach (var group in binderGroups)
-                        {
-                            group.BinderId = loosePagesBinder.BinderId;
-                        }
-                        _context.Entry(loosePagesBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(loosePagesBinder);
+                            List<TextGroup> binderGroups = _context.TextGroups.Where(x => x.BinderId == editedBinder.BinderId).ToList();
+                            foreach (var group in binderGroups)
+                            {
+                                group.BinderId = loosePagesBinder.BinderId;
+                            }
 
-                        _context.Entry(binderGroups).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderGroups);
+                            _context.Entry(loosePagesBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                            _context.Update(loosePagesBinder);
 
-                        _context.Entry(binderToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderToUpdate);
+                            _context.TextGroups.UpdateRange(binderGroups);
 
-                        _context.Entry(binderHeaders).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderHeaders);
+                            _context.Entry(binderToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                            _context.Update(binderToUpdate);
 
+                            _context.TextHeaders.UpdateRange(binderHeaders);
                         }
                     }
                     break;
@@ -857,36 +853,32 @@ namespace RhymeBinder.Controllers
                     {
                         if(verifyDeleteAll != null)
                         {
+                            Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
+                            binderToUpdate.Hidden = true;
 
-                        Binder binderToUpdate = _context.Binders.Where(x => x.BinderId == editedBinder.BinderId).FirstOrDefault();
-                        binderToUpdate.Hidden = true;
-
-                        Binder trashBinder = _context.Binders.Where(x => x.UserId == userId
-                                                                       && x.Name == "Trash").FirstOrDefault();
-
-
-                        List<TextHeader> binderHeaders = _context.TextHeaders.Where(x => x.BinderId == editedBinder.BinderId).ToList();
-                        foreach (var header in binderHeaders)
-                        {
-                            header.Deleted = true;
-                            header.BinderId = trashBinder.BinderId;
-                        }
-
-                        List<TextGroup> binderGroups = _context.TextGroups.Where(x => x.BinderId == editedBinder.BinderId).ToList();
-                        foreach (var group in binderGroups)
-                        {
-                            group.BinderId = trashBinder.BinderId;
-                        }
-
-                        _context.Entry(binderGroups).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderGroups);
+                            Binder trashBinder = _context.Binders.Where(x => x.UserId == userId
+                                                                           && x.Name == "Trash").FirstOrDefault();
 
 
-                        _context.Entry(binderToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderToUpdate);
+                            List<TextHeader> binderHeaders = _context.TextHeaders.Where(x => x.BinderId == editedBinder.BinderId).ToList();
+                            foreach (var header in binderHeaders)
+                            {
+                                header.Deleted = true;
+                                header.BinderId = trashBinder.BinderId;
+                            }
 
-                        _context.Entry(binderHeaders).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                        _context.Update(binderHeaders);
+                            List<TextGroup> binderGroups = _context.TextGroups.Where(x => x.BinderId == editedBinder.BinderId).ToList();
+                            foreach (var group in binderGroups)
+                            {
+                                group.BinderId = trashBinder.BinderId;
+                            }
+
+                            _context.TextGroups.UpdateRange(binderGroups);
+
+                            _context.Entry(binderToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                            _context.Update(binderToUpdate);
+
+                            _context.TextHeaders.UpdateRange(binderHeaders);
                         }
                     }
                     break;
