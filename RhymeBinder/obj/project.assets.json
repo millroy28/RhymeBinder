@@ -5780,11 +5780,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\millr\\source\\repos\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
+      "projectUniqueName": "C:\\Users\\millr\\source\\repos\\RhymeBinder_CleanBuild\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
       "projectName": "RhymeBinder",
-      "projectPath": "C:\\Users\\millr\\source\\repos\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
+      "projectPath": "C:\\Users\\millr\\source\\repos\\RhymeBinder_CleanBuild\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
       "packagesPath": "C:\\Users\\millr\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\millr\\source\\repos\\RhymeBinder\\RhymeBinder\\obj\\",
+      "outputPath": "C:\\Users\\millr\\source\\repos\\RhymeBinder_CleanBuild\\RhymeBinder\\RhymeBinder\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\millr\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -65,14 +65,7 @@ namespace RhymeBinder.Controllers
             return RedirectToAction("Index");
         }
         //-------TEXT:
-        [HttpGet]
         public IActionResult StartNewText()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult StartNewText(string title)
         {
             string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             SimpleUser thisUser = _context.SimpleUsers.Where(x => x.AspNetUserId == aspUserID).First();
@@ -95,8 +88,8 @@ namespace RhymeBinder.Controllers
             //create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             int binderId = GetCurrentBinderID();
             TextHeader newTextHeader = new TextHeader();
-            
-            newTextHeader.Title = title;
+
+            newTextHeader.Title = DateTime.Now.ToString();
             newTextHeader.Created = DateTime.Now;
             newTextHeader.CreatedBy = thisUser.UserId;
             newTextHeader.LastModified = DateTime.Now;

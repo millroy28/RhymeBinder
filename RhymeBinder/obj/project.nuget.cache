@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pJ9R77LpIrH07ELT/Gn/wvgVhKwkW/UPo0qJFzACFTPA4ZvXtMyDV11XdCsJHz7FhtnZDxRMEGFLLM4uMAfj+A==",
+  "dgSpecHash": "S4lIzKotigWi0vFSM61LDtZ++FgPim0iPEEJBK1W3REE387SWkwENndSd/3d0dJgCxs3PpaIRZHLJhVHjdc23Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\millr\\source\\repos\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
+  "projectFilePath": "C:\\Users\\millr\\source\\repos\\RhymeBinder_CleanBuild\\RhymeBinder\\RhymeBinder\\RhymeBinder.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\millr\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\millr\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\3.1.18\\microsoft.aspnetcore.cryptography.internal.3.1.18.nupkg.sha512",
