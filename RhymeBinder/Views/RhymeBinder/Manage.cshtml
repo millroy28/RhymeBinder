@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Manage Binder";
 }
-
+@model int
 <div class="menu-bar-main">
     <div class="menu-bar-title">
         Manage Binder:
@@ -11,7 +11,7 @@
 
     <p>To do: Build out list of menus </p>
 <ul>
-    <li>Import files</li>
+    <li><a href="/FileImport/Import?userID=@Model">Import files</a></li>
 </ul>    
 
     
