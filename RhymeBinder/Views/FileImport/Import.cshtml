@@ -13,7 +13,9 @@
     
 <form enctype="multipart/form-data" method="post" class="form-wrapper">
     <input type="hidden" name="UserId" value="@Model.UserId"/>
-    
+    <input type="hidden" name="Binders" value="@Model.Binders"/>
+    <input type="hidden" name="Results" value="@Model.Results"/>
+
     <div class="form-item-title">
         Import Files -
     </div>
@@ -62,15 +64,39 @@
     </div>
     
     <div class="form-item-title">
-        Import Selected Files
+        Import Selected Files:
     </div>
     <div class="form-item-descriptor-two">
         <input asp-page-handler="Upload" class="btn" type="submit" value="Upload">
     </div>
 
+@if(Model.Results.Count() > 0)
+{
+    <div class="form-divider"><hr /></div>
+    
+    <div class="form-item-title">
+        Results:
+    </div>
+    <div class="form-item-large-entry">
+        <table>
+            <tr>
+                <th>File</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Failure Reason</th>
+            </tr>
+            @foreach(var result in @Model.Results){
+                <tr>
+                    <td>@result.FileName</td>
+                    <td>@result.FileType</td>
+                    <td>@result.ImportStatus</td>
+                    <td>@result.FailureMessage</td>
+                </tr>
+            }
+        </table>
+    </div>
 
-
+}
 
 </form>
-
 

@@ -24,15 +24,36 @@ namespace RhymeBinder.Controllers
             DisplayInputForm displayInputForm = new DisplayInputForm()
             {
                 UserId = userId,
-                Binders = _context.Binders.Where(x => x.UserId == userId).ToList()
+                Binders = _context.Binders.Where(x => x.UserId == userId).ToList(),
+                Results = new List<DisplayFileImportResult>()
+
             };
             
             return View(displayInputForm);
         }
         [HttpPost]
-        public async Task<IActionResult> Import(ImportEntry import)
+        public async Task<IActionResult> Import(DisplayInputForm import)
         {
             var files = HttpContext.Request.Form.Files;
+
+            List<DisplayFileImportResult> results = new List<DisplayFileImportResult>();
+
+            foreach (var file in files)
+            {
+                DisplayFileImportResult thisResult = new DisplayFileImportResult()
+                {
+                    FileName = file.FileName,
+                    FileType = file.ContentType,
+                    ImportStatus = "Failed",
+                    FailureMessage = "No one coded this part yet so nothing happened!"
+                };
+                results.Add(thisResult);
+            };
+
+
+
+            import.Results = results;
+
 
             //using (var memoryStream = new MemoryStream())
             //{
@@ -55,7 +76,7 @@ namespace RhymeBinder.Controllers
             //        ModelState.AddModelError("File", "The file is too large.");
             //    }
             //}
-            return View();
+            return View(import);
         }
     }
 }

@@ -8,5 +8,6 @@ namespace RhymeBinder.Models
         public int UserId { get; set; }
         public List<Binder> Binders { get; set;}
         public ImportEntry ImportEntry { get; set; }
+        public List<DisplayFileImportResult> Results { get; set; }
     }
 }
