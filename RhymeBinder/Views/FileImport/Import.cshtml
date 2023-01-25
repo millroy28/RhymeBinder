@@ -12,7 +12,7 @@
 
     
 <form enctype="multipart/form-data" method="post" class="form-wrapper">
-    <input type="hidden" name="UserId" value="@Model.UserId"/>
+    <input type="hidden" name="ImportEntry.UserId" value="@Model.UserId"/>
     <input type="hidden" name="Binders" value="@Model.Binders"/>
     <input type="hidden" name="Results" value="@Model.Results"/>
 
@@ -34,7 +34,7 @@
         Select Existing Binder:
     </div>
     <div class="form-item-descriptor-one">
-        <select name="BinderId" >
+        <select name="ImportEntry.BinderId" >
                 @foreach (var binder in Model.Binders)
                 {
                     <option value="@binder.BinderId">@binder.Name</option>
@@ -46,19 +46,19 @@
         Create New Binder:
     </div>
     <div class="form-item-descriptor-one" >
-        Create New:<input type="checkbox" name="CreateNewBinderForImport" />
+        Create New:<input type="checkbox" name="ImportEntry.CreateNewBinderForImport" />
     </div>
     <div class="form-item-descriptor-two">
-        <textarea name="NewBinderName" class="form-single-line-box">New Import Binder Name</textarea>
+        <textarea name="ImportEntry.NewBinderName" class="form-single-line-box">New Import Binder Name</textarea>
     </div>
     
     <div class="form-item-title">
         Derive Title:
     </div>
     <div class="form-item-large-entry" >
-        <input type="radio" id="filename" name="TitleDerivationMethod" value="filename" checked="checked"/>
+        <input type="radio" id="filename" name="ImportEntry.TitleDerivationMethod" value="filename" checked="checked"/>
         <label for="filename">Set Title To File Name</label>
-        <input type="radio" id="firstline" name="TitleDerivationMethod" value="firstline" />
+        <input type="radio" id="firstline" name="ImportEntry.TitleDerivationMethod" value="firstline" />
         <label for="firstline">Set Title To First Line of File</label>
 
     </div>
