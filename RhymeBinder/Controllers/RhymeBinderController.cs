@@ -615,7 +615,8 @@ namespace RhymeBinder.Controllers
         }
         public IActionResult Manage()
         {
-            return View();
+            int userId = GetCurrentSimpleUserID();
+            return View(userId);
         }
         public IActionResult ManageGroups(TextGroup group, string action)
         {
