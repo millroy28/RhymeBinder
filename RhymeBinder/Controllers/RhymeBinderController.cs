@@ -435,7 +435,7 @@ namespace RhymeBinder.Controllers
             TextHeader oldTextHeader = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderID).First();
             TextHeader newTextHeader = new TextHeader();
 
-            newTextHeader.Created = DateTime.Now;
+            newTextHeader.Created = oldTextHeader.Created;
             newTextHeader.CreatedBy = thisUser.UserId;
             newTextHeader.LastModified = DateTime.Now;
             newTextHeader.LastModifiedBy = thisUser.UserId;
