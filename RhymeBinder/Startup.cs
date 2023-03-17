@@ -33,6 +33,8 @@ namespace RhymeBinder
 
             services.AddDbContext<RhymeBinderContext>(options => options.UseSqlServer(connection));
 
+            services.AddScoped<ModelHelper>();
+            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));

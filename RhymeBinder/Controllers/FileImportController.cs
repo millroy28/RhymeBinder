@@ -245,7 +245,7 @@ namespace RhymeBinder.Controllers
 
         public TextHeaderBodyPair ConvertPlainTextToHeaderBodyPair(IFormFile file, string titleDerivationMethod)
         {
-            string title = "";            
+            string title = "";
 
             var contents = new StringBuilder();
              using (var reader = new StreamReader(file.OpenReadStream()))
