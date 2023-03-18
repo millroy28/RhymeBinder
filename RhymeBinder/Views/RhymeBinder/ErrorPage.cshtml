@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Whoopsie";
 }
-@model String
+@model Status
 
 <div class="menu-bar-main">
     <div class="menu-bar-title">
@@ -9,7 +9,38 @@
     </div>
 </div>
 
-<p>
-    Something went wrong round about here: 
-    @Model
-</p>
+<div style="padding:30px">
+    <div style="color:red;font-weight:700">
+         Oh noes! :(
+    </div>
+    <div>
+        Something broke right around here:
+    </div>
+</div>
+
+<div class="form-wrapper">
+    <div class="form-divider"><hr /></div>
+    <div class="form-item-title">
+        Message:
+    </div>
+    <div class="form-item-large-entry">
+        @Model.message
+    </div>
+
+    <div class="form-item-title">
+        Record Id:
+    </div>
+    <div class="form-item-large-entry">
+        @Model.recordId
+    </div>
+  
+    <div class="form-item-title">
+        User Id:
+    </div>
+    <div class="form-item-large-entry">
+        @Model.userId
+    </div>
+    <div class="form-divider"><hr /></div>
+</div>
+
+

@@ -13,6 +13,8 @@ namespace RhymeBinder.Controllers
     public class RhymeBinderController : Controller
     {
         public RhymeBinder.Models.ModelHelper _modelHelper;
+        public Status _status { get; set; }
+
         public RhymeBinderController(ModelHelper modelHelper)
         {
             _modelHelper = modelHelper;
@@ -48,7 +50,7 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return Redirect(Url.Action("ErrorPage", status));                
+                return RedirectToAction("ErrorPage", status);
             }
         }
         //-------TEXT:
@@ -63,7 +65,7 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
         }
         [HttpGet]
@@ -82,7 +84,7 @@ namespace RhymeBinder.Controllers
             Status status = _modelHelper.SaveEditedText(editedTextHeaderBodyUserRecord);
             if (!status.success)
             {
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             //Where do we go from here?
             switch (action)
@@ -99,7 +101,7 @@ namespace RhymeBinder.Controllers
                     }
                     else
                     {
-                        return Redirect(Url.Action("ErrorPage", status));
+                        return RedirectToAction("ErrorPage", status);
                     }
                 default:
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
@@ -118,7 +120,7 @@ namespace RhymeBinder.Controllers
                     success = false,
                     message = "Failed to retrieve Active saved view"
                 };
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             };
             return Redirect($"/RhymeBinder/ListTexts?viewID={savedViewId}");
         }
@@ -140,7 +142,7 @@ namespace RhymeBinder.Controllers
                     message = "Failed to get list of texts for view",
                     recordId = viewId
                 };
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
         }
         [HttpPost]
@@ -201,7 +203,7 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
         }
 
@@ -217,7 +219,7 @@ namespace RhymeBinder.Controllers
                 {
                     message = "Failed to retrieve Text Groups for display"
                 };
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             return View(displayTextGroups);
         }
@@ -231,7 +233,7 @@ namespace RhymeBinder.Controllers
                 {
                     message = $"Failed to retrieve Text Group Id {groupID}"
                 };
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             return View(groupToEdit);
         }
@@ -262,7 +264,7 @@ namespace RhymeBinder.Controllers
 
             if (!status.success) 
             {
-                return Redirect(Url.Action("ErrorPage", status));
+                 return RedirectToAction("ErrorPage", status);
             }
             else 
             { 
@@ -285,7 +287,7 @@ namespace RhymeBinder.Controllers
 
             if (!status.success)
             {
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             else
             {
@@ -321,7 +323,7 @@ namespace RhymeBinder.Controllers
                     return Redirect($"/RhymeBinder/ListTexts?viewID={viewId}");
                 }
             }
-            return Redirect(Url.Action("ErrorPage", status));
+            return RedirectToAction("ErrorPage", status);
         }
        
         public IActionResult ListBinders()
@@ -334,7 +336,7 @@ namespace RhymeBinder.Controllers
                 {
                     message = "Failed to retrieve Display Binders"
                 };
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             return View(binders);
         }
@@ -348,11 +350,10 @@ namespace RhymeBinder.Controllers
                 {
                     message = $"Failed to retrieve Display Binder {binderID}"
                 };
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             return View(binder);
         }
-        //  ====================progress marker
         [HttpPost]
         public IActionResult EditBinder(DisplayBinder editedBinder, string action, string verifyClear, string verifyDelete, string verifyDeleteAll)
         {
@@ -403,16 +404,15 @@ namespace RhymeBinder.Controllers
             Status status = _modelHelper.OpenBinder(userId, binderId);
             if (!status.success)
             {
-                return Redirect(Url.Action("ErrorPage", status));
+                return RedirectToAction("ErrorPage", status);
             }
             return RedirectToAction("ListTextsOnSessionStart");
         }
-        [HttpPost]
+
         public IActionResult ErrorPage(Status status)
         {
-            string msg = status.message;
-
-            return View(msg);
+            status.userId = GetUserId();
+            return View(status);
         }
 
         public int GetUserId()
