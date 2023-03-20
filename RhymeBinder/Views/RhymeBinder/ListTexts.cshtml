@@ -41,7 +41,7 @@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
-                Open: @Model.Binder.Name - @Model.View.SetValue
+                Open: @Model.Binder.Name - @Model.View.ViewName
             </div>
 
             <div class="menu-bar-dropdown">
@@ -68,13 +68,10 @@
                     {
                         @foreach(var group in Model.Groups)
                         {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.TextGroupId>@group.GroupTitle</a>
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
                         }
                         <a class="menu-bar-dropdown-item" >――――――――</a>
                     }
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_all">All</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_active">Active</a>
-                    <a class="menu-bar-dropdown-item" onclick="grouping_view_form_submit('GroupFilter', 'view_set_value', this.id)" id="set_value_scrapped">Hidden</a>
                     <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
                 </div>
             </div>
@@ -91,7 +88,7 @@
                         <a class="menu-bar-dropdown-item">Add to Group... </a>
                         @foreach (var group in Model.Groups)
                         {
-                            if (!group.Locked)
+                            if (!group.Locked && group.TextGroupId > 0)
                             {
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
                             }
@@ -99,7 +96,7 @@
                         <a class="menu-bar-dropdown-item">Remove from Group... </a>
                         @foreach (var group in Model.Groups)
                         {
-                            if (!group.Locked)
+                            if (!group.Locked && group.TextGroupId > 0)
                             {
                                 <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
                             }
@@ -164,9 +161,7 @@
                         <td name="groups_col">
                             @foreach(var group in text.Groups)
                                 {
-                            <a href="/RhymeBinder/ManageGroup?groupID=@group.TextGroupId">
-                                <span style="padding-right:5px">@group.GroupTitle</span>
-                            </a>
+                                    <a class="menu-bar-dropdown-item"  onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
                                 }
                         </td>
                     </tr>

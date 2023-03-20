@@ -10,6 +10,16 @@
 
 <form action="EditBinder" method="post" class="form-wrapper">
     <input type="hidden" name="BinderId" value="@Model.BinderId" />
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="Created" value="@Model.Created" />
+    <input type="hidden" name="CreatedBy" value="@Model.CreatedBy" />
+    <input type="hidden" name="LastModified" value="@Model.LastModified" />
+    <input type="hidden" name="LastModifiedBy" value="@Model.LastModifiedBy" />
+    <input type="hidden" name="Hidden" value="@Model.Hidden.ToString()" />
+    <input type="hidden" name="Selected" value="@Model.Selected.ToString()" />
+    <input type="hidden" name="LastAccessed" value="@Model.LastAccessed" />
+    <input type="hidden" name="LastAccessedBy" value="@Model.LastAccessedBy" />
+
     
     <div class="form-item-title">
         Binder Name:

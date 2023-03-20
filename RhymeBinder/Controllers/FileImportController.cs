@@ -15,10 +15,12 @@ namespace RhymeBinder.Controllers
     public class FileImportController : Controller
     {
         private readonly RhymeBinderContext _context;
+        public RhymeBinder.Models.ModelHelper _modelHelper;
 
-        public FileImportController(RhymeBinderContext context)
+        public FileImportController(RhymeBinderContext context, ModelHelper modelHelper)
         {
             _context = context;
+            _modelHelper = modelHelper; 
         }
         [HttpGet]
         public IActionResult Import(int userId)
@@ -26,7 +28,7 @@ namespace RhymeBinder.Controllers
             DisplayInputForm displayInputForm = new DisplayInputForm()
             {
                 UserId = userId,
-                Binders = _context.Binders.Where(x => x.UserId == userId).ToList(),
+                Binders = _context.Binders.Where(x => x.UserId == userId && x.Hidden == false).ToList(),
                 Results = new List<DisplayFileImportResult>()
 
             };
@@ -43,7 +45,12 @@ namespace RhymeBinder.Controllers
             // Build new binder or use specified Binder Id
             if (import.ImportEntry.CreateNewBinderForImport == "on")
             {
-                binderId = CreateNewBinder(import.ImportEntry.UserId, import.ImportEntry.NewBinderName);
+                Binder newBinder = new Binder()
+                {
+                    Name = import.ImportEntry.NewBinderName
+                };
+                Status status = _modelHelper.CreateNewBinder(import.ImportEntry.UserId, newBinder);
+                binderId = status.recordId;               
             };
 
             // Begin attempting import
@@ -149,100 +156,6 @@ namespace RhymeBinder.Controllers
             return success;
         }
         
-        public int CreateNewBinder(int userId, string binderName)
-        {   //TO DO encapsulate this in a utility method accessable from both controllers to avoid duplication
-            Binder newBinder = new Binder()
-            {
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                CreatedBy = userId,
-                UserId = userId,
-                LastModifiedBy = userId,
-                Name = binderName,
-                Description = "Created at File Import",
-                Selected = false,
-                Hidden = false
-            };
-            if (ModelState.IsValid)
-            {
-                _context.Binders.Add(newBinder);
-                _context.SaveChanges();
-            }
-
-            SavedView defaultView = new SavedView()
-            {
-                UserId = userId,
-                SetValue = "Active",
-                SortValue = "title",
-                ViewName = "Active - AutoCreated",
-                Descending = false,
-                Default = true,
-                Saved = false,
-                LastView = true,
-                Created = true,
-                CreatedBy = false,
-                LastModified = false,
-                LastModifiedBy = false,
-                VisionNumber = false,
-                RevisionStatus = false,
-                Groups = false,
-                BinderId = newBinder.BinderId,
-
-            };
-
-            SavedView trashView = new SavedView()
-            {
-                UserId = userId,
-                SetValue = "Hidden",
-                SortValue = "title",
-                ViewName = "Hidden - AutoCreated",
-                Descending = false,
-                Default = false,
-                Saved = false,
-                LastView = false,
-                Created = true,
-                CreatedBy = false,
-                LastModified = false,
-                LastModifiedBy = false,
-                VisionNumber = false,
-                RevisionStatus = false,
-                Groups = false,
-                BinderId = newBinder.BinderId
-            };
-
-            SavedView loosePagesView = new SavedView()
-            {
-                UserId = userId,
-                SetValue = "All",
-                SortValue = "title",
-                ViewName = "All - AutoCreated",
-                Descending = false,
-                Default = false,
-                Saved = false,
-                LastView = false,
-                Created = true,
-                CreatedBy = false,
-                LastModified = false,
-                LastModifiedBy = false,
-                VisionNumber = false,
-                RevisionStatus = false,
-                Groups = false,
-                BinderId = newBinder.BinderId
-            };
-
-
-            if (ModelState.IsValid)
-            {
-                _context.SavedViews.Add(defaultView);
-                _context.SavedViews.Add(trashView);
-                _context.SavedViews.Add(loosePagesView);
-
-                _context.SaveChanges();
-            }
-
-            return newBinder.BinderId;
-        }
-
         public TextHeaderBodyPair ConvertPlainTextToHeaderBodyPair(IFormFile file, string titleDerivationMethod)
         {
             string title = "";

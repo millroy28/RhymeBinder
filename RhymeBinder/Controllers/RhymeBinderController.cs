@@ -13,8 +13,6 @@ namespace RhymeBinder.Controllers
     public class RhymeBinderController : Controller
     {
         public RhymeBinder.Models.ModelHelper _modelHelper;
-        public Status _status { get; set; }
-
         public RhymeBinderController(ModelHelper modelHelper)
         {
             _modelHelper = modelHelper;
@@ -179,7 +177,7 @@ namespace RhymeBinder.Controllers
                     break;
 
                 case "GroupFilter":
-                    status = _modelHelper.SwitchToView(userId, savedView.View.SetValue);
+                    status = _modelHelper.SwitchToViewBySet(userId, groupID.ToString());
                     break;
 
                 case "Transfer":
@@ -241,7 +239,7 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult EditGroup(TextGroup editedGroup, string action, string verifyDeleteGroup, string verifyDeleteAll, string verifyClear)
         {
-            Status status = new Status();
+            Status status = new Status() { success = true };
 
             switch (action)
             {
@@ -252,7 +250,7 @@ namespace RhymeBinder.Controllers
                     if (verifyClear != null)
                     {
                         status = _modelHelper.ClearTextsFromGroup(editedGroup.TextGroupId);
-                    }
+                    }   
                     break;
                 case "Delete Group":
                     if (verifyDeleteGroup != null)
@@ -343,7 +341,8 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult EditBinder(int binderID)
         {
-            DisplayBinder binder = _modelHelper.GetDisplayBinder(binderID);
+            int userId = GetUserId();
+            DisplayBinder binder = _modelHelper.GetDisplayBinder(userId, binderID);
             if (binder.BinderId == -1)
             {
                 Status status = new Status()
@@ -358,12 +357,12 @@ namespace RhymeBinder.Controllers
         public IActionResult EditBinder(DisplayBinder editedBinder, string action, string verifyClear, string verifyDelete, string verifyDeleteAll)
         {
             int userId = GetUserId();
-            Status status = new Status();
+            Status status = new Status() { success = true};
 
             switch (action)
             {
                 case "Submit Changes":
-                    status = _modelHelper.UpdateBinder(editedBinder);
+                    status = _modelHelper.UpdateBinder(userId, editedBinder);
                     break;
                 case "Clear":
                     if(verifyClear != null)
@@ -399,7 +398,6 @@ namespace RhymeBinder.Controllers
         }
         public IActionResult OpenBinder(int binderId)
         {
-
             int userId = GetUserId();
             Status status = _modelHelper.OpenBinder(userId, binderId);
             if (!status.success)
