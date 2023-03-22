@@ -16,7 +16,7 @@ var previous_focus_element;
 var keyup_timer;
 
 function reset_autosave_timer() {
-    autosave_timer = 60; //seconds before autosaving
+    autosave_timer = 10; //seconds before autosaving
 }
 
 function reset_keyup_timer() {

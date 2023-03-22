@@ -96,6 +96,19 @@ header {
     background-color: #c6c9b6;
 }
 
+.navbar-text {
+    text-decoration: none;
+}
+.navbar-item-right a:link {
+    text-decoration: none;
+    color: black;
+}
+.navbar-text a:hover {
+    text-decoration: none;
+    color: black;
+    background-color: #c6c9b6;
+}
+
 .navbar-button {
     float: right;
     display: block;
@@ -122,6 +135,8 @@ header {
         border: 0px;
     }
 
+
+
 /*``[Body]*/
 
 body {
@@ -132,15 +147,18 @@ body {
     background-color: #f4f5ef;
 }
 
+
+
 /*``[Table Pages]*/
 .table-view-wrapper {
     display: grid;
     grid-gap: 0px;
-    grid-template-columns: 2% 96% 2%;
+    grid-template-columns: 1% 98% 1%;
     grid-template-rows: 30px auto;
     width: 100%;
     box-sizing: border-box;
     height: 90vh;
+    background: #eff3d8;
 }
 
 .table-view-table-container {
@@ -149,6 +167,20 @@ body {
     align-self: flex-start;
     font-size: small;
 }
+/*
+
+.table-view-table-container-left {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    background: linear-gradient(90deg, rgba(193,193,193,1) 0%, rgba(215,225,157,1) 35%, rgba(244,245,239,1) 100%);
+}
+.table-view-table-container-right {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+    background: linear-gradient(270deg, rgba(193,193,193,1) 0%, rgba(215,225,157,1) 35%, rgba(244,245,239,1) 100%);
+}
+*/
+
 
 .list-texts-menu-bar-main {
     grid-column: 1 / 4;
@@ -229,6 +261,49 @@ body {
     padding-top: 4px;
     padding-bottom: 4px;
 }
+.menu-bar-title a:link {
+    align-self: center;
+    font-weight: 600;
+    padding-left: 6px;
+    padding-right: 40px;
+    margin-left: 26px;
+    border-left: solid;
+    border-right: solid;
+    border-left-color: black;
+    border-right-color: #464936;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    color: black !important;
+}
+    .menu-bar-title a:visited {
+        align-self: center;
+        font-weight: 600;
+        padding-left: 6px;
+        padding-right: 40px;
+        margin-left: 26px;
+        border-left: solid;
+        border-right: solid;
+        border-left-color: black;
+        border-right-color: #464936;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        color: black !important;
+    }
+    .menu-bar-title a:hover {
+        align-self: center;
+        font-weight: 600;
+        padding-left: 6px;
+        padding-right: 40px;
+        margin-left: 26px;
+        border-left: solid;
+        border-right: solid;
+        border-left-color: black;
+        border-right-color: #464936;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        background-color: #c6c9b6;
+        color: black !important;
+    }
 .menu-bar-item-right-final {
     align-self: flex-start;
     padding-right: 24px;
@@ -492,6 +567,8 @@ th {
     border-bottom-color: #2a4d6f;
     
 }
+/*
+
     th a {
         text-decoration: none;
         color: black;
@@ -503,6 +580,7 @@ th {
         th a:hover {
             text-decoration-line: underline;
         }
+*/
 tr {
     border-bottom-style: solid;
     border-bottom-color: #575775;
@@ -516,11 +594,13 @@ tr {
 td{
     padding: 3px;
 }
+
 td:nth-child(1) {
         font-weight: 600;
         border-right-style: double;
         border-right-color: indianred;
     }
+/*
 td:nth-child(1) a {
         text-decoration: none;
         color: black;
@@ -530,9 +610,10 @@ td:nth-child(1) a {
         
     }
 td:nth-child(1) a:hover {
-/*        background-color: #d7dac2;*/
+        background-color: #d7dac2;
 text-decoration-line: underline;
     }
+*/
 
 
 /*``[Drawer]*/
@@ -723,3 +804,33 @@ text-decoration-line: underline;
     margin-top: 10px;
     margin-bottom: 5px;
 }
+
+
+.link {
+    position: relative;
+    display: inline-block;
+    padding: 4px;
+
+}
+
+.link-item {
+    color: black;
+    text-decoration: none;
+    display: block;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: #9ea091;
+}
+
+    .link-item:hover {
+        background-color: #c6c9b6;
+        cursor: default;
+        text-decoration: none !important;
+    }
+    .link-item:active {
+        background-color: #9ea091;
+        cursor: default;
+        text-decoration: none;
+    }
+
+

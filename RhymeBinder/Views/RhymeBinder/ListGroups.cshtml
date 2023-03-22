@@ -10,7 +10,7 @@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
-                Binder: @Model.First().Binder.Name - Manage Groups
+                Binder:  @Model.First().Binder.Name - Manage Groups
             </div>
 
             <div class="menu-bar-dropdown">
@@ -35,7 +35,7 @@
             @foreach (var group in Model)
             {
                 <tr>
-                    <td align="right"><a href="/RhymeBinder/EditGroup?groupID=@group.TextGroupId">@group.GroupTitle</a></td>
+                    <td align="right"><a class="link-item" href="/RhymeBinder/EditGroup?groupID=@group.TextGroupId">@group.GroupTitle</a></td>
                     <td align="center">@group.HeaderCount</td>
                     @if(group.Locked == true){<td align="center">Locked</td>} else {<td></td>};
                     <td>@group.Notes</td>

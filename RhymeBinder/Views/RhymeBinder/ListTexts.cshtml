@@ -128,6 +128,8 @@
                 </div>
             </div>
         </div>
+        <div class="table-view-table-container-left"> 
+        </div>
         <div class="table-view-table-container">
             <table>
                 <tr>
@@ -151,7 +153,7 @@
                             <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
                         </td>
-                        <td><a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
+                        <td><a class="link-item"  href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td name="last_modified_col">@text.LastModified</td>
                         <td name="last_modified_by_col">@text.ModifyByName</td>
                         <td name="created_col">@text.Created</td>
@@ -161,7 +163,7 @@
                         <td name="groups_col">
                             @foreach(var group in text.Groups)
                                 {
-                                    <a class="menu-bar-dropdown-item"  onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
+                                    <a class="link-item"   onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
                                 }
                         </td>
                     </tr>
@@ -169,6 +171,8 @@
                 }
 
             </table>
+        </div>
+        <div class="table-view-table-container-right"> 
         </div>
     </div>
     <script language="Javascript">

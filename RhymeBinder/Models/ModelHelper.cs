@@ -1137,12 +1137,13 @@ namespace RhymeBinder.Models
             Text newText = new Text();
             newText.TextBody = "";
             newText.Created = DateTime.Now;
-            
+          
             try
             {
                 _context.Texts.Add(newText);
                 _context.SaveChanges();
                 status = CreateNewTextHeader(userId, newText);
+                status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
             }
             catch
             {
@@ -1186,6 +1187,34 @@ namespace RhymeBinder.Models
             {
                 status.success = false;
                 status.message = $"Failed creating header for text id {newText.TextId}";
+            }
+            return status;
+        }
+        public Status CreateNewTextHeaderEditWindowProperty(int userId, int textHeaderId)
+        {
+            Status status = new Status();
+            // EditWindowProperty entry helps autosave function/set ui elements to previous state on load after save
+            try
+            {
+                EditWindowProperty editWindowProperty = new EditWindowProperty()
+                {
+                    TextHeaderId = textHeaderId,
+                    UserId = userId,
+                    ActiveElement = "body_edit_field", //ID of text body edit field
+                    CursorPosition = 0,
+                    ShowLineCount = 1,
+                    ShowParagraphCount = 1
+                };
+                _context.EditWindowProperties.Add(editWindowProperty);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = textHeaderId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = $"Failed to set default Edit Window Properties for text header {textHeaderId}";
             }
             return status;
         }
