@@ -51,6 +51,42 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ErrorPage", status);
             }
         }
+
+        [HttpGet]
+        public IActionResult EditUser()
+        {
+            int userId = GetUserId();
+            SimpleUser user = _modelHelper.GetCurrentSimpleUser(userId);
+          
+
+            if (user.UserId == -1)
+            {
+                Status status = new Status()
+                {
+                    success = false,
+                    message = $"Failed to retrieve user {userId} to edit"
+                };
+
+                return RedirectToAction("ErrorPage", status);
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult EditUser(SimpleUser editedUser)
+        {
+        
+            Status status = _modelHelper.UpdateSimpleUser(editedUser);
+
+            if (!status.success)
+            {
+                return RedirectToAction("ErrorPage", status);
+            }
+            else
+            {
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+        }
         //-------TEXT:
         public IActionResult StartNewText()
         {
@@ -412,6 +448,8 @@ namespace RhymeBinder.Controllers
             status.userId = GetUserId();
             return View(status);
         }
+
+
 
         public int GetUserId()
         {

@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewData["Title"] = "Manage Binder: Groups: Edit Group:";
+}
+@model SimpleUser
+<div class="menu-bar-main">
+    <div class="menu-bar-title">
+       Edit User:
+    </div>
+</div>
+
+
+<form action="EditUser" method="post" class="form-wrapper">
+    <input type="hidden" name="UserId" value="@Model.UserId"/>
+    <input type="hidden" name="AspNetUserId" value="@Model.AspNetUserId"/>
+
+
+
+    <div class="form-item-title">
+        User Name:
+    </div>
+    <div class="form-item-large-entry">
+        <textarea name="UserName" class="form-single-line-box">@Model.UserName</textarea> 
+    </div>
+    
+    <div class="form-divider"><hr /></div>
+
+    <div class="form-item-title">
+        Records Per Page:
+    </div>
+    <div class="form-item-large-entry">
+        @Html.EditorFor(m => m.DefaultRecordsPerPage)
+    </div>
+
+    <div class="form-item-title">
+        New Texts Show Line Count:
+    </div>
+    <div class="form-item-descriptor-one">
+        @Html.EditorFor(m => m.DefaultShowLineCount)
+    </div>
+
+    <div class="form-item-title">
+        New Texts Show Paragraph Count:
+    </div>
+    <div class="form-item-descriptor-one">
+        @Html.EditorFor(m => m.DefaultShowParagraphCount)
+    </div>
+
+    <div class="form-item-descriptor-two">
+        <input type="submit" name="action" class="button" value="Submit Changes"/>
+    </div>
+
+
+</form>
+
+
+
+    
+
+
+

@@ -761,31 +761,6 @@ namespace RhymeBinder.Models
 
         // CRUD Methods
             //  Setup Methods:
-        public Status SetupNewUser(SimpleUser newUser)
-        {
-            // Each user will have an entry in the SimpleUsers table 
-            // linked to their AspNetUser entry that will provide an int
-            // to use as a key
-
-            Status status = new Status();
-
-            try
-            {
-                _context.SimpleUsers.Add(newUser);
-                _context.SaveChanges();
-
-                status.success = true;
-            } catch
-            {
-                status.success = false;
-                status.message = "Failed to save SimpleUser model.";
-                return status;
-            }
-
-            // Each user will need a new set of binders made...
-            status = CreateNewUserBinderSet(newUser.UserId);
-            return status;
-        }
         public Status CreateNewUserBinderSet(int newUserId)
         {
             Status status = new Status();
@@ -1126,9 +1101,58 @@ namespace RhymeBinder.Models
             return status;
 
         }
+        
+        //  USER Methods : 
+        public Status SetupNewUser(SimpleUser newUser)
+        {
+            // Each user will have an entry in the SimpleUsers table 
+            // linked to their AspNetUser entry that will provide an int
+            // to use as a key
+            newUser.DefaultRecordsPerPage = 25;
+            newUser.DefaultShowLineCount = true;
+            newUser.DefaultShowParagraphCount = true;
 
+            Status status = new Status();
 
-            //  Text Methods:
+            try
+            {
+                _context.SimpleUsers.Add(newUser);
+                _context.SaveChanges();
+
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save SimpleUser model.";
+                return status;
+            }
+
+            // Each user will need a new set of binders made...
+            status = CreateNewUserBinderSet(newUser.UserId);
+            return status;
+        }
+        public Status UpdateSimpleUser(SimpleUser user)
+        {
+            Status status = new Status();
+            try
+            {
+                _context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(user);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = user.UserId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = $"Failed to update user {user.UserName}";
+            }
+            return status;
+        }
+
+        //  Text Methods:
         public Status StartNewText(int userId)
         {
             Status status = new Status();
@@ -1196,14 +1220,15 @@ namespace RhymeBinder.Models
             // EditWindowProperty entry helps autosave function/set ui elements to previous state on load after save
             try
             {
+                SimpleUser user = GetCurrentSimpleUser(userId);
                 EditWindowProperty editWindowProperty = new EditWindowProperty()
                 {
                     TextHeaderId = textHeaderId,
                     UserId = userId,
                     ActiveElement = "body_edit_field", //ID of text body edit field
                     CursorPosition = 0,
-                    ShowLineCount = 1,
-                    ShowParagraphCount = 1
+                    ShowLineCount = user.DefaultShowLineCount ? 1 : 0,
+                    ShowParagraphCount = user.DefaultShowParagraphCount ? 1 : 0
                 };
                 _context.EditWindowProperties.Add(editWindowProperty);
                 _context.SaveChanges();

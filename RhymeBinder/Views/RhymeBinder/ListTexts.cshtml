@@ -149,17 +149,17 @@
 
                     <tr>
 
-                        <td>
+                        <td style="text-align: right">
                             <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
                         </td>
                         <td><a class="link-item"  href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
-                        <td name="last_modified_col">@text.LastModified</td>
-                        <td name="last_modified_by_col">@text.ModifyByName</td>
-                        <td name="created_col">@text.Created</td>
-                        <td name="created_by_col">@text.CreatedByName</td>
-                        <td name="vision_col">@text.VisionNumber</td>
-                        <td name="revision_col">@text.RevisionStatus</td>
+                        <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
+                        <td style="text-align: center" name="last_modified_by_col">@text.ModifyByName</td>
+                        <td style="text-align: center" name="created_col">@text.Created</td>
+                        <td style="text-align: center" name="created_by_col">@text.CreatedByName</td>
+                        <td style="text-align: center" name="vision_col">@text.VisionNumber</td>
+                        <td style="text-align: center" name="revision_col">@text.RevisionStatus</td>
                         <td name="groups_col">
                             @foreach(var group in text.Groups)
                                 {

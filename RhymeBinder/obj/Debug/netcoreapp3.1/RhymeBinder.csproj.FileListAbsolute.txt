@@ -226,3 +226,4 @@ C:\Users\millr\source\repos\RhymeBinder_CleanBuild\RhymeBinder\RhymeBinder\bin\D
 C:\Users\millr\source\repos\RhymeBinder_CleanBuild\RhymeBinder\RhymeBinder\bin\Debug\netcoreapp3.1\WebMatrix.Data.dll
 C:\Users\millr\source\repos\RhymeBinder_CleanBuild\RhymeBinder\RhymeBinder\bin\Debug\netcoreapp3.1\WebMatrix.WebData.dll
 C:\Users\millr\source\repos\RhymeBinder_CleanBuild\RhymeBinder\RhymeBinder\bin\Debug\netcoreapp3.1\Microsoft.Web.Infrastructure.dll
+C:\Users\millr\source\repos\RhymeBinder_CleanBuild\RhymeBinder\RhymeBinder\obj\Debug\netcoreapp3.1\Razor\Views\RhymeBinder\EditUser.cshtml.g.cs
