@@ -12,5 +12,10 @@ namespace RhymeBinder.Models
         public List<TextGroup> Groups { get; set; }
         public DisplayBinder Binder { get; set; }
         public List<Binder> UserBinders { get; set; }
+        public int Page { get; set; }
+        public int TotalPages { get; set; }
+        public int LowIndex { get; set; }
+        public int HighIndex { get; set; }
+        public int TotalHeaders { get; set; }
     }
 }

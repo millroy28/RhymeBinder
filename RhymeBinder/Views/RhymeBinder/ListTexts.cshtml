@@ -33,6 +33,7 @@
     <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
     <input type="hidden" name="View.BinderId" value="@Model.View.BinderId" />
+    <input type="hidden" name="Page" value="@Model.Page" id="page" />
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
@@ -171,6 +172,41 @@
                 }
 
             </table>
+        </div>
+        <div class="table-view-page-control-container">
+            <div class="table-view-page-control-container-item">
+                Records <b>@Model.LowIndex - @Model.HighIndex</b> of <b>@Model.TotalHeaders</b>
+            </div>
+            <div class="table-view-page-control-container-item">
+
+                @if(Model.Page > 1)
+                {
+                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (1))">▐◄</a>
+                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (@Model.Page - 1))">◄ </a>
+                }
+                else
+                {
+                    @:<a class="button menu-bar-button-disabled">▐◄</a>
+                    @:<a class="button menu-bar-button-disabled">◄ </a>
+                }        
+                
+                Page <b>@Model.Page</b> of <b>@Model.TotalPages</b>
+
+                @if(Model.Page < Model.TotalPages)
+                {
+                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (@Model.Page + 1))">►</a>
+                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (@Model.TotalPages))">►▌</a>
+                }
+                else
+                {
+                    @:<a class="menu-bar-button-disabled">►</a>
+                    @:<a class="menu-bar-button-disabled">►▌</a>                    
+                }    
+            </div>
+            <div class="table-view-page-control-container-item">
+                @Html.EditorFor(x => x.View.RecordsPerPage) Records Per Page
+            </div>
+                
         </div>
         <div class="table-view-table-container-right"> 
         </div>

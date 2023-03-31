@@ -159,10 +159,13 @@ namespace RhymeBinder.Controllers
             return Redirect($"/RhymeBinder/ListTexts?viewID={savedViewId}");
         }
         [HttpGet]
-        public IActionResult ListTexts(int viewId)
+        public IActionResult ListTexts(int viewId, int? page)
         {
             int userId = GetUserId();
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId);
+            int currentPage;
+            if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
+
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
 
             if (displayTextHeadersAndSavedView.View.SavedViewId != -1)
             {
@@ -226,6 +229,9 @@ namespace RhymeBinder.Controllers
                 case "CreateGroup":
                     return Redirect($"/RhymeBinder/CreateGroup?binderID={savedView.View.BinderId}");
 
+                case "ChangePage":
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page={groupID}");
+
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
             }
@@ -233,7 +239,7 @@ namespace RhymeBinder.Controllers
             // For most switch cases we redirect back to the same list of texts...
             if (status.success)
             {
-                return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}");
+                return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}&page={savedView.Page}");
             }
             else
             {

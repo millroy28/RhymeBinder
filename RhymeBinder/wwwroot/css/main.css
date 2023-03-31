@@ -157,7 +157,7 @@ body {
     grid-template-rows: 30px auto;
     width: 100%;
     box-sizing: border-box;
-    height: 90vh;
+  /*  height: 90vh; */
     background: #eff3d8;
 }
 
@@ -167,19 +167,32 @@ body {
     align-self: flex-start;
     font-size: small;
 }
-/*
+.table-view-page-control-container {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+    font-size: small;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+}
+.table-view-page-control-container-item {
+    align-self: center;
+    padding: 4px 30px;
+    margin: auto;
+}
 
 .table-view-table-container-left {
     grid-column: 1 / 2;
-    grid-row: 2 / 3;
+    grid-row: 2 / 4;
     background: linear-gradient(90deg, rgba(193,193,193,1) 0%, rgba(215,225,157,1) 35%, rgba(244,245,239,1) 100%);
 }
 .table-view-table-container-right {
     grid-column: 3 / 4;
-    grid-row: 2 / 3;
+    grid-row: 2 / 4;
     background: linear-gradient(270deg, rgba(193,193,193,1) 0%, rgba(215,225,157,1) 35%, rgba(244,245,239,1) 100%);
 }
-*/
+
 
 
 .list-texts-menu-bar-main {
@@ -332,6 +345,15 @@ body {
 /*    background-color: #afc33c;
 */
     
+}
+.menu-bar-button-disabled {
+    font-weight: 600;
+    color: gray;   
+    border-color: transparent;
+    padding: 4px !important;
+    margin: 0px !important;
+    border: 0px !important;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
     .menu-bar-button:hover {
         font-weight: 600;
@@ -833,4 +855,11 @@ text-decoration-line: underline;
         text-decoration: none;
     }
 
+.site-container{
+    height:auto;
+}
 
+.site-footer{
+    bottom:0;
+
+}

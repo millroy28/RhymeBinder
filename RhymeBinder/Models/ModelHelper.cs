@@ -263,7 +263,7 @@ namespace RhymeBinder.Models
             }
             return (displayTextGroups);
         }
-        public List<DisplayTextHeader> GetDisplayTextHeaders(SavedView savedView)
+        public List<DisplayTextHeader> GetDisplayTextHeaders(SavedView savedView, int page)
         {
             //TO DO: make this less ponderous and introduce error handling?
             //Get all text headers for this view
@@ -403,9 +403,13 @@ namespace RhymeBinder.Models
 
             return (theseDisplayTextHeaders);
         }
-        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId)
+
+        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page)
         {
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView();
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView()
+            {
+                Page = page
+            };
 
             SavedView savedView = GetSavedView(viewId);
             DisplayBinder binder = GetDisplayBinder(userId);
@@ -452,13 +456,26 @@ namespace RhymeBinder.Models
             List<DisplayTextHeader> textHeaders = new List<DisplayTextHeader>();
             try
             {
-                textHeaders = GetDisplayTextHeaders(savedView);
+                textHeaders = GetDisplayTextHeaders(savedView, page);
             }
             catch
             {
                 displayTextHeadersAndSavedView.View.SavedViewId = -1;
                 return displayTextHeadersAndSavedView;
             }
+
+            // do some page calculation
+            int headerCount = textHeaders.Count;
+            int upperIndex = savedView.RecordsPerPage * page;
+            int lowerIndex = upperIndex - savedView.RecordsPerPage;
+            if (upperIndex > headerCount) { upperIndex = headerCount; };
+            int count = upperIndex - lowerIndex;
+            int pageCount = (headerCount - 1) / savedView.RecordsPerPage + 1;
+
+            // remove any headers not to be shown based on page and number of records per page
+            List<DisplayTextHeader> displayTextHeadersOnPage = textHeaders.GetRange(lowerIndex, count);
+
+            // Pop list of binders for transfer dropdown
             List<Binder> userBinders = GetBinders(userId, "active_excluding_current");
 
             // new binders might not have a text header, so make a blank one as a placeholder:
@@ -467,16 +484,20 @@ namespace RhymeBinder.Models
                 textHeaders.Add(new DisplayTextHeader()
                 {
                     BinderId = binder.BinderId,
-
                 });
             }
 
             // put it all together
             displayTextHeadersAndSavedView.View = savedView;
-            displayTextHeadersAndSavedView.TextHeaders = textHeaders;
+            displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
             displayTextHeadersAndSavedView.Binder = binder;
             displayTextHeadersAndSavedView.UserBinders = userBinders;
+            displayTextHeadersAndSavedView.Page = page;
+            displayTextHeadersAndSavedView.TotalPages = pageCount;
+            displayTextHeadersAndSavedView.LowIndex = lowerIndex+1;
+            displayTextHeadersAndSavedView.HighIndex = upperIndex;
+            displayTextHeadersAndSavedView.TotalHeaders = headerCount;
 
             // update last accessed
             UpdateBinderLastAccessed(binder.BinderId, userId);
@@ -847,6 +868,15 @@ namespace RhymeBinder.Models
              * Texts can be moved to a "deleted" state within a binder and they are effectively hidden from view
              * They can also be removed from the binder and sent to the trash binder.
              */
+            SimpleUser user = GetCurrentSimpleUser(userId);
+            if (user.UserId == -1)
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Failed to retrieve user while creating view set for new binder";
+                return status;
+            }
+
 
             //create active saved view for user
             SavedView activeView = new SavedView()
@@ -855,6 +885,7 @@ namespace RhymeBinder.Models
                 SetValue = "Active",
                 SortValue = "title",
                 ViewName = "",
+                RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = true,
                 Saved = false,
@@ -876,6 +907,7 @@ namespace RhymeBinder.Models
                 SetValue = "Default",
                 SortValue = "title",
                 ViewName = "Default - AutoCreated",
+                RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = true,
                 Saved = false,
@@ -897,6 +929,7 @@ namespace RhymeBinder.Models
                 SetValue = "Hidden",
                 SortValue = "title",
                 ViewName = "Hidden Texts",
+                RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = false,
                 Saved = false,
@@ -917,6 +950,7 @@ namespace RhymeBinder.Models
                 SetValue = "All",
                 SortValue = "title",
                 ViewName = "All Texts",
+                RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = false,
                 Saved = false,
@@ -1499,6 +1533,7 @@ namespace RhymeBinder.Models
 
             SavedView viewToUpdate = GetSavedView(savedView.View.SavedViewId);
 
+            viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
             viewToUpdate.UserId = savedView.View.UserId;
             viewToUpdate.SetValue = savedView.View.SetValue;
             viewToUpdate.SortValue = savedView.View.SortValue;
@@ -1513,6 +1548,7 @@ namespace RhymeBinder.Models
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
+            viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
 
             try
             {
@@ -1536,6 +1572,7 @@ namespace RhymeBinder.Models
             // When user clicks SaveDefault we will apply current view's grid arrangement to the default saved view
             SavedView defaultSavedView = GetDefaultSavedView(userId);
 
+            defaultSavedView.RecordsPerPage = newDefaults.RecordsPerPage;
             defaultSavedView.Descending = newDefaults.Descending;
             defaultSavedView.SortValue = newDefaults.SortValue;
             defaultSavedView.Default = newDefaults.Default;
@@ -1585,7 +1622,6 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-
         public Status ResetActiveViewToDefaults(int userId)
         {
             Status status = new Status();
@@ -1605,6 +1641,7 @@ namespace RhymeBinder.Models
             SavedView defaultView = _context.SavedViews.Single(x => x.BinderId == binderId
                                                                  && x.SetValue == "Default");
 
+            activeView.RecordsPerPage = defaultView.RecordsPerPage;
             activeView.Descending = defaultView.Descending;
             activeView.SortValue = defaultView.SortValue;
             activeView.Default = defaultView.Default;
@@ -1635,6 +1672,7 @@ namespace RhymeBinder.Models
            
             return status;
         }
+       
 
             //  Binder Methods:
         public Status CreateNewBinder(int userId, Binder newBinder)

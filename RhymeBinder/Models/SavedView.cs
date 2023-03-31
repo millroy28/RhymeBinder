@@ -9,6 +9,7 @@ namespace RhymeBinder.Models
     {
         public int SavedViewId { get; set; }
         public int? UserId { get; set; }
+        public int RecordsPerPage { get; set; }
         public string SetValue { get; set; }
         public string SortValue { get; set; }
         public bool? Descending { get; set; }
