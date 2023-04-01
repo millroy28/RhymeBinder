@@ -47,6 +47,13 @@ namespace RhymeBinder
             {
                 options.AllowSynchronousIO = true;
             });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(45);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
