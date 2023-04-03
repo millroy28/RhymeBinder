@@ -357,6 +357,32 @@ namespace RhymeBinder.Models
                     );
             }
 
+            //reduce results by search value
+            if (!string.IsNullOrWhiteSpace(savedView.SearchValue))
+            {
+                try
+                {
+                    // search text bodies
+                    List<Text> searchFilteredTexts = _context.Texts.Where(x => theseTextHeaders.Select(y => y.TextId).Contains(x.TextId)
+                                                                            && x.TextBody.Contains(savedView.SearchValue)
+                                                                            ).ToList();
+
+                    // search text titles too...
+                    List<DisplayTextHeader> searchFilteredDisplayTextHeaders = theseDisplayTextHeaders.Where(x => x.Title.Contains(savedView.SearchValue)
+                                                                                                               // || searchFilteredTexts.All(y => y.TextId == x.TextId)
+                                                                                                               || searchFilteredTexts.Select(y => y.TextId).Contains(x.TextId)
+                                                                                                               ).ToList();
+
+                  
+                    theseDisplayTextHeaders.RemoveAll(x => !searchFilteredDisplayTextHeaders.Exists(y => y.TextHeaderId == x.TextHeaderId));
+                }
+                catch
+                {
+
+                }
+            }
+
+
             //fudge a blank if there are no results
             if (theseDisplayTextHeaders.Count == 0)
             {
@@ -404,7 +430,8 @@ namespace RhymeBinder.Models
             return (theseDisplayTextHeaders);
         }
 
-        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page)
+
+        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page, string searchValue)
         {
             DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView()
             {
@@ -743,7 +770,14 @@ namespace RhymeBinder.Models
         }
         public int GetSavedViewIdOnStart(int userId)
         {
-            Status status = ResetActiveViewToDefaults(userId);
+            Status status = ClearSavedViewSearchValues(userId);
+            
+            if(status.recordId == -1)
+            {
+                return status.recordId;
+            }
+
+            status = ResetActiveViewToDefaults(userId);
 
             return status.recordId;
         }
@@ -1549,6 +1583,7 @@ namespace RhymeBinder.Models
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
             viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
+            viewToUpdate.SearchValue = savedView.View.SearchValue;
 
             try
             {
@@ -1672,8 +1707,27 @@ namespace RhymeBinder.Models
            
             return status;
         }
-       
 
+        public Status ClearSavedViewSearchValues(int userId)
+        {
+            Status status = new Status();
+            try
+            {
+                List<SavedView> savedViews = _context.SavedViews.Where(x => x.UserId == userId).ToList();
+                savedViews.ForEach(x => x.SearchValue = "");
+                _context.UpdateRange(savedViews);
+                _context.SaveChanges();
+
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Failed to clear search values from user's saved views";
+            }
+            return status;
+        }
             //  Binder Methods:
         public Status CreateNewBinder(int userId, Binder newBinder)
         {

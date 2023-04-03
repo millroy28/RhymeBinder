@@ -159,13 +159,13 @@ namespace RhymeBinder.Controllers
             return Redirect($"/RhymeBinder/ListTexts?viewID={savedViewId}");
         }
         [HttpGet]
-        public IActionResult ListTexts(int viewId, int? page)
+        public IActionResult ListTexts(int viewId, int? page, string searchValue)
         {
             int userId = GetUserId();
             int currentPage;
             if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
 
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage, searchValue);
 
             if (displayTextHeadersAndSavedView.View.SavedViewId != -1)
             {
@@ -183,7 +183,7 @@ namespace RhymeBinder.Controllers
             }
         }
         [HttpPost]
-        public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action, int groupID)
+        public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action, string value)
         {
             int userId = GetUserId();
             Status status = new Status();
@@ -200,27 +200,32 @@ namespace RhymeBinder.Controllers
                     break;     
 
                 case "Hide":
+                    status = _modelHelper.UpdateView(savedView);
                     status = _modelHelper.ToggleHideSelectedHeaders(savedView, true);
                     break;
 
                 case "Restore":
+                    status = _modelHelper.UpdateView(savedView);
                     status = _modelHelper.ToggleHideSelectedHeaders(savedView, false);
                     break;
 
                 case "GroupAdd":
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, groupID, true);
+                    status = _modelHelper.UpdateView(savedView);
+                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), true);
                     break;
 
                 case "GroupRemove":
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, groupID, false);
+                    status = _modelHelper.UpdateView(savedView);
+                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), false);
                     break;
 
                 case "GroupFilter":
-                    status = _modelHelper.SwitchToViewBySet(userId, groupID.ToString());
+                    status = _modelHelper.SwitchToViewBySet(userId, value);
                     break;
 
                 case "Transfer":
-                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, groupID);
+                    status = _modelHelper.UpdateView(savedView);
+                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, int.Parse(value));
                     break;
 
                 case "ManageGroups":
@@ -230,7 +235,10 @@ namespace RhymeBinder.Controllers
                     return Redirect($"/RhymeBinder/CreateGroup?binderID={savedView.View.BinderId}");
 
                 case "ChangePage":
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page={groupID}");
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page={value}");
+
+                case "Search":
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page=1&searchValue={value}");
 
                 default:
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");

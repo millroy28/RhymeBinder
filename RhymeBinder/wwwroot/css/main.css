@@ -379,7 +379,6 @@ body {
 .menu-bar-dropdown {
     position: relative;
     display: inline-block;
-    padding: 4px;
 }
 .menu-bar-dropdown-content {
     display: none;

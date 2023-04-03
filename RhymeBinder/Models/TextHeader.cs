@@ -19,7 +19,7 @@ namespace RhymeBinder.Models
         }
 
         public int TextHeaderId { get; set; }
-        public int? TextId { get; set; }
+        public int TextId { get; set; }
         public string Title { get; set; }
         public DateTime? Created { get; set; }
         public int? CreatedBy { get; set; }

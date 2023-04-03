@@ -37,7 +37,7 @@
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
-    <input type="hidden" name="groupID" value="-1" id="group_id" />
+    <input type="hidden" name="value" value="-1" id="record_id" />
 
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
@@ -128,6 +128,15 @@
 
                 </div>
             </div>
+            <div class="menu-bar-dropdown">
+                    @Html.EditorFor(x => x.View.SearchValue)
+            </div>
+           
+                    <a class="menu-bar-button" onclick="selected_action_form_submit('LastView', 0)">Search</a>
+           
+                    <a class="menu-bar-button" onclick="clear_search()">Clear</a>
+           
+
         </div>
         <div class="table-view-table-container-left"> 
         </div>

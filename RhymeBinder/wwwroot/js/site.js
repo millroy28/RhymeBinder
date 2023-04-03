@@ -94,10 +94,16 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
 }
 
 //--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
-function selected_action_form_submit(actionValue, groupID) {
-    // group Id value stored in form under id 'group_id'
-    document.getElementById("group_id").value = groupID;
+function selected_action_form_submit(actionValue, recordId) {
+    // group Id value stored in form under id 'record_id'
+    document.getElementById("record_id").value = recordId;
     sub_form(actionValue);
+}
+
+//--------SEARCH ACTIONS: SUBMITTING VALUE FOR SEARCH----------------------------------
+function clear_search() {
+    document.getElementById("View_SearchValue").value = "";
+    sub_form('LastView');
 }
 
 //--------MISC UTILITIES----------------------------------------------------------------
