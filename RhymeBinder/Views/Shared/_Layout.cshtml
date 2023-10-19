@@ -14,7 +14,7 @@
            
                 
                                 
-                    <a asp-area="" class="navbar-item-brand" asp-controller="RhymeBinder" asp-action="Index">RhymeBinder</a>
+                    <a asp-area="" class="navbar-item-brand" asp-controller="RhymeBinder">RhymeBinder</a>
                     <ul class="navbar-links">
                         <li class="navbar-item">
                             <a asp-area="" asp-controller="RhymeBinder" asp-action="StartNewText">NEW</a>
@@ -35,14 +35,14 @@
         </nav>
     </header>
     <div class="site-container">
-        <main role="main" class="pb-3">
+        <main role="main" class="main">
             @RenderBody()
         </main>
     </div>
 
     <footer class="site-footer">
         <div class="container">
-            &copy; 2021 - RhymeBinder - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2021-2023 - RhymeBinder - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -33,52 +33,75 @@
     <input type="hidden" name="EditWindowProperty.UserID" value="@Model.User.UserId" />
     <input type="hidden" name="EditWindowProperty.TextHeaderID" value="@Model.TextHeader.TextHeaderId" />
 
-    <div class="menu-bar-main">
-        <div class="menu-bar-title">
-            Editing:
-        </div>
-        <div class="menu-bar-item">
-            Revision Status:
-        </div>
-        <div class="menu-bar-item">
-            <select name="TextHeader.TextRevisionStatusID" id="revision_status">
-                @foreach (var revisionStatus in Model.AllRevisionStatuses)
-                {
-                    if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
-                    {
-                        <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
-                    }
-                    else
-                    {
-                        <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                    }
-                }
-            </select>
-        </div>
+    <div class="menu-bar">
 
-        <div class="menu-bar-dropdown">
-            <div class="button menu-bar-button-dropdown">
-                View ▼
+
+        <div class="menu-bar-main">
+            <div class="menu-bar-title">
+                Editing:
             </div>
-            <div class="menu-bar-dropdown-content">
-                <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_line_count', this.id, 'line_count')" id="toggle_line_count">? Line Count</a>
-                <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_paragraph_count', this.id, 'paragraph_count')" id="toggle_paragraph_count">? Stanza Count</a>
+            <div class="menu-bar-item">
+                Revision Status:
+            </div>
+            <div class="menu-bar-item">
+                <select name="TextHeader.TextRevisionStatusID" id="revision_status">
+                    @foreach (var revisionStatus in Model.AllRevisionStatuses)
+                    {
+                        if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
+                        {
+                            <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
+                        }
+                        else
+                        {
+                            <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
+                        }
+                    }
+                </select>
             </div>
 
-        </div>
-    </div>
+            <div class="menu-bar-dropdown">
+                <div class="button menu-bar-button-dropdown">
+                    View ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_line_count', this.id, 'line_count')" id="toggle_line_count">? Line Count</a>
+                    <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_paragraph_count', this.id, 'paragraph_count')" id="toggle_paragraph_count">? Stanza Count</a>
+                </div>
 
-
-
-    <div class="menu-bar-escape">
-        <div class="menu-bar-item">
-            <input type="submit" name="action" class="button menu-bar-button" value="Return" />
+            </div>
         </div>
-        <div class="menu-bar-item">
-            <input type="submit" name="action" class="button menu-bar-button" value="Save" id="save" />
+
+        <div class="mobile-menu-bar-main">
+            <div class="menu-bar-dropdown">
+                <div class="button menu-bar-button-dropdown">
+                    Editing: 
+                </div>
+
+                <div class="menu-bar-dropdown-content">
+                    <input type="submit" name="action" class="menu-bar-dropdown-item" value="Revision" id="save" />
+                </div>
+            </div>
         </div>
-        <div class="menu-bar-item-right-final">
-            <input type="submit" name="action" class="button menu-bar-button" value="Revision" id="save" />
+
+        <div class="menu-bar-escape">
+            <div class="menu-bar-item">
+                <input type="submit" name="action" class="button menu-bar-button" value="Return" />
+            </div>
+            <div class="menu-bar-item">
+                <input type="submit" name="action" class="button menu-bar-button" value="Save" id="save" />
+            </div>
+            <div class="menu-bar-item-right-final">
+                <input type="submit" name="action" class="button menu-bar-button" value="Revision" id="save" />
+            </div>
+        </div>
+
+        <div class="mobile-menu-bar-escape">
+            <div class="menu-bar-item">
+                <input type="submit" name="action" class="button mobile-menu-bar-button-save" value="Save" id="save" />
+            </div>
+            <div class="menu-bar-item">
+                <input type="submit" name="action" class="button mobile-menu-bar-button-return" value="Return" />
+            </div>
         </div>
     </div>
 

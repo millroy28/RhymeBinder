@@ -52,7 +52,7 @@ namespace RhymeBinder
             {
                 options.LoginPath = "/Identity/Account/Login";
                 options.LogoutPath = "/Identity/Account/Logout";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(45);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(240);
             });
         }
 
