@@ -29,7 +29,7 @@ namespace RhymeBinder
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = "Server=.\\SQLExpress;Database=RhymeBinderDev;Trusted_Connection=True;ConnectRetryCount=0;";
+            var connection = "Server=.\\SQLExpress;Database=RhymeBinder;Trusted_Connection=True;ConnectRetryCount=0;";
 
             services.AddDbContext<RhymeBinderContext>(options => options.UseSqlServer(connection));
 

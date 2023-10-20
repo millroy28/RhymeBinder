@@ -41,7 +41,7 @@
 
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
-            <div class="menu-bar-title" id="menu_bar_title">
+            <div class="menu-bar-title menu-bar-title-mobile" id="menu_bar_title">
                 Open: @Model.Binder.Name - @Model.View.ViewName
             </div>
 
@@ -128,13 +128,13 @@
 
                 </div>
             </div>
-            <div class="menu-bar-dropdown">
+            <div class="menu-bar-item">
                     @Html.EditorFor(x => x.View.SearchValue)
-            </div>
            
                     <a class="menu-bar-button" onclick="selected_action_form_submit('LastView', 0)">Search</a>
            
                     <a class="menu-bar-button" onclick="clear_search()">Clear</a>
+            </div>
            
 
         </div>
@@ -212,7 +212,7 @@
                     @:<a class="menu-bar-button-disabled">►▌</a>                    
                 }    
             </div>
-            <div class="table-view-page-control-container-item">
+            <div class="table-view-page-control-container-item table-view-page-control-container-item-mobileHide">
                 @Html.EditorFor(x => x.View.RecordsPerPage) Records Per Page
             </div>
                 
