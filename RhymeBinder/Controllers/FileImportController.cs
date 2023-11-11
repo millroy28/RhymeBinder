@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Web.Helpers;
+// using Microsoft.Web.Helpers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace RhymeBinder.Controllers
             return View(displayInputForm);
         }
         [HttpPost]
-        public async Task<IActionResult> Import(DisplayInputForm import)
+        public IActionResult Import(DisplayInputForm import)
         {
             var files = HttpContext.Request.Form.Files;
             List<DisplayFileImportResult> results = new List<DisplayFileImportResult>();
