@@ -1,7 +1,7 @@
 --CREATE DATABASE RhymeBinder
 --GO
 
-USE RhymeBinder
+USE RhymeBinder_New
 /*
 DROP TABLE SimpleUsers
 DROP TABLE TextRecord
@@ -39,6 +39,8 @@ Example of organization:
 
 
 */
+
+
 
 CREATE TABLE SimpleUsers (
 UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
