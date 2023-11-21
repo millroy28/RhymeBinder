@@ -24,6 +24,8 @@ namespace RhymeBinder
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+
             services.AddDbContext<RhymeBinderContext>(options => 
                 options.UseSqlServer(
                     Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
@@ -33,8 +35,10 @@ namespace RhymeBinder
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
 
