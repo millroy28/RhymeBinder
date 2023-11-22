@@ -858,7 +858,9 @@ namespace RhymeBinder.Models
             try
             {
                 _context.Binders.Add(defaultBinder);
+                _context.SaveChanges();
                 _context.Binders.Add(trashBinder);
+                _context.SaveChanges();
                 _context.Binders.Add(loosePages);
                 _context.SaveChanges();
                 status.success = true;
@@ -997,8 +999,11 @@ namespace RhymeBinder.Models
             try
             {
                 _context.SavedViews.Add(activeView);
+                _context.SaveChanges();
                 _context.SavedViews.Add(defaultView);
+                _context.SaveChanges();
                 _context.SavedViews.Add(trashView);
+                _context.SaveChanges();
                 _context.SavedViews.Add(loosePagesView);
 
                 _context.SaveChanges();

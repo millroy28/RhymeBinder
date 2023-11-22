@@ -17,7 +17,6 @@ namespace RhymeBinder.Models
             Submissions = new HashSet<Submission>();
             TextRecords = new HashSet<TextRecord>();
         }
-
         public int TextHeaderId { get; set; }
         public int TextId { get; set; }
         public string Title { get; set; }

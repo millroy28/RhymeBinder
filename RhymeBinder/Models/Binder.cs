@@ -14,6 +14,7 @@ namespace RhymeBinder.Models
             TextHeaders = new HashSet<TextHeader>();
         }
 
+
         public int BinderId { get; set; }
         public int? UserId { get; set; }
         public DateTime? Created { get; set; }

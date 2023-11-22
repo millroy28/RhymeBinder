@@ -1,7 +1,7 @@
 --CREATE DATABASE RhymeBinder
 --GO
 
-USE RhymeBinder_New
+
 /*
 DROP TABLE SimpleUsers
 DROP TABLE TextRecord
@@ -16,10 +16,17 @@ DROP TABLE SubmissionStatuses
 DROP TABLE TextRevisionStatuses
 DROP TABLE Submissions
 DROP TABLE SavedViews
+DROP TABLE Binders
+DROP TABLE EditWindowProperties
+DROP TABLE GroupACtions
+DROP TABLE GroupHistory
+
+DROP TABLE lnkTextHeadersTextGroups
 
 
 
-lnkTextHeadersBinders
+
+
 */
 /*
 Example of organization:
@@ -46,7 +53,12 @@ CREATE TABLE SimpleUsers (
 UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 AspNetUserID NVARCHAR(450) FOREIGN KEY REFERENCES AspNetUsers(ID) NOT NULL,
 UserName NVARCHAR(300),
+DefaultRecordsPerPage int,
+DefaultShowLineCount bit,
+DefaultShowParagraphCount bit 
 )
+
+
 
 CREATE TABLE Texts (
 TextID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
@@ -67,12 +79,14 @@ CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 LastModified DATETIME,
 LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Hidden] BIT,
-[Name] VARCHAR(1000),
-[Description] VARCHAR(MAX),
+[Name] NVARCHAR(1000),
+[Description] NVARCHAR(MAX),
 [Selected] BIT,
 LastAccessed DATETIME,
 LastAccessedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
+
+
 
 CREATE TABLE PublicationRatings(
 PublicationRatingID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
@@ -81,8 +95,8 @@ PublicationRating VARCHAR(2000)
 
 CREATE TABLE Publications (
 PublicationID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-[Name] VARCHAR(200),
-[URL] VARCHAR(2000),
+[Name] NVARCHAR(200),
+[URL] NVARCHAR(2000),
 PublicationTypeID INT FOREIGN KEY REFERENCES PublicationTypes(PublicationTypeID),
 PublicationRatingID INT FOREIGN KEY REFERENCES PublicationRatings(PublicationRatingID),
 )
@@ -97,21 +111,45 @@ TextRevisionStatusID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 TextRevisionStatus VARCHAR(100)
 )
 
+CREATE TABLE SavedViews (
+SavedViewID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+SetValue NVARCHAR (20),
+SortValue NVARCHAR (20),
+Descending BIT,
+ViewName NVARCHAR(200),
+[Default] BIT,
+[Saved] BIT,
+[LastView] BIT,
+LastModified BIT,
+LastModifiedBy BIT,
+Created BIT,
+CreatedBy BIT,
+VisionNumber BIT,
+RevisionStatus BIT,
+Groups BIT,
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
+SearchValue nvarchar (150),
+RecordsPerPage int
+)
+
+
 CREATE TABLE TextGroups (
 TextGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-GroupTitle VARCHAR(1000),
+GroupTitle NVARCHAR(1000),
 OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
-Notes VARCHAR(Max),
+Notes NVARCHAR(Max),
 Locked BIT,
 [Hidden] BIT,
-BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
+SavedViewId INT FOREIGN KEY REFERENCES SavedViews(SavedViewID)
 )
 
 
 CREATE TABLE TextHeaders (
 TextHeaderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 TextID INT FOREIGN KEY REFERENCES Texts (TextID),
-Title VARCHAR(1000),
+Title NVARCHAR(1000),
 Created DATETIME,
 CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 LastModified DATETIME,
@@ -162,33 +200,13 @@ Created DATETIME
 )
 
 
-CREATE TABLE SavedViews (
-SavedViewID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
-SetValue VARCHAR (20),
-SortValue VARCHAR (20),
-Descending BIT,
-ViewName VARCHAR(200),
-[Default] BIT,
-[Saved] BIT,
-[LastView] BIT,
-LastModified BIT,
-LastModifiedBy BIT,
-Created BIT,
-CreatedBy BIT,
-VisionNumber BIT,
-RevisionStatus BIT,
-Groups BIT,
-BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
-)
-
 
 
 CREATE TABLE EditWindowProperties (
 EditWindowPropertyID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
-ActiveElement VARCHAR(300),
+ActiveElement NVARCHAR(300),
 CursorPosition INT,
 ShowLineCount INT,
 ShowParagraphCount INT

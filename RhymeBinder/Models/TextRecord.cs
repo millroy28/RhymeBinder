@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+
 
 #nullable disable
 
@@ -7,6 +7,7 @@ namespace RhymeBinder.Models
 {
     public partial class TextRecord
     {
+
         public int TextRecordId { get; set; }
         public int TextHeaderId { get; set; }
         public int TextId { get; set; }

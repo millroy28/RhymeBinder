@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 
 #nullable disable
 
@@ -12,7 +12,6 @@ namespace RhymeBinder.Models
             GroupHistories = new HashSet<GroupHistory>();
             LnkTextHeadersTextGroups = new HashSet<LnkTextHeadersTextGroup>();
         }
-
         public int TextGroupId { get; set; }
         public string GroupTitle { get; set; }
         public int OwnerId { get; set; }
