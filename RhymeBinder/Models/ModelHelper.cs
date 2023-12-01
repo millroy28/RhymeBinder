@@ -146,6 +146,8 @@ namespace RhymeBinder.Models
             {
                 Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
 
+                
+
                 int textCount = _context.TextHeaders.Where(x => x.Top == true
                                                              && x.Deleted == false
                                                              && x.BinderId == binderId).Count();
@@ -187,8 +189,7 @@ namespace RhymeBinder.Models
                 List<TextGroup> textGroups = _context.TextGroups.Where(x => x.Owner.UserId == userId
                                                                          && x.Hidden == false).ToList();
 
-                int textCount;
-                int groupCount;
+                int textCount; int groupCount; 
 
                 foreach (var binder in binders)
                 {
@@ -202,6 +203,7 @@ namespace RhymeBinder.Models
                                   where header.BinderId == binder.BinderId
                                   select textGroup.TextGroupId).Distinct().Count();
 
+                   
                     displayBinders.Add(new DisplayBinder
                     {
                         BinderId = binder.BinderId,
@@ -215,7 +217,9 @@ namespace RhymeBinder.Models
                         Description = binder.Description,
                         PageCount = textCount,
                         GroupCount = groupCount,
-                        Selected = binder.Selected
+                        Selected = binder.Selected,
+                        CreatedByName = GetUserName(binder.CreatedBy),
+                        ModifyByName = GetUserName(binder.LastModifiedBy)
                     });
 
                 }
@@ -343,12 +347,12 @@ namespace RhymeBinder.Models
                     LastModified = textHeader.LastModified,
                     LastRead = textHeader.LastRead,
                     Groups = selectedGroups,
-                    CreatedByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.CreatedBy).First().UserName,
-                    ModifyByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastModifiedBy).First().UserName,
-                    ReadByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastReadBy).First().UserName,
+                    CreatedByName = GetUserName(textHeader.CreatedBy),
+                    ModifyByName = GetUserName(textHeader.LastModifiedBy),
+                    ReadByName = GetUserName(textHeader.LastReadBy),
                     RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1
                 }
-                    );
+                    );;
             }
 
             //reduce results by search value
@@ -650,10 +654,6 @@ namespace RhymeBinder.Models
                 previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
                                            join Text text in previousTexts
                                              on textHeader.TextId equals text.TextId
-                                           join SimpleUser createdByUser in users
-                                             on textHeader.CreatedBy equals createdByUser.UserId
-                                           join SimpleUser modifiedUser in users
-                                             on textHeader.LastModifiedBy equals modifiedUser.UserId
                                            join TextRevisionStatus revisionStatus in revisionStatuses
                                              on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
                                            select new SimpleTextHeaderAndText
@@ -663,8 +663,8 @@ namespace RhymeBinder.Models
                                                VisionNumber = textHeader.VisionNumber,
                                                Created = textHeader.Created,
                                                LastModified = textHeader.LastModified,
-                                               CreatedBy = createdByUser.UserName,
-                                               LastModifiedBy = modifiedUser.UserName,
+                                               CreatedBy = GetUserName(textHeader.CreatedBy),
+                                               LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
                                                Status = revisionStatus.TextRevisionStatus1
                                            }
                                           ).ToList();
@@ -2108,6 +2108,23 @@ namespace RhymeBinder.Models
                 return (prevTextHeaders);
             }
             return (prevTextHeaders);
+        }
+
+        public string GetUserName(int? userId)
+        {
+            string name = "";
+            if (userId != null)
+            {
+                try 
+                {
+                    name = _context.SimpleUsers.Where(x => x.UserId == userId).FirstOrDefault().UserName;
+                }
+                catch
+                {
+                    name = "";
+                }
+            }
+            return name;
         }
 
     }
