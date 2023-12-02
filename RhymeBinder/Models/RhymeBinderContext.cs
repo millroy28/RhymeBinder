@@ -42,7 +42,6 @@ namespace RhymeBinder.Models
         public virtual DbSet<Text> Texts { get; set; }
         public virtual DbSet<TextGroup> TextGroups { get; set; }
         public virtual DbSet<TextHeader> TextHeaders { get; set; }
-        public virtual DbSet<TextHeaderTitleDefaultType> TextHeaderTitleDefaultTypes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
 
@@ -168,14 +167,15 @@ namespace RhymeBinder.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.NewTextDefaultShowLineCount)
-                    .IsRequired()
-                    .HasDefaultValueSql("((1))");
+                    .IsRequired();
+                //.HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.NewTextDefaultShowParagraphCount)
-                    .IsRequired()
-                    .HasDefaultValueSql("((1))");
+                    .IsRequired();
+                    //.HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.TextHeaderTitleDefaultType).HasDefaultValueSql("((1))");
+                entity.Property(e => e.TextHeaderTitleDefaultFormat).HasMaxLength(200)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -188,12 +188,6 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.BinderLastModifiedByNavigations)
                     .HasForeignKey(d => d.LastModifiedBy)
                     .HasConstraintName("FK__Binders__LastMod__673F4B05");
-
-                entity.HasOne(d => d.TextHeaderTitleDefaultTypeNavigation)
-                    .WithMany(p => p.Binders)
-                    .HasForeignKey(d => d.TextHeaderTitleDefaultType)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Binders__TextHea__5AA469F6");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.BinderUsers)
@@ -573,12 +567,6 @@ namespace RhymeBinder.Models
                     .HasConstraintName("FK__TextHeade__Versi__52793849");
             });
 
-            modelBuilder.Entity<TextHeaderTitleDefaultType>(entity =>
-            {
-                entity.Property(e => e.TextHeaderTitleDefaultType1)
-                    .HasMaxLength(100)
-                    .HasColumnName("TextHeaderTitleDefaultType");
-            });
 
             modelBuilder.Entity<TextRecord>(entity =>
             {

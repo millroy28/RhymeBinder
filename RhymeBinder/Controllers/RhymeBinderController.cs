@@ -348,28 +348,19 @@ namespace RhymeBinder.Controllers
         }
 
         //-------BINDER METHODS:
-        [HttpGet]
         public IActionResult CreateBinder()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult CreateBinder(Binder newBinder)
         {
             int userId = GetUserId();
             Status status = new Status();
 
-            status = _modelHelper.CreateNewBinder(userId, newBinder);
+            status = _modelHelper.CreateNewBinder(userId);
 
-            if (status.success)
+            if (!status.success)
             {
-                int viewId = _modelHelper.GetSavedViewIdOnStart(userId);
-                if(viewId != -1)
-                {
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={viewId}");
-                }
+                return RedirectToAction("ErrorPage", status);
             }
-            return RedirectToAction("ErrorPage", status);
+
+            return Redirect($"/RhymeBinder/EditBinder?binderID={status.recordId}");
         }
        
         public IActionResult ListBinders()

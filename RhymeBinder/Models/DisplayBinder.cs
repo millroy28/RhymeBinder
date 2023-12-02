@@ -6,12 +6,8 @@ namespace RhymeBinder.Models
     {
         public int PageCount { get; set; }
         public int GroupCount { get; set; }
-
         public string CreatedByName { get; set; }
-
         public string ModifyByName { get; set; }
-
-        public List<TextHeaderTitleDefaultType> DefaultTitleTypes { get; set; }
 
     }
 }

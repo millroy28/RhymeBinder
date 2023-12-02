@@ -167,8 +167,9 @@ namespace RhymeBinder.Models
                 displayBinder.Selected = binder.Selected;
                 displayBinder.GroupCount = groupCount;
                 displayBinder.PageCount = textCount;
-
-                displayBinder.DefaultTitleTypes = _context.TextHeaderTitleDefaultTypes.ToList();
+                displayBinder.TextHeaderTitleDefaultFormat = binder.TextHeaderTitleDefaultFormat;
+                displayBinder.NewTextDefaultShowParagraphCount = binder.NewTextDefaultShowParagraphCount;
+                displayBinder.NewTextDefaultShowLineCount = binder.NewTextDefaultShowLineCount;
             }
             catch
             {
@@ -1546,6 +1547,53 @@ namespace RhymeBinder.Models
             status = CreateNewBinderViewSet(defaultBinder.BinderId, newUserId);
             if (status.success) status = CreateNewBinderViewSet(trashBinder.BinderId, newUserId);
             if (status.success) status = CreateNewBinderViewSet(loosePages.BinderId, newUserId);
+
+            return status;
+        }
+        public Status CreateNewBinder(int userId)
+        {
+            Status status = new Status();
+
+            SimpleUser simpleUser = GetCurrentSimpleUser(userId);
+
+            Binder newBinder = new Binder()
+            {
+                UserId = userId,
+                CreatedBy = userId,
+                Created = DateTime.Now,
+                Description = "",
+                Hidden = false,
+                Name = "New Binder",
+                NewTextDefaultShowLineCount = simpleUser.DefaultShowLineCount,
+                NewTextDefaultShowParagraphCount = simpleUser.DefaultShowParagraphCount,
+                TextHeaderTitleDefaultFormat = "Title",
+                Selected = false //taken care of by OpenBinder                
+            };
+
+            try
+            {
+                _context.Binders.Add(newBinder);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newBinder.BinderId;
+            }
+            catch
+            {
+                status.recordId = -1;
+                status.success = false;
+                status.message = $"Failed to create binder {newBinder.Name}";
+                return status;
+            }
+
+            status = CreateNewBinderViewSet(userId, newBinder.BinderId);
+
+            if (!status.success)
+            {
+                return status;
+            }
+
+            status = OpenBinder(userId, newBinder.BinderId);
+
 
             return status;
         }
