@@ -578,12 +578,7 @@ namespace RhymeBinder.Models
             TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
 
             //grab the related text (if it exists)
-            Text thisText = new Text();
-
-            if (thisTextHeader.TextId != null)
-            {
-                thisText = GetText((int)thisTextHeader.TextId);
-            }
+            Text thisText = GetText((int)thisTextHeader.TextId);
 
             //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
