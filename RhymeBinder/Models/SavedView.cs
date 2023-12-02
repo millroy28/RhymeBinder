@@ -1,14 +1,17 @@
-﻿
-
-#nullable disable
+﻿using System;
+using System.Collections.Generic;
 
 namespace RhymeBinder.Models
 {
     public partial class SavedView
     {
+        public SavedView()
+        {
+            TextGroups = new HashSet<TextGroup>();
+        }
+
         public int SavedViewId { get; set; }
         public int? UserId { get; set; }
-        public int RecordsPerPage { get; set; }
         public string SetValue { get; set; }
         public string SortValue { get; set; }
         public bool? Descending { get; set; }
@@ -24,8 +27,11 @@ namespace RhymeBinder.Models
         public bool? RevisionStatus { get; set; }
         public bool? Groups { get; set; }
         public int? BinderId { get; set; }
+        public int? RecordsPerPage { get; set; }
         public string SearchValue { get; set; }
+
         public virtual Binder Binder { get; set; }
         public virtual SimpleUser User { get; set; }
+        public virtual ICollection<TextGroup> TextGroups { get; set; }
     }
 }

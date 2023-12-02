@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace RhymeBinder.Models
 {
     public partial class Binder
@@ -14,7 +12,6 @@ namespace RhymeBinder.Models
             TextHeaders = new HashSet<TextHeader>();
         }
 
-
         public int BinderId { get; set; }
         public int? UserId { get; set; }
         public DateTime? Created { get; set; }
@@ -25,12 +22,15 @@ namespace RhymeBinder.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Selected { get; set; }
-
         public DateTime? LastAccessed { get; set; }
         public int? LastAccessedBy { get; set; }
+        public bool? NewTextDefaultShowLineCount { get; set; }
+        public bool? NewTextDefaultShowParagraphCount { get; set; }
+        public int TextHeaderTitleDefaultType { get; set; }
 
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
+        public virtual TextHeaderTitleDefaultType TextHeaderTitleDefaultTypeNavigation { get; set; }
         public virtual SimpleUser User { get; set; }
         public virtual ICollection<SavedView> SavedViews { get; set; }
         public virtual ICollection<TextGroup> TextGroups { get; set; }

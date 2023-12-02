@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace RhymeBinder.Models
 {
     public partial class AspNetUserLogin

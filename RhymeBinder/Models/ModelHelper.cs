@@ -1738,7 +1738,6 @@ namespace RhymeBinder.Models
             newBinder.Hidden = false;
             newBinder.Selected = false;
 
-
             try
             {
                 _context.Binders.Add(newBinder);

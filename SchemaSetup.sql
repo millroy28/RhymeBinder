@@ -71,6 +71,22 @@ PublicationTypeID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 PublicationType VARCHAR(100)
 )
 
+CREATE TABLE TextHeaderTitleDefaultTypes (
+TextHeaderTitleDefaultTypeId INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+TextHeaderTitleDefaultType NVARCHAR(100)
+)
+
+INSERT INTO TextHeaderTitleDefaultTypes (TextHeaderTitleDefaultType)
+VALUES
+('Date and Time'),
+('Date'),
+('Number'),
+('Number - Date'),
+('Custom Text'),
+('Custom Text - Date'),
+('Custom Text - Number')
+
+
 CREATE TABLE Binders(
 BinderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
@@ -82,6 +98,9 @@ LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Name] NVARCHAR(1000),
 [Description] NVARCHAR(MAX),
 [Selected] BIT,
+NewTextDefaultShowLineCount BIT NOT NULL DEFAULT 1,
+NewTextDefaultShowParagraphCount BIT NOT NULL DEFAULT 1,
+TextHeaderTitleDefaultType INT FOREIGN KEY REFERENCES TextHeaderTitleDefaultTypes(TextHeaderTitleDefaultTypeId) NOT NULL DEFAULT 1,
 LastAccessed DATETIME,
 LastAccessedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
@@ -148,7 +167,7 @@ SavedViewId INT FOREIGN KEY REFERENCES SavedViews(SavedViewID)
 
 CREATE TABLE TextHeaders (
 TextHeaderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-TextID INT FOREIGN KEY REFERENCES Texts (TextID),
+TextID INT FOREIGN KEY REFERENCES Texts (TextID) NOT NULL,
 Title NVARCHAR(1000),
 Created DATETIME,
 CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),

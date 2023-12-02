@@ -1,8 +1,5 @@
-﻿
+﻿using System;
 using System.Collections.Generic;
-
-
-#nullable disable
 
 namespace RhymeBinder.Models
 {
@@ -26,9 +23,9 @@ namespace RhymeBinder.Models
         public int UserId { get; set; }
         public string AspNetUserId { get; set; }
         public string UserName { get; set; }
-        public int DefaultRecordsPerPage { get; set; }
-        public bool DefaultShowLineCount { get; set; }
-        public bool DefaultShowParagraphCount { get; set; }
+        public int? DefaultRecordsPerPage { get; set; }
+        public bool? DefaultShowLineCount { get; set; }
+        public bool? DefaultShowParagraphCount { get; set; }
 
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual ICollection<Binder> BinderCreatedByNavigations { get; set; }

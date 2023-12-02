@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-#nullable disable
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace RhymeBinder.Models
 {
     public partial class RhymeBinderContext : DbContext
     {
-        private string _connectionString = "";
-        public RhymeBinderContext(string connectionString)
+        public RhymeBinderContext()
         {
-            _connectionString = connectionString;
         }
 
         public RhymeBinderContext(DbContextOptions<RhymeBinderContext> options)
@@ -22,7 +21,6 @@ namespace RhymeBinder.Models
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
-        public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual DbSet<Binder> Binders { get; set; }
         public virtual DbSet<EditWindowProperty> EditWindowProperties { get; set; }
@@ -40,6 +38,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<Text> Texts { get; set; }
         public virtual DbSet<TextGroup> TextGroups { get; set; }
         public virtual DbSet<TextHeader> TextHeaders { get; set; }
+        public virtual DbSet<TextHeaderTitleDefaultType> TextHeaderTitleDefaultTypes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
 
@@ -47,14 +46,13 @@ namespace RhymeBinder.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_connectionString);
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=RhymeBinder;Trusted_Connection=True;Encrypt=False");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-
             modelBuilder.Entity<AspNetRole>(entity =>
             {
                 entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
@@ -92,6 +90,21 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "AspNetUserRole",
+                        l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "RoleId");
+
+                            j.ToTable("AspNetUserRoles");
+
+                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+                        });
             });
 
             modelBuilder.Entity<AspNetUserClaim>(entity =>
@@ -122,21 +135,6 @@ namespace RhymeBinder.Models
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<AspNetUserRole>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.RoleId });
-
-                entity.HasIndex(e => e.RoleId, "IX_AspNetUserRoles_RoleId");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.AspNetUserRoles)
-                    .HasForeignKey(d => d.RoleId);
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.AspNetUserRoles)
-                    .HasForeignKey(d => d.UserId);
-            });
-
             modelBuilder.Entity<AspNetUserToken>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
@@ -158,11 +156,23 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.Description).IsUnicode(false);
 
+                entity.Property(e => e.LastAccessed).HasColumnType("datetime");
+
                 entity.Property(e => e.LastModified).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
+
+                entity.Property(e => e.NewTextDefaultShowLineCount)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.NewTextDefaultShowParagraphCount)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TextHeaderTitleDefaultType).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -175,6 +185,12 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.BinderLastModifiedByNavigations)
                     .HasForeignKey(d => d.LastModifiedBy)
                     .HasConstraintName("FK__Binders__LastMod__673F4B05");
+
+                entity.HasOne(d => d.TextHeaderTitleDefaultTypeNavigation)
+                    .WithMany(p => p.Binders)
+                    .HasForeignKey(d => d.TextHeaderTitleDefaultType)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Binders__TextHea__5AA469F6");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.BinderUsers)
@@ -362,6 +378,10 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.BinderId).HasColumnName("BinderID");
 
+                entity.Property(e => e.SearchValue)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.SetValue)
                     .HasMaxLength(20)
                     .IsUnicode(false);
@@ -476,6 +496,8 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
 
+                entity.Property(e => e.SavedViewId).HasColumnName("SavedViewID");
+
                 entity.HasOne(d => d.Binder)
                     .WithMany(p => p.TextGroups)
                     .HasForeignKey(d => d.BinderId)
@@ -485,6 +507,11 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.TextGroups)
                     .HasForeignKey(d => d.OwnerId)
                     .HasConstraintName("FK__TextGroup__Owner__49E3F248");
+
+                entity.HasOne(d => d.SavedView)
+                    .WithMany(p => p.TextGroups)
+                    .HasForeignKey(d => d.SavedViewId)
+                    .HasConstraintName("FK__TextGroup__Saved__1CA7377D");
             });
 
             modelBuilder.Entity<TextHeader>(entity =>
@@ -541,6 +568,13 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.InverseVersionOfNavigation)
                     .HasForeignKey(d => d.VersionOf)
                     .HasConstraintName("FK__TextHeade__Versi__52793849");
+            });
+
+            modelBuilder.Entity<TextHeaderTitleDefaultType>(entity =>
+            {
+                entity.Property(e => e.TextHeaderTitleDefaultType1)
+                    .HasMaxLength(100)
+                    .HasColumnName("TextHeaderTitleDefaultType");
             });
 
             modelBuilder.Entity<TextRecord>(entity =>

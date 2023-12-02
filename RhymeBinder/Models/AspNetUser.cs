@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace RhymeBinder.Models
 {
     public partial class AspNetUser
@@ -11,9 +9,9 @@ namespace RhymeBinder.Models
         {
             AspNetUserClaims = new HashSet<AspNetUserClaim>();
             AspNetUserLogins = new HashSet<AspNetUserLogin>();
-            AspNetUserRoles = new HashSet<AspNetUserRole>();
             AspNetUserTokens = new HashSet<AspNetUserToken>();
             SimpleUsers = new HashSet<SimpleUser>();
+            Roles = new HashSet<AspNetRole>();
         }
 
         public string Id { get; set; }
@@ -34,8 +32,9 @@ namespace RhymeBinder.Models
 
         public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; }
         public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; }
-        public virtual ICollection<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual ICollection<SimpleUser> SimpleUsers { get; set; }
+
+        public virtual ICollection<AspNetRole> Roles { get; set; }
     }
 }

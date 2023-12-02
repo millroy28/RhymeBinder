@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace RhymeBinder.Models
 {
     public partial class TextHeader
@@ -17,6 +15,7 @@ namespace RhymeBinder.Models
             Submissions = new HashSet<Submission>();
             TextRecords = new HashSet<TextRecord>();
         }
+
         public int TextHeaderId { get; set; }
         public int TextId { get; set; }
         public string Title { get; set; }
