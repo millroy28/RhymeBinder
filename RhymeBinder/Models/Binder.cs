@@ -24,8 +24,8 @@ namespace RhymeBinder.Models
         public bool? Selected { get; set; }
         public DateTime? LastAccessed { get; set; }
         public int? LastAccessedBy { get; set; }
-        public bool? NewTextDefaultShowLineCount { get; set; }
-        public bool? NewTextDefaultShowParagraphCount { get; set; }
+        public bool NewTextDefaultShowLineCount { get; set; }
+        public bool NewTextDefaultShowParagraphCount { get; set; }
         public int TextHeaderTitleDefaultType { get; set; }
 
         public virtual SimpleUser CreatedByNavigation { get; set; }

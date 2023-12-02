@@ -23,7 +23,7 @@ namespace RhymeBinder.Models
         public int UserId { get; set; }
         public string AspNetUserId { get; set; }
         public string UserName { get; set; }
-        public int? DefaultRecordsPerPage { get; set; }
+        public int DefaultRecordsPerPage { get; set; }
         public bool? DefaultShowLineCount { get; set; }
         public bool? DefaultShowParagraphCount { get; set; }
 

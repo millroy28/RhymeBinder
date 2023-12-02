@@ -13,7 +13,7 @@ namespace RhymeBinder.Models
 
         public int TextGroupId { get; set; }
         public string GroupTitle { get; set; }
-        public int? OwnerId { get; set; }
+        public int OwnerId { get; set; }
         public string Notes { get; set; }
         public bool? Locked { get; set; }
         public bool? Hidden { get; set; }

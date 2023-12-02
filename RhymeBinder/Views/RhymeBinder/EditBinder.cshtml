@@ -34,7 +34,17 @@
     <div class="form-item-large-entry">
         <textarea name="Description" class="form-multi-line-box">@Model.Description</textarea>
     </div>
+    <div class="form-item-title">
+        New Text Defaults:
+    </div>
+    <div class="form-item-large-entry">
+            @Html.DropDownListFor(model => model.TextHeaderTitleDefaultType,
+                new List<SelectListItem> { new SelectListItem { Value = "0", Text = "Plese Select one Item" } }
+                    .Concat(Model.DefaultTitleTypes.Select(x => new SelectListItem { Text = x.TextHeaderTitleDefaultType1, Value = x.TextHeaderTitleDefaultTypeId.ToString() })),
+                new { @class = "myselect" })  
 
+
+    </div>
     <div class="form-item-descriptor-two">
         <input type="submit" name="action" class="button" value="Submit Changes"/>
     </div>

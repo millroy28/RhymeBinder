@@ -53,9 +53,9 @@ CREATE TABLE SimpleUsers (
 UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 AspNetUserID NVARCHAR(450) FOREIGN KEY REFERENCES AspNetUsers(ID) NOT NULL,
 UserName NVARCHAR(300),
-DefaultRecordsPerPage int,
-DefaultShowLineCount bit,
-DefaultShowParagraphCount bit 
+DefaultRecordsPerPage INT NOT NULL,
+DefaultShowLineCount BIT,
+DefaultShowParagraphCount BIT 
 )
 
 
@@ -132,7 +132,7 @@ TextRevisionStatus VARCHAR(100)
 
 CREATE TABLE SavedViews (
 SavedViewID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID) NOT NULL,
 SetValue NVARCHAR (20),
 SortValue NVARCHAR (20),
 Descending BIT,
@@ -149,14 +149,14 @@ RevisionStatus BIT,
 Groups BIT,
 BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
 SearchValue nvarchar (150),
-RecordsPerPage int
+RecordsPerPage INT NOT NULL
 )
 
 
 CREATE TABLE TextGroups (
 TextGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 GroupTitle NVARCHAR(1000),
-OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID) NOT NULL,
 Notes NVARCHAR(Max),
 Locked BIT,
 [Hidden] BIT,

@@ -1,4 +1,6 @@
-﻿namespace RhymeBinder.Models
+﻿using System.Collections.Generic;
+
+namespace RhymeBinder.Models
 {
     public class DisplayBinder : Binder
     {
@@ -8,6 +10,8 @@
         public string CreatedByName { get; set; }
 
         public string ModifyByName { get; set; }
+
+        public List<TextHeaderTitleDefaultType> DefaultTitleTypes { get; set; }
 
     }
 }

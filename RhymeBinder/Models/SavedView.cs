@@ -11,7 +11,7 @@ namespace RhymeBinder.Models
         }
 
         public int SavedViewId { get; set; }
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         public string SetValue { get; set; }
         public string SortValue { get; set; }
         public bool? Descending { get; set; }
@@ -27,7 +27,7 @@ namespace RhymeBinder.Models
         public bool? RevisionStatus { get; set; }
         public bool? Groups { get; set; }
         public int? BinderId { get; set; }
-        public int? RecordsPerPage { get; set; }
+        public int RecordsPerPage { get; set; }
         public string SearchValue { get; set; }
 
         public virtual Binder Binder { get; set; }
