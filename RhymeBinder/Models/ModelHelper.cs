@@ -894,7 +894,7 @@ namespace RhymeBinder.Models
             {
                 _context.Texts.Add(newText);
                 _context.SaveChanges();
-                status = CreateNewTextHeader(userId, newText);
+                status = CreateNewTextHeader(userId, newText.TextId);
                 status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
             }
             catch
@@ -930,14 +930,15 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status CreateNewTextHeader(int userId, Text newText)
+        public Status CreateNewTextHeader(int userId, int newTextId)
         {
             Status status = new Status();
             // Create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             int binderId = GetCurrentBinderID(userId);
+
             TextHeader newTextHeader = new TextHeader()
             {
-                Title = DateTime.Now.ToString(),
+                Title = GetNewTextTitle(binderId),
                 Created = DateTime.Now,
                 CreatedBy = userId,
                 LastModified = DateTime.Now,
@@ -949,7 +950,7 @@ namespace RhymeBinder.Models
                 TextRevisionStatusId = 1,
                 LastRead = DateTime.Now,
                 LastReadBy = userId,
-                TextId = newText.TextId,
+                TextId = newTextId,
                 BinderId = binderId
             };
 
@@ -963,9 +964,72 @@ namespace RhymeBinder.Models
             catch
             {
                 status.success = false;
-                status.message = $"Failed creating header for text id {newText.TextId}";
+                status.message = $"Failed creating header for text id {newTextId}";
             }
             return status;
+        }
+        public Status CreateNewTextHeader(int userId, TextHeader parentHeader)
+        {
+            Status status = new Status();
+            // Create a new TextHeader child (new "vision") of parentHeader:
+
+            TextHeader newTextHeader = new TextHeader()
+            {
+                Title = parentHeader.Title,
+                Created = parentHeader.Created,
+                CreatedBy = parentHeader.CreatedBy,
+                LastModified = DateTime.Now,
+                LastModifiedBy = userId,
+                VisionNumber = parentHeader.VisionNumber + 1,
+                VersionOf = parentHeader.TextHeaderId,
+                Deleted = false,
+                Locked = false,
+                Top = true,
+                TextRevisionStatusId = parentHeader.TextRevisionStatusId,
+                LastRead = DateTime.Now,
+                LastReadBy = userId,
+                TextId = parentHeader.TextId,
+                BinderId = parentHeader.BinderId
+            };
+
+            try
+            {
+                _context.TextHeaders.Add(newTextHeader);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newTextHeader.TextHeaderId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed creating new child header for parent header id {parentHeader.TextHeaderId}";
+            }
+            return status;
+        }
+        public string GetNewTextTitle(int binderId)
+        {
+            /*
+             *          replacing :
+             * [DATE TIME] - current date and time
+               [TIME] - current time
+               [DATE] - current date
+               [NUMBER] - latest number (based on active texts in binder - removing texts could cause duplicates)
+            */
+            string title = _context.Binders.Where(x => x.BinderId == binderId).First().TextHeaderTitleDefaultFormat;
+            int textCount = 0;
+            if (title.Contains("[NUMBER]"))
+            {
+                textCount = _context.TextHeaders.Where(x => x.BinderId == binderId
+                                                         && x.Deleted == false
+                                                         && x.Top == true).Count() + 1;
+            }
+
+            title = title.Replace("[DATE TIME]", DateTime.Now.ToString());
+            title = title.Replace("[TIME]", DateTime.Now.ToShortTimeString());
+            title = title.Replace("[DATE]", DateTime.Now.ToShortDateString());
+            title = title.Replace("[NUMBER]", textCount.ToString());
+
+            return title;
         }
         public Status CreateNewTextRecord(int textHeaderId, int textId, int userId)
         {
@@ -1011,6 +1075,15 @@ namespace RhymeBinder.Models
                     ShowLineCount = binder.NewTextDefaultShowLineCount ? 1 : 0,
                     ShowParagraphCount = binder.NewTextDefaultShowParagraphCount ? 1 : 0,
                 };
+                // is this a new "vision"?
+                TextHeader textHeader = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderId).First();
+                if(textHeader.VersionOf != null)
+                {
+                    EditWindowProperty previousEditWindowProperty = _context.EditWindowProperties.Where(x => x.TextHeaderId == textHeader.VersionOf).First();
+                    editWindowProperty.ShowLineCount = previousEditWindowProperty.ShowLineCount;
+                    editWindowProperty.ShowParagraphCount = previousEditWindowProperty.ShowParagraphCount;
+                }
+
                 _context.EditWindowProperties.Add(editWindowProperty);
                 _context.SaveChanges();
                 status.success = true;
@@ -1262,26 +1335,19 @@ namespace RhymeBinder.Models
         public Status AddRevisionToText(int userId, int textHeaderId)
         {
             Status status = new Status();
-
             TextHeader currentTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId);
-            TextHeader newTextHeader = new TextHeader()
+
+            status = CreateNewTextHeader(userId, currentTextHeader);
+            if (!status.success)
             {
-                Created = currentTextHeader.Created,
-                CreatedBy = userId,
-                LastModified = DateTime.Now,
-                LastModifiedBy = userId,
-                LastRead = DateTime.Now,
-                LastReadBy = userId,
-                Deleted = false,
-                Locked = false,
-                Top = true,
-                TextId = currentTextHeader.TextId,
-                Title = currentTextHeader.Title,
-                VersionOf = currentTextHeader.TextHeaderId,
-                VisionNumber = currentTextHeader.VisionNumber + 1,
-                TextRevisionStatusId = currentTextHeader.TextRevisionStatusId,
-                BinderId = currentTextHeader.BinderId
-            };
+                return status;
+            }
+
+            status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
+            if (!status.success)
+            {
+                return status;
+            }
 
             currentTextHeader.Top = false;
             currentTextHeader.Locked = true;
@@ -1290,10 +1356,7 @@ namespace RhymeBinder.Models
             {
                 _context.Entry(currentTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                 _context.Update(currentTextHeader);
-                _context.TextHeaders.Add(newTextHeader);
                 _context.SaveChanges();
-                status.success = true;
-                status.recordId = newTextHeader.TextHeaderId;
             }
             catch
             {
