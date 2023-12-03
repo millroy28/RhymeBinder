@@ -44,7 +44,9 @@
             <div class="menu-bar-title menu-bar-title-mobile" id="menu_bar_title">
                 Open: @Model.Binder.Name - @Model.View.ViewName
             </div>
-
+            <div class="menu-bar-item">
+                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>
+            </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
                     Columns ▼
@@ -135,7 +137,7 @@
            
                     <a class="menu-bar-button" onclick="clear_search()">Clear</a>
             </div>
-           
+
 
         </div>
         <div class="table-view-table-container-left"> 

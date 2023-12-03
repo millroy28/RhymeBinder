@@ -187,6 +187,9 @@ namespace RhymeBinder.Controllers
             Status status = new Status();
             switch (action)
             {
+                case "NewText":
+                    return RedirectToAction("StartNewText");
+
                 case "LastView":
                     // Update current saved view with changed form values
                     status = _modelHelper.UpdateView(savedView);
