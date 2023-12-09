@@ -332,7 +332,7 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             Status status = new Status();
 
-            status = _modelHelper.CreateGroup(userId, newGroup);
+            status = _modelHelper.CreateNewTextGroup(userId, newGroup);
 
             if (!status.success)
             {

@@ -646,26 +646,38 @@ namespace RhymeBinder.Models
                 //previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
                 foreach (var textHeader in previousTextHeaders)
                 {
-                    previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
+                    SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
+                    {
+                        Created = textHeader.Created,
+                        CreatedBy = GetUserName(textHeader.CreatedBy),
+                        LastModified = textHeader.LastModified,
+                        LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
+                        Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
+                        Title = textHeader.Title,
+                        VisionNumber = textHeader.VisionNumber,
+                        TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
+                    };
+                    previousTextsAndHeaders.Add(simpleTextHeaderAndText);
+                    //previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
                 }
 
-                previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
-                                           join Text text in previousTexts
-                                             on textHeader.TextId equals text.TextId
-                                           join TextRevisionStatus revisionStatus in revisionStatuses
-                                             on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
-                                           select new SimpleTextHeaderAndText
-                                           {
-                                               Title = textHeader.Title,
-                                               TextBody = text.TextBody,
-                                               VisionNumber = textHeader.VisionNumber,
-                                               Created = textHeader.Created,
-                                               LastModified = textHeader.LastModified,
-                                               CreatedBy = GetUserName(textHeader.CreatedBy),
-                                               LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
-                                               Status = revisionStatus.TextRevisionStatus1
-                                           }
-                                          ).ToList();
+                //previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
+                //                           join Text text in previousTexts
+                //                             on textHeader.TextId equals text.TextId
+                //                           join TextRevisionStatus revisionStatus in revisionStatuses
+                //                             on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
+                //                           select new SimpleTextHeaderAndText
+                //                           {
+                //                               Title = textHeader.Title,
+                //                               TextBody = text.TextBody,
+                //                               VisionNumber = textHeader.VisionNumber,
+                //                               Created = textHeader.Created,
+                //                               LastModified = textHeader.LastModified,
+                //                               CreatedBy = GetUserName(textHeader.CreatedBy),
+                //                               LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
+                //                               Status = revisionStatus.TextRevisionStatus1
+                //                           }
+                                          //).ToList();
 
                 previousTextsAndHeaders = previousTextsAndHeaders.OrderByDescending(x => x.VisionNumber).ToList();
             }
@@ -1226,76 +1238,6 @@ namespace RhymeBinder.Models
                 status.success = false;
                 status.recordId = savedView.View.SavedViewId;
                 status.message = $"Failed to save Text Hidden state to {hide} for view {savedView.View.SavedViewId}";
-            }
-
-            return status;
-        }
-        public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
-        {
-            Status status = new Status();
-
-            try
-            {
-                //Get a list of all the headerIDs that we're going to update:
-                List<int> headerIDsToUpdate = savedView.TextHeaders.Where(x => x.Selected).Select(x => x.TextHeaderId).ToList();
-
-                // TODO - It's inelegant to grab ALL linked records and search them. This can be refactored 
-                //  Added a join on selected headers to limit results returned - previously was all. 
-                List<LnkTextHeadersTextGroup> existingLinks = _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Any(y => y == x.TextHeaderId)).ToList();
-
-                bool exists = true;
-
-                if (add)
-                {
-                    foreach (int headerID in headerIDsToUpdate)
-                    {
-                        // Check for existing links to avoid inserting duplicates
-                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
-                                                        x.TextGroupId == groupID);
-
-                        if (!exists)
-                        {
-                            LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
-
-                            newLink.TextGroupId = groupID;
-                            newLink.TextHeaderId = headerID;
-
-                            _context.LnkTextHeadersTextGroups.Add(newLink);
-                        }
-                    }
-                }
-
-                if (!add)
-                {
-                    foreach (int headerID in headerIDsToUpdate)
-                    {
-                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
-                                                        x.TextGroupId == groupID);
-
-                        if (exists)
-                        {
-                            LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
-
-                            linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
-                                                                                        x.TextGroupId == groupID).First();
-
-                            _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
-                        }
-                    }
-                }
-
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = savedView.View.SavedViewId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = savedView.View.SavedViewId;
-                string addOrRemove; string toOrFrom;
-                if (add) { addOrRemove = " add "; toOrFrom = " to "; } else { addOrRemove = " remove "; toOrFrom = " from "; };
-
-                status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
             }
 
             return status;
@@ -2064,9 +2006,47 @@ namespace RhymeBinder.Models
             Status status = new Status();
             // Create a new group and a new view for that group
 
+            SavedView defaultSavedView = GetDefaultSavedView(userId);
+            SavedView newGroupView = new SavedView()
+            {
+                UserId = userId,
+                SetValue = null, //setting below, once new group is saved
+                SortValue = defaultSavedView.SortValue,
+                ViewName = null,
+                Descending = defaultSavedView.Descending,
+                Default = defaultSavedView.Default,
+                Saved = defaultSavedView.Saved,
+                LastView = defaultSavedView.LastView,
+                Created = defaultSavedView.Created,
+                CreatedBy = defaultSavedView.CreatedBy,
+                LastModified = defaultSavedView.LastModified,
+                LastModifiedBy = defaultSavedView.LastModifiedBy,
+                VisionNumber = defaultSavedView.VisionNumber,
+                RevisionStatus = defaultSavedView.RevisionStatus,
+                RecordsPerPage = defaultSavedView.RecordsPerPage,
+                Groups = defaultSavedView.Groups,
+                BinderId = defaultSavedView.BinderId
+            };
+
+            try
+            {
+                _context.SavedViews.Add(newGroupView);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+            
+
             newGroup.OwnerId = userId;
             newGroup.Hidden = false;
             newGroup.Locked = false;
+            newGroup.SavedViewId = newGroupView.SavedViewId;
+
             try
             {
                 _context.TextGroups.Add(newGroup);
@@ -2080,34 +2060,29 @@ namespace RhymeBinder.Models
                 status.recordId = -1;
             }
 
-            if (status.recordId != -1)
+            newGroupView.SetValue = newGroup.TextGroupId.ToString();
+            newGroupView.ViewName = newGroup.GroupTitle;
+
+            try
             {
-                SavedView newGroupView = _context.SavedViews.Single(x => x.UserId == userId
-                                                                     && x.SetValue == "Default");
-
-                newGroupView.SetValue = newGroup.TextGroupId.ToString();
-                newGroupView.ViewName = newGroup.GroupTitle;
-
-                try
-                {
-                    _context.SavedViews.Add(newGroupView);
-                    _context.SaveChanges();
-                    status.success = true;
-                }
-                catch
-                {
-                    status.success = false;
-                    status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
-                    status.recordId = -1;
-                }
+                _context.SavedViews.Update(newGroupView);
+                _context.SaveChanges();
+                status.success = true;
             }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+
             return status;
         }
         public Status UpdateGroup(TextGroup editedGroup)
         {
             Status status = new Status();
             // May get a null value from the front end for locked
-            editedGroup.Locked = (editedGroup.Locked == null) ? false : editedGroup.Locked;
+            //editedGroup.Locked = (editedGroup.Locked == null) ? false : editedGroup.Locked;
             try
             {
                 _context.Entry(editedGroup).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
@@ -2122,6 +2097,79 @@ namespace RhymeBinder.Models
                 status.message = $"Failed to update group {editedGroup.GroupTitle}";
                 status.recordId = -1;
             }
+            return status;
+        }
+        public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
+        {
+            Status status = new Status();
+
+            try
+            {
+                //Get a list of all the headerIDs that we're going to update:
+                List<int> headerIDsToUpdate = savedView.TextHeaders.Where(x => x.Selected).Select(x => x.TextHeaderId).ToList();
+
+                // TODO - It's inelegant to grab ALL linked records and search them. This can be refactored 
+                //  Added a join on selected headers to limit results returned - previously was all. 
+                List<LnkTextHeadersTextGroup> existingLinks = _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Contains(x.TextHeaderId)).ToList();
+                    
+                    
+                    // _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Any(y => y == x.TextHeaderId)).ToList();
+
+                bool exists = true;
+
+                if (add)
+                {
+                    foreach (int headerID in headerIDsToUpdate)
+                    {
+                        // Check for existing links to avoid inserting duplicates
+                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
+                                                        x.TextGroupId == groupID);
+
+                        if (!exists)
+                        {
+                            LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
+
+                            newLink.TextGroupId = groupID;
+                            newLink.TextHeaderId = headerID;
+
+                            _context.LnkTextHeadersTextGroups.Add(newLink);
+                        }
+                    }
+                }
+
+                if (!add)
+                {
+                    foreach (int headerID in headerIDsToUpdate)
+                    {
+                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
+                                                        x.TextGroupId == groupID);
+
+                        if (exists)
+                        {
+                            LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
+
+                            linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
+                                                                                        x.TextGroupId == groupID).First();
+
+                            _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
+                        }
+                    }
+                }
+
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = savedView.View.SavedViewId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = savedView.View.SavedViewId;
+                string addOrRemove; string toOrFrom;
+                if (add) { addOrRemove = " add "; toOrFrom = " to "; } else { addOrRemove = " remove "; toOrFrom = " from "; };
+
+                status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
+            }
+
             return status;
         }
         public Status ClearTextsFromGroup(int groupId)
@@ -2160,26 +2208,6 @@ namespace RhymeBinder.Models
                     status.success = false;
                     status.message = $"Failed to delete text group {editedGroup.TextGroupId}";
                 }
-            }
-            return status;
-        }
-        public Status CreateGroup(int userId, TextGroup newGroup)
-        {   // Must also create a new view for each group.
-            Status status = new Status();
-
-            newGroup.OwnerId = userId;
-            newGroup.Hidden = false;
-            newGroup.Locked = false;
-
-            try
-            {
-                _context.TextGroups.Add(newGroup);
-                _context.SaveChanges();
-                status = CreateViewForGroup(newGroup);
-            }
-            catch
-            {
-                status.success = false;
             }
             return status;
         }

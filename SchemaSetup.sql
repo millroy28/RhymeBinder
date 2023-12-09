@@ -54,8 +54,8 @@ UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 AspNetUserID NVARCHAR(450) FOREIGN KEY REFERENCES AspNetUsers(ID) NOT NULL,
 UserName NVARCHAR(300),
 DefaultRecordsPerPage INT NOT NULL,
-DefaultShowLineCount BIT,
-DefaultShowParagraphCount BIT 
+DefaultShowLineCount BIT NOT NULL,
+DefaultShowParagraphCount BIT NOT NULL
 )
 
 
@@ -71,22 +71,6 @@ PublicationTypeID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 PublicationType VARCHAR(100)
 )
 
-CREATE TABLE TextHeaderTitleDefaultTypes (
-TextHeaderTitleDefaultTypeId INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-TextHeaderTitleDefaultType NVARCHAR(100)
-)
-
-INSERT INTO TextHeaderTitleDefaultTypes (TextHeaderTitleDefaultType)
-VALUES
-('Date and Time'),
-('Date'),
-('Number'),
-('Number - Date'),
-('Custom Text'),
-('Custom Text - Date'),
-('Custom Text - Number')
-
-
 CREATE TABLE Binders(
 BinderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
@@ -100,7 +84,7 @@ LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Selected] BIT,
 NewTextDefaultShowLineCount BIT NOT NULL DEFAULT 1,
 NewTextDefaultShowParagraphCount BIT NOT NULL DEFAULT 1,
-TextHeaderTitleDefaultType INT FOREIGN KEY REFERENCES TextHeaderTitleDefaultTypes(TextHeaderTitleDefaultTypeId) NOT NULL DEFAULT 1,
+TextHeaderTitleDefaultFormat NVARCHAR(200),
 LastAccessed DATETIME,
 LastAccessedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
@@ -187,8 +171,8 @@ BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 
 CREATE TABLE lnkTextHeadersTextGroups (
 lnkHeaderGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID),
-TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID)
+TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
+TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID) NOT NULL
 )
 
 CREATE TABLE TextRecord (
