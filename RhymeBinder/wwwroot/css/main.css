@@ -388,6 +388,7 @@
     border-bottom-right-radius: 4px;
     border-top-right-radius: 4px;*/
         font-family: Verdana, Geneva, Tahoma, sans-serif;
+        text-decoration: none;
     }
 
         .menu-bar-button:disabled {
@@ -1370,6 +1371,7 @@ display:none;
     border-bottom-right-radius: 4px;
     border-top-right-radius: 4px;*/
         font-family: Verdana, Geneva, Tahoma, sans-serif;
+        text-decoration: none;
     }
 
         .menu-bar-button:disabled {
@@ -1486,6 +1488,17 @@ display:none;
 
     .mobile-menu-bar-button-revision {
         background: url("../img/file-earmark-plus.svg") no-repeat;
+        font-size: 1px;
+        color: transparent;
+        border-color: transparent;
+        padding: 8px !important;
+        margin: 0px !important;
+        border: 0px !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .mobile-menu-bar-button-edit {
+        background: url("../img/pencil-square.svg") no-repeat;
         font-size: 1px;
         color: transparent;
         border-color: transparent;

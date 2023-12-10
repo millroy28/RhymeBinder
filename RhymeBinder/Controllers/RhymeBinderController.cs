@@ -100,6 +100,14 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ErrorPage", status);
             }
         }
+        public IActionResult ViewText(int textHeaderID)
+        {
+            int userId = GetUserId();
+
+            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
+
+            return View(thisTextHeaderBodyUserRecord);
+        }
         [HttpGet]
         public IActionResult EditText(int textHeaderID)
         {

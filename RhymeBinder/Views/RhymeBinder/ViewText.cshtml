@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewData["Title"] = "EditText";
+}
+@{
+}
+@model TextHeaderBodyUserRecord
+
+
+<div class="editor-view-wrapper">
+    
+    <div class="menu-bar">
+
+
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile">
+                Viewing:
+            </div>
+          </div>
+
+        <div class="menu-bar-escape mobile-menu-bar-escape">
+            <div class="menu-bar-item-right-final">
+                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeader.TextHeaderId">Edit</a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="title-bar">
+        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field" readonly>@Model.TextHeader.Title</textarea>
+    </div>
+
+    <div class="editor-container">
+        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" readonly>@Model.Text.TextBody</textarea>
+    </div>
+    <div class="ruler-container-a">
+       
+    </div>
+    <div class="ruler-container-b">
+       
+    </div>
+
+
+    <div class="left-sidebar">
+        <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
+        <div class="left-sidebar-item">Vision No. @Model.TextHeader.VisionNumber</div>
+        @if (Model.PreviousTexts.Count() > 0)
+        {
+            <div class="left-sidebar-item">Previous visions:</div>
+            foreach (var prev in Model.PreviousTexts)
+            {
+
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls="@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
+                <div class="left-sidebar-item">Status: @prev.Status</div>
+                <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
+                <div class="left-sidebar-item">Last Modified @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
+            }
+        }
+    </div>
+
+    <div class="right-sidebar">
+        <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified.Value.ToString("d")</div>
+        <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
+        <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created.Value.ToString("d")</div>
+        <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
+    </div>
+
+
+
+
+
+</div>
+
+@* Populate Drawers *@
+@foreach (var prev in Model.PreviousTexts)
+{
+    <section class="drawer drawer--left" id="@prev.VisionNumber" data-drawer-target>
+        <div class="drawer__wrapper">
+            <div class="drawer__header">
+                <div class="drawer__title">
+                    @prev.Title (Vision No.: @prev.VisionNumber)
+                </div>
+                <button class="drawer__close" data-drawer-close aria-label="Close Drawer"></button>
+            </div>
+            <textarea class="drawer__content">
+                @prev.TextBody
+            </textarea>
+        </div>
+    </section>
+}
+
+<div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
+
+
+@*<script language="Javascript" src="~/js/site.js"></script>*@
+@*<script language="Javascript" src="~/js/editor.js"></script>*@
+<br />
+
+
+
+
+
+
+
