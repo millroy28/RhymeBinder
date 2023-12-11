@@ -1,13 +1,10 @@
 ﻿using System;
-
-
-#nullable disable
+using System.Collections.Generic;
 
 namespace RhymeBinder.Models
 {
     public partial class TextRecord
     {
-
         public int TextRecordId { get; set; }
         public int TextHeaderId { get; set; }
         public int TextId { get; set; }

@@ -5,7 +5,7 @@
 @{
 }
 @model List<DisplayBinder>
-@{ int index = 0; } 
+
 
 
     <div class="table-view-wrapper">
@@ -67,9 +67,9 @@
                         <td name="text_count_col" align="center">@binder.PageCount</td>
                         <td name="group_count_col" align="center">@binder.GroupCount</td>
                         <td name="last_modified_col "align="center">@binder.LastModified</td>
-                        <td name="last_modified_by_col" align="center">@binder.LastModifiedBy</td>
+                        <td name="last_modified_by_col" align="center">@binder.ModifyByName</td>
                         <td name="created_col" align="center">@binder.Created</td>
-                        <td name="created_by_col" align="center">@binder.CreatedBy</td>
+                        <td name="created_by_col" align="center">@binder.CreatedByName</td>
                         <td name="description_col">@binder.Description</td>
                     </tr>
                 }

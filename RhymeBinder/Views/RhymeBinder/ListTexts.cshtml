@@ -44,7 +44,9 @@
             <div class="menu-bar-title menu-bar-title-mobile" id="menu_bar_title">
                 Open: @Model.Binder.Name - @Model.View.ViewName
             </div>
-
+            <div class="menu-bar-item">
+                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>
+            </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
                     Columns ▼
@@ -135,7 +137,7 @@
            
                     <a class="menu-bar-button" onclick="clear_search()">Clear</a>
             </div>
-           
+
 
         </div>
         <div class="table-view-table-container-left"> 
@@ -163,7 +165,7 @@
                             <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
                         </td>
-                        <td><a class="link-item"  href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
+                        <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
                         <td style="text-align: center" name="last_modified_by_col">@text.ModifyByName</td>
                         <td style="text-align: center" name="created_col">@text.Created</td>

@@ -14,11 +14,11 @@ namespace RhymeBinder.Models
             _context = context;
             
         }
-        // CHECK and GET methods
-                //  on failures, models will return with -1 in the ID field
+        //  GET methods         -- on failures, models will return with -1 in the ID field
+        #region GetModelMethods
         public List<Binder> GetBinders(int userId, string set)
         {
-            
+
 
             List<Binder> binders = new List<Binder>();
 
@@ -78,8 +78,8 @@ namespace RhymeBinder.Models
         }
         public SimpleUser GetCurrentSimpleUser(int userId)
         {
-           // string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-           // string aspUserID = aspNetUserId;
+            // string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            // string aspUserID = aspNetUserId;
             SimpleUser thisUser = new SimpleUser();
             try
             {
@@ -146,6 +146,8 @@ namespace RhymeBinder.Models
             {
                 Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
 
+
+
                 int textCount = _context.TextHeaders.Where(x => x.Top == true
                                                              && x.Deleted == false
                                                              && x.BinderId == binderId).Count();
@@ -165,6 +167,9 @@ namespace RhymeBinder.Models
                 displayBinder.Selected = binder.Selected;
                 displayBinder.GroupCount = groupCount;
                 displayBinder.PageCount = textCount;
+                displayBinder.TextHeaderTitleDefaultFormat = binder.TextHeaderTitleDefaultFormat;
+                displayBinder.NewTextDefaultShowParagraphCount = binder.NewTextDefaultShowParagraphCount;
+                displayBinder.NewTextDefaultShowLineCount = binder.NewTextDefaultShowLineCount;
             }
             catch
             {
@@ -187,8 +192,7 @@ namespace RhymeBinder.Models
                 List<TextGroup> textGroups = _context.TextGroups.Where(x => x.Owner.UserId == userId
                                                                          && x.Hidden == false).ToList();
 
-                int textCount;
-                int groupCount;
+                int textCount; int groupCount;
 
                 foreach (var binder in binders)
                 {
@@ -201,6 +205,7 @@ namespace RhymeBinder.Models
                                     on lnkTextHeadersTextGroups.TextGroupId equals textGroup.TextGroupId
                                   where header.BinderId == binder.BinderId
                                   select textGroup.TextGroupId).Distinct().Count();
+
 
                     displayBinders.Add(new DisplayBinder
                     {
@@ -215,7 +220,9 @@ namespace RhymeBinder.Models
                         Description = binder.Description,
                         PageCount = textCount,
                         GroupCount = groupCount,
-                        Selected = binder.Selected
+                        Selected = binder.Selected,
+                        CreatedByName = GetUserName(binder.CreatedBy),
+                        ModifyByName = GetUserName(binder.LastModifiedBy)
                     });
 
                 }
@@ -293,7 +300,8 @@ namespace RhymeBinder.Models
                     {
                         TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
                         theseTextHeaders = GetTextHeadersInGroup(group);
-                    } else
+                    }
+                    else
                     {   // Returning active set in the case of a parsing failure on group ID
                         theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == savedView.UserId &&
                                                     x.Top == true &&
@@ -343,12 +351,12 @@ namespace RhymeBinder.Models
                     LastModified = textHeader.LastModified,
                     LastRead = textHeader.LastRead,
                     Groups = selectedGroups,
-                    CreatedByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.CreatedBy).First().UserName,
-                    ModifyByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastModifiedBy).First().UserName,
-                    ReadByName = _context.SimpleUsers.Where(x => x.UserId == textHeader.LastReadBy).First().UserName,
+                    CreatedByName = GetUserName(textHeader.CreatedBy),
+                    ModifyByName = GetUserName(textHeader.LastModifiedBy),
+                    ReadByName = GetUserName(textHeader.LastReadBy),
                     RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1
                 }
-                    );
+                    ); ;
             }
 
             //reduce results by search value
@@ -367,7 +375,7 @@ namespace RhymeBinder.Models
                                                                                                                || searchFilteredTexts.Select(y => y.TextId).Contains(x.TextId)
                                                                                                                ).ToList();
 
-                  
+
                     theseDisplayTextHeaders.RemoveAll(x => !searchFilteredDisplayTextHeaders.Exists(y => y.TextHeaderId == x.TextHeaderId));
                 }
                 catch
@@ -423,8 +431,6 @@ namespace RhymeBinder.Models
 
             return (theseDisplayTextHeaders);
         }
-
-
         public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page, string searchValue)
         {
             DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView()
@@ -439,7 +445,8 @@ namespace RhymeBinder.Models
             // Add default views to list of groups for display in dropdown.
             try
             {
-                groups.Add(new TextGroup(){
+                groups.Add(new TextGroup()
+                {
                     GroupTitle = "All",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
                                                                && x.SetValue == "All").SavedViewId,
@@ -469,7 +476,7 @@ namespace RhymeBinder.Models
             // let's pause for station identification and an error check
             if (savedView.SavedViewId == -1 || binder.BinderId == -1)
             {
-                displayTextHeadersAndSavedView.View = new SavedView() {SavedViewId = -1};
+                displayTextHeadersAndSavedView.View = new SavedView() { SavedViewId = -1 };
                 return displayTextHeadersAndSavedView;
             }
 
@@ -516,7 +523,7 @@ namespace RhymeBinder.Models
             displayTextHeadersAndSavedView.UserBinders = userBinders;
             displayTextHeadersAndSavedView.Page = page;
             displayTextHeadersAndSavedView.TotalPages = pageCount;
-            displayTextHeadersAndSavedView.LowIndex = lowerIndex+1;
+            displayTextHeadersAndSavedView.LowIndex = lowerIndex + 1;
             displayTextHeadersAndSavedView.HighIndex = upperIndex;
             displayTextHeadersAndSavedView.TotalHeaders = headerCount;
 
@@ -568,27 +575,22 @@ namespace RhymeBinder.Models
         public TextHeaderBodyUserRecord GetTextHeaderBodyUserRecord(int userId, int textHeaderID)
         {
             // Build up a TextHeaderBodyUserRecord to pass into a view:
-                // obvs, gonna need that TextHeader:
+            // obvs, gonna need that TextHeader:
             TextHeader thisTextHeader = _context.TextHeaders.Find(textHeaderID);
 
-                //grab the related text (if it exists)
-            Text thisText = new Text();
+            //grab the related text (if it exists)
+            Text thisText = GetText((int)thisTextHeader.TextId);
 
-            if (thisTextHeader.TextId != null)
-            {
-                thisText = GetText((int)thisTextHeader.TextId);
-            }
-
-                //grab up the revision statuses for display in the dropdown list
+            //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
 
-                //grab the current revision status in a readable format for display
+            //grab the current revision status in a readable format for display
             string currentRevisionStatus = revisionStatuses.Single(x => x.TextRevisionStatusId == thisTextHeader.TextRevisionStatusId).TextRevisionStatus1;
 
-                //grab the SimpleUser object for current user
+            //grab the SimpleUser object for current user
             SimpleUser currentUser = GetCurrentSimpleUser(userId);
 
-                //grab the SimpleUser object for the user who created the TextHeader
+            //grab the SimpleUser object for the user who created the TextHeader
             SimpleUser createdUser = new SimpleUser();
             try
             {
@@ -598,7 +600,7 @@ namespace RhymeBinder.Models
             {
             }
 
-                //grab the SimpleUser object for the user who last modified the TextHeader
+            //grab the SimpleUser object for the user who last modified the TextHeader
             SimpleUser lastModifiedUser = new SimpleUser();
             try
             {
@@ -608,7 +610,7 @@ namespace RhymeBinder.Models
             {
             }
 
-                //grab the EditWindowStatus for the current user/header (if it exists; if not-create it)
+            //grab the EditWindowStatus for the current user/header (if it exists; if not-create it)
             EditWindowProperty thisEditWindowProperty = new EditWindowProperty();
             try
             {
@@ -630,7 +632,7 @@ namespace RhymeBinder.Models
             }
 
 
-                //build up previous Text "visions" and TextHeaders for them
+            //build up previous Text "visions" and TextHeaders for them
             List<TextHeader> previousTextHeaders = new List<TextHeader>();
             List<Text> previousTexts = new List<Text>();
             List<SimpleTextHeaderAndText> previousTextsAndHeaders = new List<SimpleTextHeaderAndText>();
@@ -644,30 +646,38 @@ namespace RhymeBinder.Models
                 //previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
                 foreach (var textHeader in previousTextHeaders)
                 {
-                    previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
+                    SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
+                    {
+                        Created = textHeader.Created,
+                        CreatedBy = GetUserName(textHeader.CreatedBy),
+                        LastModified = textHeader.LastModified,
+                        LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
+                        Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
+                        Title = textHeader.Title,
+                        VisionNumber = textHeader.VisionNumber,
+                        TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
+                    };
+                    previousTextsAndHeaders.Add(simpleTextHeaderAndText);
+                    //previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
                 }
 
-                previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
-                                           join Text text in previousTexts
-                                             on textHeader.TextId equals text.TextId
-                                           join SimpleUser createdByUser in users
-                                             on textHeader.CreatedBy equals createdByUser.UserId
-                                           join SimpleUser modifiedUser in users
-                                             on textHeader.LastModifiedBy equals modifiedUser.UserId
-                                           join TextRevisionStatus revisionStatus in revisionStatuses
-                                             on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
-                                           select new SimpleTextHeaderAndText
-                                           {
-                                               Title = textHeader.Title,
-                                               TextBody = text.TextBody,
-                                               VisionNumber = textHeader.VisionNumber,
-                                               Created = textHeader.Created,
-                                               LastModified = textHeader.LastModified,
-                                               CreatedBy = createdByUser.UserName,
-                                               LastModifiedBy = modifiedUser.UserName,
-                                               Status = revisionStatus.TextRevisionStatus1
-                                           }
-                                          ).ToList();
+                //previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
+                //                           join Text text in previousTexts
+                //                             on textHeader.TextId equals text.TextId
+                //                           join TextRevisionStatus revisionStatus in revisionStatuses
+                //                             on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
+                //                           select new SimpleTextHeaderAndText
+                //                           {
+                //                               Title = textHeader.Title,
+                //                               TextBody = text.TextBody,
+                //                               VisionNumber = textHeader.VisionNumber,
+                //                               Created = textHeader.Created,
+                //                               LastModified = textHeader.LastModified,
+                //                               CreatedBy = GetUserName(textHeader.CreatedBy),
+                //                               LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
+                //                               Status = revisionStatus.TextRevisionStatus1
+                //                           }
+                                          //).ToList();
 
                 previousTextsAndHeaders = previousTextsAndHeaders.OrderByDescending(x => x.VisionNumber).ToList();
             }
@@ -675,7 +685,7 @@ namespace RhymeBinder.Models
             {
             }
 
-                //wrap it up and send it
+            //wrap it up and send it
             TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
             {
                 TextHeader = thisTextHeader,
@@ -741,7 +751,7 @@ namespace RhymeBinder.Models
         {
             int binderId = GetCurrentBinderID(userId);
             int savedViewId;
-            
+
             try
             {
                 try
@@ -754,7 +764,7 @@ namespace RhymeBinder.Models
                                                              && x.BinderId == binderId
                                                              && x.SetValue == setValue).SavedViewId;
                 }
-  
+
             }
             catch
             {
@@ -765,8 +775,8 @@ namespace RhymeBinder.Models
         public int GetSavedViewIdOnStart(int userId)
         {
             Status status = ClearSavedViewSearchValues(userId);
-            
-            if(status.recordId == -1)
+
+            if (status.recordId == -1)
             {
                 return status.recordId;
             }
@@ -775,6 +785,26 @@ namespace RhymeBinder.Models
 
             return status.recordId;
         }
+        public string GetUserName(int? userId)
+        {
+            string name = "";
+            if (userId != null)
+            {
+                try 
+                {
+                    name = _context.SimpleUsers.Where(x => x.UserId == userId).FirstOrDefault().UserName;
+                }
+                catch
+                {
+                    name = "";
+                }
+            }
+            return name;
+        }
+        #endregion
+
+        // UTILITY methods
+        #region UtilityMethods
         public bool SimpleUserExists(int userId)
         {
             bool exists = false;
@@ -783,7 +813,8 @@ namespace RhymeBinder.Models
             if (thisUser.UserId != -1)
             {
                 exists = true;
-            } else
+            }
+            else
             {
                 exists = false;
             }
@@ -805,11 +836,656 @@ namespace RhymeBinder.Models
             }
 
             return same;
+        } 
+        #endregion
+
+        //  USER Methods: 
+        #region UserMethods
+        public Status SetupNewUser(SimpleUser newUser)
+        {
+            // Each user will have an entry in the SimpleUsers table 
+            // linked to their AspNetUser entry that will provide an int
+            // to use as a key
+            newUser.DefaultRecordsPerPage = 25;
+            newUser.DefaultShowLineCount = true;
+            newUser.DefaultShowParagraphCount = true;
+
+            Status status = new Status();
+
+            try
+            {
+                _context.SimpleUsers.Add(newUser);
+                _context.SaveChanges();
+
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save SimpleUser model.";
+                return status;
+            }
+
+            // Each user will need a new set of binders made...
+            status = CreateNewUserBinderSet(newUser.UserId);
+            return status;
         }
+        public Status UpdateSimpleUser(SimpleUser user)
+        {
+            Status status = new Status();
+            try
+            {
+                _context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(user);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = user.UserId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = $"Failed to update user {user.UserName}";
+            }
+            return status;
+        } 
+        #endregion
 
+        //  Text Methods:
+        #region TextMethods
+        public Status StartNewText(int userId)
+        {
+            Status status = new Status();
 
-        // CRUD Methods
-            //  Setup Methods:
+            // Create a new blank Text
+            Text newText = new Text();
+            newText.TextBody = "";
+            newText.Created = DateTime.Now;
+
+            try
+            {
+                _context.Texts.Add(newText);
+                _context.SaveChanges();
+                status = CreateNewTextHeader(userId, newText.TextId);
+                status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to create new Text object";
+                return status;
+            }
+            return status;
+        }
+        public Status CreateNewText(string textBody)
+        {
+            Status status = new Status();
+
+            Text newText = new Text()
+            {
+                TextBody = textBody,
+                Created = DateTime.Now
+            };
+
+            try
+            {
+                _context.Texts.Add(newText);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newText.TextId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Failed to save Text.";
+            }
+            return status;
+        }
+        public Status CreateNewTextHeader(int userId, int newTextId)
+        {
+            Status status = new Status();
+            // Create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
+            int binderId = GetCurrentBinderID(userId);
+
+            TextHeader newTextHeader = new TextHeader()
+            {
+                Title = GetNewTextTitle(binderId),
+                Created = DateTime.Now,
+                CreatedBy = userId,
+                LastModified = DateTime.Now,
+                LastModifiedBy = userId,
+                VisionNumber = 1,
+                Deleted = false,
+                Locked = false,
+                Top = true,
+                TextRevisionStatusId = 1,
+                LastRead = DateTime.Now,
+                LastReadBy = userId,
+                TextId = newTextId,
+                BinderId = binderId
+            };
+
+            try
+            {
+                _context.TextHeaders.Add(newTextHeader);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newTextHeader.TextHeaderId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed creating header for text id {newTextId}";
+            }
+            return status;
+        }
+        public Status CreateNewTextHeader(int userId, TextHeader parentHeader)
+        {
+            Status status = new Status();
+            // Create a new TextHeader child (new "vision") of parentHeader:
+
+            TextHeader newTextHeader = new TextHeader()
+            {
+                Title = parentHeader.Title,
+                Created = parentHeader.Created,
+                CreatedBy = parentHeader.CreatedBy,
+                LastModified = DateTime.Now,
+                LastModifiedBy = userId,
+                VisionNumber = parentHeader.VisionNumber + 1,
+                VersionOf = parentHeader.TextHeaderId,
+                Deleted = false,
+                Locked = false,
+                Top = true,
+                TextRevisionStatusId = parentHeader.TextRevisionStatusId,
+                LastRead = DateTime.Now,
+                LastReadBy = userId,
+                TextId = parentHeader.TextId,
+                BinderId = parentHeader.BinderId
+            };
+
+            try
+            {
+                _context.TextHeaders.Add(newTextHeader);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newTextHeader.TextHeaderId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed creating new child header for parent header id {parentHeader.TextHeaderId}";
+            }
+            return status;
+        }
+        public string GetNewTextTitle(int binderId)
+        {
+            /*
+             *          replacing :
+             * [DATE TIME] - current date and time
+               [TIME] - current time
+               [DATE] - current date
+               [NUMBER] - latest number (based on active texts in binder - removing texts could cause duplicates)
+            */
+            string title = _context.Binders.Where(x => x.BinderId == binderId).First().TextHeaderTitleDefaultFormat;
+            int textCount = 0;
+            if (title.Contains("[NUMBER]"))
+            {
+                textCount = _context.TextHeaders.Where(x => x.BinderId == binderId
+                                                         && x.Deleted == false
+                                                         && x.Top == true).Count() + 1;
+            }
+
+            title = title.Replace("[DATE TIME]", DateTime.Now.ToString());
+            title = title.Replace("[TIME]", DateTime.Now.ToShortTimeString());
+            title = title.Replace("[DATE]", DateTime.Now.ToShortDateString());
+            title = title.Replace("[NUMBER]", textCount.ToString());
+
+            return title;
+        }
+        public Status CreateNewTextRecord(int textHeaderId, int textId, int userId)
+        {
+            Status status = new Status();
+            //Create a new log entry for the TextRecord table
+            TextRecord newTextRecord = new TextRecord()
+            {
+                TextHeaderId = textHeaderId,
+                TextId = textId,
+                UserId = userId,
+                Recorded = DateTime.Now
+            };
+
+            try
+            {
+                _context.TextRecords.Add(newTextRecord);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newTextRecord.TextRecordId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save new Text Record";
+                status.recordId = -1;
+            }
+            return status;
+        }
+        public Status CreateNewTextHeaderEditWindowProperty(int userId, int textHeaderId)
+        {
+            Status status = new Status();
+            // EditWindowProperty entry helps autosave function/set ui elements to previous state on load after save
+            try
+            {
+                Binder binder = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderId).Select(x => x.Binder).First();
+
+                EditWindowProperty editWindowProperty = new EditWindowProperty()
+                {
+                    TextHeaderId = textHeaderId,
+                    UserId = userId,
+                    ActiveElement = "body_edit_field", //ID of text body edit field
+                    CursorPosition = 0,
+                    ShowLineCount = binder.NewTextDefaultShowLineCount ? 1 : 0,
+                    ShowParagraphCount = binder.NewTextDefaultShowParagraphCount ? 1 : 0,
+                };
+                // is this a new "vision"?
+                TextHeader textHeader = _context.TextHeaders.Where(x => x.TextHeaderId == textHeaderId).First();
+                if(textHeader.VersionOf != null)
+                {
+                    EditWindowProperty previousEditWindowProperty = _context.EditWindowProperties.Where(x => x.TextHeaderId == textHeader.VersionOf).First();
+                    editWindowProperty.ShowLineCount = previousEditWindowProperty.ShowLineCount;
+                    editWindowProperty.ShowParagraphCount = previousEditWindowProperty.ShowParagraphCount;
+                }
+
+                _context.EditWindowProperties.Add(editWindowProperty);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = textHeaderId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = $"Failed to set default Edit Window Properties for text header {textHeaderId}";
+            }
+            return status;
+        }
+        public Status UpdateTextHeader(TextHeader updatedTextHeader)
+        {
+            Status status = new Status();
+
+            try
+            {
+                _context.Entry(updatedTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(updatedTextHeader);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save updated TextHeader.";
+            }
+            return status;
+        }
+        public Status UpdateEditWindowProperty(EditWindowProperty updatedEditWindowProperty)
+        {
+            Status status = new Status();
+            try
+            {
+                _context.Entry(updatedEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(updatedEditWindowProperty);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save updated Edit Window Property";
+            }
+            return status;
+        }
+        public Status SaveEditedText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord)
+        {
+            Status status = new Status();
+            //Check for change and only save if the text has changed
+            bool unchanged;
+            Text origText = new Text();
+
+            origText = GetText((int)editedTextHeaderBodyUserRecord.TextHeader.TextId);
+            unchanged = TextsAreSame(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody);
+
+            //also checking for status changes and title changes
+            if (unchanged)
+            {
+                TextHeader origHeader = new TextHeader();
+                origHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
+                if (origHeader.TextRevisionStatusId != editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId)
+                {
+                    unchanged = false;
+                }
+                if (unchanged)
+                {
+                    unchanged = TextsAreSame(origHeader.Title, editedTextHeaderBodyUserRecord.TextHeader.Title);
+                }
+            }
+
+            // if something has changed, let's save it by creating a new Text and pointing the header towards it
+            if (!unchanged)
+            {
+                //Create a new record in the Text table 
+                status = CreateNewText(editedTextHeaderBodyUserRecord.Text.TextBody);
+                if (!status.success) { return status; }
+                Text newText = GetText(status.recordId);
+
+                status = CreateNewTextRecord(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId, newText.TextId, editedTextHeaderBodyUserRecord.User.UserId);
+                if (!status.success) { return status; }
+
+                //Update the TextHeader with the new TextID, etc
+                TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
+
+                updatedTextHeader.LastModified = newText.Created;
+                updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserId;
+                updatedTextHeader.LastRead = newText.Created;
+                updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
+                updatedTextHeader.TextId = newText.TextId;
+                updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
+                updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
+
+                status = UpdateTextHeader(updatedTextHeader);
+                if (!status.success) { return status; }
+
+                //  update that EditWindowStatus to save the view preferences for this text header
+                EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == editedTextHeaderBodyUserRecord.User.UserId
+                                                                                                && x.TextHeaderId == editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId).First();
+
+                thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
+                thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
+                thisEditWindowProperty.ShowLineCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowLineCount;
+                thisEditWindowProperty.ShowParagraphCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowParagraphCount;
+
+                status = UpdateEditWindowProperty(thisEditWindowProperty);
+            }
+            else
+            {
+                // Still have to return a success status even if no new record was saved
+                status.success = true;
+                status.recordId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
+            }
+            return status;
+        }
+        public Status ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
+        {
+            Status status = new Status();
+
+            foreach (var header in savedView.TextHeaders)
+            {
+                if (header.Selected)
+                {
+                    TextHeader thisTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == header.TextHeaderId);
+                    thisTextHeader.Deleted = hide;
+                    _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    _context.Update(thisTextHeader);
+                }
+            }
+            try
+            {
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = savedView.View.SavedViewId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = savedView.View.SavedViewId;
+                status.message = $"Failed to save Text Hidden state to {hide} for view {savedView.View.SavedViewId}";
+            }
+
+            return status;
+        }
+        public Status TransferHeadersAcrossBinders(DisplayTextHeadersAndSavedView savedView, int newBinderId)
+        {
+            Status status = new Status();
+
+            foreach (var header in savedView.TextHeaders)
+            {
+                if (header.Selected)
+                {
+                    TextHeader thisTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == header.TextHeaderId);
+                    thisTextHeader.BinderId = newBinderId;
+                    thisTextHeader.Deleted = false; // deleted == hidden, and I don't want transferred headers to be hidden even if they were previously
+
+                    try
+                    {
+                        _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                        _context.Update(thisTextHeader);
+                    }
+                    catch
+                    {
+                        status.success = false;
+                        status.recordId = -1;
+                        status.message = $"Failed to transfer text header {thisTextHeader.TextHeaderId} into binder {newBinderId}";
+                        return status;
+                    }
+                }
+            }
+
+            _context.SaveChanges();
+            status.success = true;
+            status.recordId = savedView.View.SavedViewId;
+            return status;
+        }
+        public Status AddRevisionToText(int userId, int textHeaderId)
+        {
+            Status status = new Status();
+            TextHeader currentTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId);
+
+            status = CreateNewTextHeader(userId, currentTextHeader);
+            if (!status.success)
+            {
+                return status;
+            }
+
+            status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
+            if (!status.success)
+            {
+                return status;
+            }
+
+            currentTextHeader.Top = false;
+            currentTextHeader.Locked = true;
+
+            try
+            {
+                _context.Entry(currentTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(currentTextHeader);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = $"Failed to add revision to Text Header{textHeaderId}";
+            }
+
+            return status;
+        } 
+        #endregion
+
+        //  View Methods:
+        #region ViewMethods
+        public Status UpdateView(DisplayTextHeadersAndSavedView savedView)
+        {   // The intent here is that when the user changes the dispaly
+            // in the ui, the values are changed in the Saved View
+            // that is returned. This method will apply those changes and save them
+            // to the database.
+            Status status = new Status();
+
+            SavedView viewToUpdate = GetSavedView(savedView.View.SavedViewId);
+
+            viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
+            viewToUpdate.UserId = savedView.View.UserId;
+            viewToUpdate.SetValue = savedView.View.SetValue;
+            viewToUpdate.SortValue = savedView.View.SortValue;
+            viewToUpdate.Descending = (bool)savedView.View.Descending;
+            viewToUpdate.ViewName = savedView.View.ViewName;
+            viewToUpdate.Default = (bool)savedView.View.Default;
+            viewToUpdate.Saved = (bool)savedView.View.Saved;
+            viewToUpdate.LastModified = (bool)savedView.View.LastModified;
+            viewToUpdate.LastModifiedBy = (bool)savedView.View.LastModifiedBy;
+            viewToUpdate.Created = (bool)savedView.View.Created;
+            viewToUpdate.CreatedBy = (bool)savedView.View.CreatedBy;
+            viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
+            viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
+            viewToUpdate.Groups = (bool)savedView.View.Groups;
+            viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
+            viewToUpdate.SearchValue = savedView.View.SearchValue;
+
+            try
+            {
+                _context.Entry(viewToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(viewToUpdate);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = viewToUpdate.SavedViewId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = savedView.View.SavedViewId;
+                status.message = "Failed to update SavedView";
+            }
+            return status;
+        }
+        public Status SetDefaultView(int userId, SavedView newDefaults)
+        {
+            Status status = new Status();
+            // When user clicks SaveDefault we will apply current view's grid arrangement to the default saved view
+            SavedView defaultSavedView = GetDefaultSavedView(userId);
+
+            defaultSavedView.RecordsPerPage = newDefaults.RecordsPerPage;
+            defaultSavedView.Descending = newDefaults.Descending;
+            defaultSavedView.SortValue = newDefaults.SortValue;
+            defaultSavedView.Default = newDefaults.Default;
+            defaultSavedView.Saved = newDefaults.Saved;
+            defaultSavedView.LastView = newDefaults.LastView;
+            defaultSavedView.LastModified = newDefaults.LastModified;
+            defaultSavedView.LastModifiedBy = newDefaults.LastModifiedBy;
+            defaultSavedView.Created = newDefaults.Created;
+            defaultSavedView.CreatedBy = newDefaults.CreatedBy;
+            defaultSavedView.VisionNumber = newDefaults.VisionNumber;
+            defaultSavedView.RevisionStatus = newDefaults.RevisionStatus;
+            defaultSavedView.Groups = newDefaults.Groups;
+
+            try
+            {
+                _context.Entry(defaultSavedView).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(defaultSavedView);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newDefaults.SavedViewId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Failed to save view defaults.";
+            }
+
+            return status;
+        }
+        public Status SwitchToViewBySet(int userId, string setValue)
+        {
+            Status status = new Status();
+
+            int viewId = GetSavedViewIdBySetValue(userId, setValue);
+
+            if (viewId == -1)
+            {
+                status.success = false;
+                status.recordId = viewId;
+                status.message = $"Failed to retrieve view with set value {setValue}";
+            }
+            else
+            {
+                status.success = true;
+                status.recordId = viewId;
+            }
+            return status;
+        }
+        public Status ResetActiveViewToDefaults(int userId)
+        {
+            Status status = new Status();
+
+            int binderId = GetCurrentBinderID(userId);
+
+            if (binderId == -1)
+            {
+                status.success = false;
+                status.message = $"Failed to retrieve current binder Id";
+                return status;
+            };
+
+            SavedView activeView = _context.SavedViews.Single(x => x.BinderId == binderId
+                                                                && x.SetValue == "Active");
+
+            SavedView defaultView = _context.SavedViews.Single(x => x.BinderId == binderId
+                                                                 && x.SetValue == "Default");
+
+            activeView.RecordsPerPage = defaultView.RecordsPerPage;
+            activeView.Descending = defaultView.Descending;
+            activeView.SortValue = defaultView.SortValue;
+            activeView.Default = defaultView.Default;
+            activeView.Saved = defaultView.Saved;
+            activeView.LastView = defaultView.LastView;
+            activeView.LastModified = defaultView.LastModified;
+            activeView.LastModifiedBy = defaultView.LastModifiedBy;
+            activeView.Created = defaultView.Created;
+            activeView.CreatedBy = defaultView.CreatedBy;
+            activeView.VisionNumber = defaultView.VisionNumber;
+            activeView.RevisionStatus = defaultView.RevisionStatus;
+            activeView.Groups = defaultView.Groups;
+
+            try
+            {
+                _context.Entry(activeView).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(activeView);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = activeView.SavedViewId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failure to reset Active saved view to default values";
+                status.recordId = -1;
+            }
+
+            return status;
+        }
+        public Status ClearSavedViewSearchValues(int userId)
+        {
+            Status status = new Status();
+            try
+            {
+                List<SavedView> savedViews = _context.SavedViews.Where(x => x.UserId == userId).ToList();
+                savedViews.ForEach(x => x.SearchValue = "");
+                _context.UpdateRange(savedViews);
+                _context.SaveChanges();
+
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Failed to clear search values from user's saved views";
+            }
+            return status;
+        } 
+        #endregion
+
+        //  Binder Methods:
+        #region BinderMethods
         public Status CreateNewUserBinderSet(int newUserId)
         {
             Status status = new Status();
@@ -867,7 +1543,7 @@ namespace RhymeBinder.Models
             }
             catch
             {
-                status.success=false;
+                status.success = false;
                 status.message = "Failed to create Default Binder Set";
                 return status;
             }
@@ -876,6 +1552,90 @@ namespace RhymeBinder.Models
             status = CreateNewBinderViewSet(defaultBinder.BinderId, newUserId);
             if (status.success) status = CreateNewBinderViewSet(trashBinder.BinderId, newUserId);
             if (status.success) status = CreateNewBinderViewSet(loosePages.BinderId, newUserId);
+
+            return status;
+        }
+        public Status CreateNewBinder(int userId)
+        {
+            Status status = new Status();
+
+            SimpleUser simpleUser = GetCurrentSimpleUser(userId);
+
+            Binder newBinder = new Binder()
+            {
+                UserId = userId,
+                CreatedBy = userId,
+                Created = DateTime.Now,
+                Description = "",
+                Hidden = false,
+                Name = "New Binder",
+                NewTextDefaultShowLineCount = simpleUser.DefaultShowLineCount,
+                NewTextDefaultShowParagraphCount = simpleUser.DefaultShowParagraphCount,
+                TextHeaderTitleDefaultFormat = "Title",
+                Selected = false //taken care of by OpenBinder                
+            };
+
+            try
+            {
+                _context.Binders.Add(newBinder);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newBinder.BinderId;
+            }
+            catch
+            {
+                status.recordId = -1;
+                status.success = false;
+                status.message = $"Failed to create binder {newBinder.Name}";
+                return status;
+            }
+
+            status = CreateNewBinderViewSet(userId, newBinder.BinderId);
+
+            if (!status.success)
+            {
+                return status;
+            }
+
+            status = OpenBinder(userId, newBinder.BinderId);
+
+
+            return status;
+        }
+        public Status CreateNewBinder(int userId, Binder newBinder)
+        {
+            Status status = new Status();
+
+            newBinder.UserId = userId;
+            newBinder.Created = DateTime.Now;
+            newBinder.CreatedBy = userId;
+            newBinder.Hidden = false;
+            newBinder.Selected = false;
+
+            try
+            {
+                _context.Binders.Add(newBinder);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = newBinder.BinderId;
+            }
+            catch
+            {
+                status.recordId = -1;
+                status.success = false;
+                status.message = $"Failed to create binder {newBinder.Name}";
+                return status;
+            }
+
+            status = CreateNewBinderViewSet(userId, newBinder.BinderId);
+
+            if (!status.success)
+            {
+                return status;
+            }
+
+            status = OpenBinder(userId, newBinder.BinderId);
+
 
             return status;
         }
@@ -1016,757 +1776,7 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status CreateNewText(string textBody)
-        {
-            Status status = new Status();
-
-            Text newText = new Text()
-            {
-                TextBody = textBody,
-                Created = DateTime.Now
-            };
-
-            try
-            {
-                _context.Texts.Add(newText);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = newText.TextId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = -1;
-                status.message = "Failed to save Text.";
-            }
-            return status;
-        }
-        public Status CreateNewTextRecord(int textHeaderId, int textId, int userId)
-        {
-            Status status = new Status();
-            //Create a new log entry for the TextRecord table
-            TextRecord newTextRecord = new TextRecord()
-            {
-                TextHeaderId = textHeaderId,
-                TextId = textId,
-                UserId = userId,
-                Recorded = DateTime.Now
-            };
-
-            try
-            {
-                _context.TextRecords.Add(newTextRecord);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = newTextRecord.TextRecordId;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failed to save new Text Record";
-                status.recordId = -1;
-            }
-            return status;
-        }
-        public Status CreateNewTextGroup(int userId, TextGroup newGroup)
-        {
-            Status status = new Status();
-            // Create a new group and a new view for that group
-
-            newGroup.OwnerId = userId;
-            newGroup.Hidden = false;
-            newGroup.Locked = false;
-            try
-            {
-                _context.TextGroups.Add(newGroup);
-                _context.SaveChanges();
-                status.recordId = newGroup.TextGroupId;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = $"Failed to save new text group {newGroup.GroupTitle}";
-                status.recordId = -1;
-            }
-
-            if (status.recordId != -1)
-            {
-                SavedView newGroupView = _context.SavedViews.Single(x => x.UserId == userId
-                                                                     && x.SetValue == "Default");
-
-                newGroupView.SetValue = newGroup.TextGroupId.ToString();
-                newGroupView.ViewName = newGroup.GroupTitle;
-
-                try
-                {
-                    _context.SavedViews.Add(newGroupView);
-                    _context.SaveChanges();
-                    status.success = true;
-                }
-                catch
-                {
-                    status.success = false;
-                    status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
-                    status.recordId = -1;
-                }
-            }
-            return status;
-        }
-        public Status UpdateTextHeader(TextHeader updatedTextHeader)
-        {
-            Status status = new Status();
-
-            try
-            {
-                _context.Entry(updatedTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(updatedTextHeader);
-                _context.SaveChanges();
-                status.success = true;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failed to save updated TextHeader.";
-            }
-            return status;
-        }
-        public Status UpdateEditWindowProperty(EditWindowProperty updatedEditWindowProperty)
-        {
-            Status status = new Status();
-            try
-            {
-                _context.Entry(updatedEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(updatedEditWindowProperty);
-                _context.SaveChanges();
-                status.success = true;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failed to save updated Edit Window Property";
-            }
-            return status;
-        }
-        public Status UpdateBinderLastAccessed(int binderId, int userId)
-        {
-            Status status = new Status();
-            Binder thisBinder = _context.Binders.Single(x => x.BinderId == binderId);
-            thisBinder.LastAccessed = DateTime.Now;
-            thisBinder.LastAccessedBy = userId;
-            try
-            {
-                _context.Entry(thisBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(thisBinder);
-                _context.SaveChanges();
-                status.success = true;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failure to update Binder";
-            }
-            return status;
-
-        }
-        
-        //  USER Methods : 
-        public Status SetupNewUser(SimpleUser newUser)
-        {
-            // Each user will have an entry in the SimpleUsers table 
-            // linked to their AspNetUser entry that will provide an int
-            // to use as a key
-            newUser.DefaultRecordsPerPage = 25;
-            newUser.DefaultShowLineCount = true;
-            newUser.DefaultShowParagraphCount = true;
-
-            Status status = new Status();
-
-            try
-            {
-                _context.SimpleUsers.Add(newUser);
-                _context.SaveChanges();
-
-                status.success = true;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failed to save SimpleUser model.";
-                return status;
-            }
-
-            // Each user will need a new set of binders made...
-            status = CreateNewUserBinderSet(newUser.UserId);
-            return status;
-        }
-        public Status UpdateSimpleUser(SimpleUser user)
-        {
-            Status status = new Status();
-            try
-            {
-                _context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                _context.Update(user);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = user.UserId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = -1;
-                status.message = $"Failed to update user {user.UserName}";
-            }
-            return status;
-        }
-
-        //  Text Methods:
-        public Status StartNewText(int userId)
-        {
-            Status status = new Status();
-
-            // Create a new blank Text
-            Text newText = new Text();
-            newText.TextBody = "";
-            newText.Created = DateTime.Now;
-          
-            try
-            {
-                _context.Texts.Add(newText);
-                _context.SaveChanges();
-                status = CreateNewTextHeader(userId, newText);
-                status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failed to create new Text object";
-                return status;
-            }
-            return status;
-        }
-        public Status CreateNewTextHeader(int userId, Text newText)
-        {
-            Status status = new Status();
-            // Create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
-            int binderId = GetCurrentBinderID(userId);
-            TextHeader newTextHeader = new TextHeader()
-            {
-                Title = DateTime.Now.ToString(),
-                Created = DateTime.Now,
-                CreatedBy = userId,
-                LastModified = DateTime.Now,
-                LastModifiedBy = userId,
-                VisionNumber = 1,
-                Deleted = false,
-                Locked = false,
-                Top = true,
-                TextRevisionStatusId = 1,
-                LastRead = DateTime.Now,
-                LastReadBy = userId,
-                TextId = newText.TextId,
-                BinderId = binderId
-            };
-
-            try
-            {
-                _context.TextHeaders.Add(newTextHeader);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = newTextHeader.TextHeaderId;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = $"Failed creating header for text id {newText.TextId}";
-            }
-            return status;
-        }
-        public Status CreateNewTextHeaderEditWindowProperty(int userId, int textHeaderId)
-        {
-            Status status = new Status();
-            // EditWindowProperty entry helps autosave function/set ui elements to previous state on load after save
-            try
-            {
-                SimpleUser user = GetCurrentSimpleUser(userId);
-                EditWindowProperty editWindowProperty = new EditWindowProperty()
-                {
-                    TextHeaderId = textHeaderId,
-                    UserId = userId,
-                    ActiveElement = "body_edit_field", //ID of text body edit field
-                    CursorPosition = 0,
-                    ShowLineCount = user.DefaultShowLineCount ? 1 : 0,
-                    ShowParagraphCount = user.DefaultShowParagraphCount ? 1 : 0
-                };
-                _context.EditWindowProperties.Add(editWindowProperty);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = textHeaderId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = -1;
-                status.message = $"Failed to set default Edit Window Properties for text header {textHeaderId}";
-            }
-            return status;
-        }
-        public Status SaveEditedText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord)
-        {
-            Status status = new Status(); 
-            //Check for change and only save if the text has changed
-            bool unchanged;
-            Text origText = new Text();
-
-            origText = GetText((int)editedTextHeaderBodyUserRecord.TextHeader.TextId);
-            unchanged = TextsAreSame(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody);
-
-            //also checking for status changes and title changes
-            if (unchanged)
-            {
-                TextHeader origHeader = new TextHeader();
-                origHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
-                if (origHeader.TextRevisionStatusId != editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId)
-                {
-                    unchanged = false;
-                }
-                if (unchanged)
-                {
-                    unchanged = TextsAreSame(origHeader.Title, editedTextHeaderBodyUserRecord.TextHeader.Title);
-                }
-            }
-
-            // if something has changed, let's save it by creating a new Text and pointing the header towards it
-            if (!unchanged)
-            {
-                //Create a new record in the Text table 
-                status = CreateNewText(editedTextHeaderBodyUserRecord.Text.TextBody);
-                if (!status.success) { return status; }
-                Text newText = GetText(status.recordId);
-
-                status = CreateNewTextRecord(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId, newText.TextId, editedTextHeaderBodyUserRecord.User.UserId);
-                if (!status.success) { return status; }
-
-                //Update the TextHeader with the new TextID, etc
-                TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
-
-                updatedTextHeader.LastModified = newText.Created;
-                updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserId;
-                updatedTextHeader.LastRead = newText.Created;
-                updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
-                updatedTextHeader.TextId = newText.TextId;
-                updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
-                updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
-
-                status = UpdateTextHeader(updatedTextHeader);
-                if (!status.success) { return status; }
-
-                //  update that EditWindowStatus to save the view preferences for this text header
-                EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == editedTextHeaderBodyUserRecord.User.UserId
-                                                                                                && x.TextHeaderId == editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId).First();
-
-                thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
-                thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
-                thisEditWindowProperty.ShowLineCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowLineCount;
-                thisEditWindowProperty.ShowParagraphCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowParagraphCount;
-
-                status = UpdateEditWindowProperty(thisEditWindowProperty);
-            }
-            else
-            {
-                // Still have to return a success status even if no new record was saved
-                status.success = true;
-                status.recordId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
-            }
-            return status;
-        }
-        public Status ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
-        {
-            Status status = new Status();
-
-            foreach (var header in savedView.TextHeaders)
-            {
-                if (header.Selected)
-                {
-                    TextHeader thisTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == header.TextHeaderId);
-                    thisTextHeader.Deleted = hide;
-                    _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                    _context.Update(thisTextHeader);
-                }
-            }
-            try
-            {
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = savedView.View.SavedViewId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = savedView.View.SavedViewId;
-                status.message = $"Failed to save Text Hidden state to {hide} for view {savedView.View.SavedViewId}";
-            }
-
-            return status;
-        }
-        public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
-        {   
-            Status status = new Status();
-
-            try
-            {
-                //Get a list of all the headerIDs that we're going to update:
-                List<int> headerIDsToUpdate = savedView.TextHeaders.Where(x => x.Selected).Select(x => x.TextHeaderId).ToList();
-
-                // TODO - It's inelegant to grab ALL linked records and search them. This can be refactored 
-                //  Added a join on selected headers to limit results returned - previously was all. 
-                List<LnkTextHeadersTextGroup> existingLinks = _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Any(y => y == x.TextHeaderId)).ToList();
-                    
-                bool exists = true;
-
-                if (add)
-                {
-                    foreach (int headerID in headerIDsToUpdate)
-                    {
-                        // Check for existing links to avoid inserting duplicates
-                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
-                                                        x.TextGroupId == groupID);
-
-                        if (!exists)
-                        {
-                            LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
-
-                            newLink.TextGroupId = groupID;
-                            newLink.TextHeaderId = headerID;
-
-                            _context.LnkTextHeadersTextGroups.Add(newLink);
-                        }
-                    }
-                }
-
-                if (!add)
-                {
-                    foreach (int headerID in headerIDsToUpdate)
-                    {
-                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
-                                                        x.TextGroupId == groupID);
-
-                        if (exists)
-                        {
-                            LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
-
-                            linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
-                                                                                        x.TextGroupId == groupID).First();
-
-                            _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
-                        }
-                    }
-                }
-
-                    _context.SaveChanges();
-                    status.success = true;
-                    status.recordId = savedView.View.SavedViewId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = savedView.View.SavedViewId;
-                string addOrRemove; string toOrFrom;
-                if (add) { addOrRemove = " add "; toOrFrom = " to "; } else { addOrRemove = " remove "; toOrFrom = " from "; };
-
-                status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
-            }
-
-            return status;
-        }
-        public Status TransferHeadersAcrossBinders(DisplayTextHeadersAndSavedView savedView, int newBinderId)
-        {
-            Status status = new Status();
-            
-            foreach (var header in savedView.TextHeaders)
-            {
-                if (header.Selected)
-                {
-                    TextHeader thisTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == header.TextHeaderId);
-                    thisTextHeader.BinderId = newBinderId;
-                    thisTextHeader.Deleted = false; // deleted == hidden, and I don't want transferred headers to be hidden even if they were previously
-
-                    try
-                    {
-                        _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                        _context.Update(thisTextHeader);
-                    }
-                    catch
-                    {
-                        status.success = false;
-                        status.recordId = -1;
-                        status.message = $"Failed to transfer text header {thisTextHeader.TextHeaderId} into binder {newBinderId}";
-                        return status;
-                    }
-                }
-            }
-
-            _context.SaveChanges();
-            status.success = true;
-            status.recordId = savedView.View.SavedViewId;
-            return status;
-        }
-        public Status AddRevisionToText(int userId, int textHeaderId)
-        {
-            Status status = new Status();
-
-            TextHeader currentTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId);
-            TextHeader newTextHeader = new TextHeader()
-            {
-                Created = currentTextHeader.Created,
-                CreatedBy = userId,
-                LastModified = DateTime.Now,
-                LastModifiedBy = userId,
-                LastRead = DateTime.Now,
-                LastReadBy = userId,
-                Deleted = false,
-                Locked = false,
-                Top = true,
-                TextId = currentTextHeader.TextId,
-                Title = currentTextHeader.Title,
-                VersionOf = currentTextHeader.TextHeaderId,
-                VisionNumber = currentTextHeader.VisionNumber + 1,
-                TextRevisionStatusId = currentTextHeader.TextRevisionStatusId,
-                BinderId = currentTextHeader.BinderId
-            };
-
-            currentTextHeader.Top = false;
-            currentTextHeader.Locked = true;
-
-            try
-            {
-                _context.Entry(currentTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                _context.Update(currentTextHeader);
-                _context.TextHeaders.Add(newTextHeader);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = newTextHeader.TextHeaderId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = -1;
-                status.message = $"Failed to add revision to Text Header{textHeaderId}";
-            }
-
-            return status;
-        }
-
-            //  View Methods:
-        public Status UpdateView(DisplayTextHeadersAndSavedView savedView)
-        {   // The intent here is that when the user changes the dispaly
-            // in the ui, the values are changed in the Saved View
-            // that is returned. This method will apply those changes and save them
-            // to the database.
-            Status status = new Status();
-
-            SavedView viewToUpdate = GetSavedView(savedView.View.SavedViewId);
-
-            viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
-            viewToUpdate.UserId = savedView.View.UserId;
-            viewToUpdate.SetValue = savedView.View.SetValue;
-            viewToUpdate.SortValue = savedView.View.SortValue;
-            viewToUpdate.Descending = (bool)savedView.View.Descending;
-            viewToUpdate.ViewName = savedView.View.ViewName;
-            viewToUpdate.Default = (bool)savedView.View.Default;
-            viewToUpdate.Saved = (bool)savedView.View.Saved;
-            viewToUpdate.LastModified = (bool)savedView.View.LastModified;
-            viewToUpdate.LastModifiedBy = (bool)savedView.View.LastModifiedBy;
-            viewToUpdate.Created = (bool)savedView.View.Created;
-            viewToUpdate.CreatedBy = (bool)savedView.View.CreatedBy;
-            viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
-            viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
-            viewToUpdate.Groups = (bool)savedView.View.Groups;
-            viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
-            viewToUpdate.SearchValue = savedView.View.SearchValue;
-
-            try
-            {
-                _context.Entry(viewToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(viewToUpdate);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = viewToUpdate.SavedViewId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = savedView.View.SavedViewId;
-                status.message = "Failed to update SavedView";
-            }
-            return status;
-        }
-        public Status SetDefaultView(int userId, SavedView newDefaults)
-        {
-            Status status = new Status();
-            // When user clicks SaveDefault we will apply current view's grid arrangement to the default saved view
-            SavedView defaultSavedView = GetDefaultSavedView(userId);
-
-            defaultSavedView.RecordsPerPage = newDefaults.RecordsPerPage;
-            defaultSavedView.Descending = newDefaults.Descending;
-            defaultSavedView.SortValue = newDefaults.SortValue;
-            defaultSavedView.Default = newDefaults.Default;
-            defaultSavedView.Saved = newDefaults.Saved;
-            defaultSavedView.LastView = newDefaults.LastView;
-            defaultSavedView.LastModified = newDefaults.LastModified;
-            defaultSavedView.LastModifiedBy = newDefaults.LastModifiedBy;
-            defaultSavedView.Created = newDefaults.Created;
-            defaultSavedView.CreatedBy = newDefaults.CreatedBy;
-            defaultSavedView.VisionNumber = newDefaults.VisionNumber;
-            defaultSavedView.RevisionStatus = newDefaults.RevisionStatus;
-            defaultSavedView.Groups = newDefaults.Groups;
-
-            try
-            {
-                _context.Entry(defaultSavedView).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                _context.Update(defaultSavedView);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = newDefaults.SavedViewId;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = -1;
-                status.message = "Failed to save view defaults.";
-            }
-
-            return status;
-        }
-        public Status SwitchToViewBySet(int userId, string setValue)
-        {
-            Status status = new Status();
-
-            int viewId = GetSavedViewIdBySetValue(userId, setValue);
-
-            if (viewId == -1)
-            {
-                status.success = false;
-                status.recordId = viewId;
-                status.message = $"Failed to retrieve view with set value {setValue}";
-            }
-            else
-            {
-                status.success = true;
-                status.recordId = viewId;
-            }
-            return status;
-        }
-        public Status ResetActiveViewToDefaults(int userId)
-        {
-            Status status = new Status();
-
-            int binderId = GetCurrentBinderID(userId);
-
-            if(binderId == -1)
-            {
-                status.success = false;
-                status.message = $"Failed to retrieve current binder Id";
-                return status;
-            };
-
-            SavedView activeView = _context.SavedViews.Single(x => x.BinderId == binderId
-                                                                && x.SetValue == "Active");
-
-            SavedView defaultView = _context.SavedViews.Single(x => x.BinderId == binderId
-                                                                 && x.SetValue == "Default");
-
-            activeView.RecordsPerPage = defaultView.RecordsPerPage;
-            activeView.Descending = defaultView.Descending;
-            activeView.SortValue = defaultView.SortValue;
-            activeView.Default = defaultView.Default;
-            activeView.Saved = defaultView.Saved;
-            activeView.LastView = defaultView.LastView;
-            activeView.LastModified = defaultView.LastModified;
-            activeView.LastModifiedBy = defaultView.LastModifiedBy;
-            activeView.Created = defaultView.Created;
-            activeView.CreatedBy = defaultView.CreatedBy;
-            activeView.VisionNumber = defaultView.VisionNumber;
-            activeView.RevisionStatus = defaultView.RevisionStatus;
-            activeView.Groups = defaultView.Groups;
-
-            try
-            {
-                _context.Entry(activeView).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(activeView);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = activeView.SavedViewId;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failure to reset Active saved view to default values";
-                status.recordId = -1;
-            }
-           
-            return status;
-        }
-
-        public Status ClearSavedViewSearchValues(int userId)
-        {
-            Status status = new Status();
-            try
-            {
-                List<SavedView> savedViews = _context.SavedViews.Where(x => x.UserId == userId).ToList();
-                savedViews.ForEach(x => x.SearchValue = "");
-                _context.UpdateRange(savedViews);
-                _context.SaveChanges();
-
-                status.success = true;
-            }
-            catch
-            {
-                status.success = false;
-                status.recordId = -1;
-                status.message = "Failed to clear search values from user's saved views";
-            }
-            return status;
-        }
-            //  Binder Methods:
-        public Status CreateNewBinder(int userId, Binder newBinder)
-        {
-            Status status = new Status();
-
-            newBinder.UserId = userId;
-            newBinder.Created = DateTime.Now;
-            newBinder.CreatedBy = userId;
-            newBinder.Hidden = false;
-            newBinder.Selected = false;
-
-
-            try
-            {
-                _context.Binders.Add(newBinder);
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = newBinder.BinderId;
-            }
-            catch
-            {
-                status.recordId = -1;
-                status.success = false;
-                status.message = $"Failed to create binder {newBinder.Name}";
-                return status;
-            }
-
-            status = CreateNewBinderViewSet(userId, newBinder.BinderId);
-
-            if (!status.success)
-            {
-                return status;
-            }
-
-            status = OpenBinder(userId, newBinder.BinderId);
-
-            
-            return status;
-        }
-        public Status UpdateBinder(int userId ,Binder editedBinder)
+        public Status UpdateBinder(int userId, Binder editedBinder)
         {
             Status status = new Status();
             editedBinder.LastModified = DateTime.Now;
@@ -1819,8 +1829,29 @@ namespace RhymeBinder.Models
                 status.success = false;
                 status.message = $"Failed to open binder {binderToOpenId}";
             }
-            return status;        
+            return status;
         }
+        public Status UpdateBinderLastAccessed(int binderId, int userId)
+        {
+            Status status = new Status();
+            Binder thisBinder = _context.Binders.Single(x => x.BinderId == binderId);
+            thisBinder.LastAccessed = DateTime.Now;
+            thisBinder.LastAccessedBy = userId;
+            try
+            {
+                _context.Entry(thisBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisBinder);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failure to update Binder";
+            }
+            return status;
+
+        } 
         public Status MoveAllBinderContents(int binderSourceId, int binderDestinationId)
         {
             Status status = new Status();
@@ -1933,8 +1964,8 @@ namespace RhymeBinder.Models
 
             try
             {
-            
-                Binder loosePagesBinder = _context.Binders.Single(x => x.UserId == userId 
+
+                Binder loosePagesBinder = _context.Binders.Single(x => x.UserId == userId
                                                                     && x.Name == "Loose Pages");
 
                 int headerCount = _context.TextHeaders.Count(x => x.BinderId == loosePagesBinder.BinderId);
@@ -1965,14 +1996,93 @@ namespace RhymeBinder.Models
             }
 
             return status;
-        }
+        } 
+        #endregion
 
         //  Group Methods:
+        #region GroupMethods
+        public Status CreateNewTextGroup(int userId, TextGroup newGroup)
+        {
+            Status status = new Status();
+            // Create a new group and a new view for that group
+
+            SavedView defaultSavedView = GetDefaultSavedView(userId);
+            SavedView newGroupView = new SavedView()
+            {
+                UserId = userId,
+                SetValue = null, //setting below, once new group is saved
+                SortValue = defaultSavedView.SortValue,
+                ViewName = null,
+                Descending = defaultSavedView.Descending,
+                Default = defaultSavedView.Default,
+                Saved = defaultSavedView.Saved,
+                LastView = defaultSavedView.LastView,
+                Created = defaultSavedView.Created,
+                CreatedBy = defaultSavedView.CreatedBy,
+                LastModified = defaultSavedView.LastModified,
+                LastModifiedBy = defaultSavedView.LastModifiedBy,
+                VisionNumber = defaultSavedView.VisionNumber,
+                RevisionStatus = defaultSavedView.RevisionStatus,
+                RecordsPerPage = defaultSavedView.RecordsPerPage,
+                Groups = defaultSavedView.Groups,
+                BinderId = defaultSavedView.BinderId
+            };
+
+            try
+            {
+                _context.SavedViews.Add(newGroupView);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+            
+
+            newGroup.OwnerId = userId;
+            newGroup.Hidden = false;
+            newGroup.Locked = false;
+            newGroup.SavedViewId = newGroupView.SavedViewId;
+
+            try
+            {
+                _context.TextGroups.Add(newGroup);
+                _context.SaveChanges();
+                status.recordId = newGroup.TextGroupId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to save new text group {newGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+
+            newGroupView.SetValue = newGroup.TextGroupId.ToString();
+            newGroupView.ViewName = newGroup.GroupTitle;
+
+            try
+            {
+                _context.SavedViews.Update(newGroupView);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+
+            return status;
+        }
         public Status UpdateGroup(TextGroup editedGroup)
         {
             Status status = new Status();
             // May get a null value from the front end for locked
-            editedGroup.Locked = (editedGroup.Locked == null) ? false : editedGroup.Locked;
+            //editedGroup.Locked = (editedGroup.Locked == null) ? false : editedGroup.Locked;
             try
             {
                 _context.Entry(editedGroup).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
@@ -1987,6 +2097,79 @@ namespace RhymeBinder.Models
                 status.message = $"Failed to update group {editedGroup.GroupTitle}";
                 status.recordId = -1;
             }
+            return status;
+        }
+        public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
+        {
+            Status status = new Status();
+
+            try
+            {
+                //Get a list of all the headerIDs that we're going to update:
+                List<int> headerIDsToUpdate = savedView.TextHeaders.Where(x => x.Selected).Select(x => x.TextHeaderId).ToList();
+
+                // TODO - It's inelegant to grab ALL linked records and search them. This can be refactored 
+                //  Added a join on selected headers to limit results returned - previously was all. 
+                List<LnkTextHeadersTextGroup> existingLinks = _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Contains(x.TextHeaderId)).ToList();
+                    
+                    
+                    // _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Any(y => y == x.TextHeaderId)).ToList();
+
+                bool exists = true;
+
+                if (add)
+                {
+                    foreach (int headerID in headerIDsToUpdate)
+                    {
+                        // Check for existing links to avoid inserting duplicates
+                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
+                                                        x.TextGroupId == groupID);
+
+                        if (!exists)
+                        {
+                            LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
+
+                            newLink.TextGroupId = groupID;
+                            newLink.TextHeaderId = headerID;
+
+                            _context.LnkTextHeadersTextGroups.Add(newLink);
+                        }
+                    }
+                }
+
+                if (!add)
+                {
+                    foreach (int headerID in headerIDsToUpdate)
+                    {
+                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
+                                                        x.TextGroupId == groupID);
+
+                        if (exists)
+                        {
+                            LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
+
+                            linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
+                                                                                        x.TextGroupId == groupID).First();
+
+                            _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
+                        }
+                    }
+                }
+
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = savedView.View.SavedViewId;
+            }
+            catch
+            {
+                status.success = false;
+                status.recordId = savedView.View.SavedViewId;
+                string addOrRemove; string toOrFrom;
+                if (add) { addOrRemove = " add "; toOrFrom = " to "; } else { addOrRemove = " remove "; toOrFrom = " from "; };
+
+                status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
+            }
+
             return status;
         }
         public Status ClearTextsFromGroup(int groupId)
@@ -2025,26 +2208,6 @@ namespace RhymeBinder.Models
                     status.success = false;
                     status.message = $"Failed to delete text group {editedGroup.TextGroupId}";
                 }
-            }
-            return status;
-        }
-        public Status CreateGroup(int userId, TextGroup newGroup)
-        {   // Must also create a new view for each group.
-            Status status = new Status();
-
-            newGroup.OwnerId = userId;
-            newGroup.Hidden = false;
-            newGroup.Locked = false;
-
-            try
-            {
-                _context.TextGroups.Add(newGroup);
-                _context.SaveChanges();
-                status = CreateViewForGroup(newGroup);
-            }
-            catch
-            {
-                status.success = false;
             }
             return status;
         }
@@ -2109,6 +2272,8 @@ namespace RhymeBinder.Models
             }
             return (prevTextHeaders);
         }
+
+        #endregion
 
     }
 }

@@ -34,7 +34,45 @@
     <div class="form-item-large-entry">
         <textarea name="Description" class="form-multi-line-box">@Model.Description</textarea>
     </div>
-
+    <div class="form-item-title">
+        New Text Default Title:
+    </div>
+    <div class="form-item-large-entry">
+        <textarea name="TextHeaderTitleDefaultFormat" class="form-single-line-box">@Model.TextHeaderTitleDefaultFormat</textarea>
+    </div>
+    <div class="form-item-descriptor-large">
+        <ul>
+            <li>[DATE TIME] - for current date and time</li>
+            <li>[TIME] - for current time</li>
+            <li>[DATE] - for current date</li>
+            <li>[NUMBER] - for latest number (based on active texts in binder - removing texts could cause duplicates)</li>
+        </ul>
+        Example: a value of 
+        <ul>
+            <li>
+                 <b>Dear Diary, it's [TIME] o'clock on [DATE]</b>
+            </li>
+        </ul>
+        would mean each new text in that binder would have a default title of 
+        <ul>
+            <li>
+                <b>Dear Diary, it's 8:44:10 AM o'clock on 3/24/2020</b> 
+            </li>
+        </ul>
+        ...with the current date and time, of course.
+    </div>
+    <div class="form-item-title">
+        New Texts Show Line Count:
+    </div>
+    <div class="form-item-large-entry">
+        @Html.EditorFor(m => m.NewTextDefaultShowLineCount)
+    </div>
+    <div class="form-item-title">
+        New Texts Show Paragraph Count:
+    </div>
+    <div class="form-item-large-entry">
+        @Html.EditorFor(m => m.NewTextDefaultShowParagraphCount)
+    </div>
     <div class="form-item-descriptor-two">
         <input type="submit" name="action" class="button" value="Submit Changes"/>
     </div>

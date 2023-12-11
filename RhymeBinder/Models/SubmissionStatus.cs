@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-
-
-#nullable disable
+﻿using System;
+using System.Collections.Generic;
 
 namespace RhymeBinder.Models
 {
@@ -11,6 +9,7 @@ namespace RhymeBinder.Models
         {
             Submissions = new HashSet<Submission>();
         }
+
         public int SubmissionStatusId { get; set; }
         public string SubmissionStatus1 { get; set; }
 

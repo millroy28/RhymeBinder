@@ -53,9 +53,9 @@ CREATE TABLE SimpleUsers (
 UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 AspNetUserID NVARCHAR(450) FOREIGN KEY REFERENCES AspNetUsers(ID) NOT NULL,
 UserName NVARCHAR(300),
-DefaultRecordsPerPage int,
-DefaultShowLineCount bit,
-DefaultShowParagraphCount bit 
+DefaultRecordsPerPage INT NOT NULL,
+DefaultShowLineCount BIT NOT NULL,
+DefaultShowParagraphCount BIT NOT NULL
 )
 
 
@@ -82,6 +82,9 @@ LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Name] NVARCHAR(1000),
 [Description] NVARCHAR(MAX),
 [Selected] BIT,
+NewTextDefaultShowLineCount BIT NOT NULL DEFAULT 1,
+NewTextDefaultShowParagraphCount BIT NOT NULL DEFAULT 1,
+TextHeaderTitleDefaultFormat NVARCHAR(200),
 LastAccessed DATETIME,
 LastAccessedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
@@ -113,7 +116,7 @@ TextRevisionStatus VARCHAR(100)
 
 CREATE TABLE SavedViews (
 SavedViewID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+UserID INT FOREIGN KEY REFERENCES SimpleUsers(UserID) NOT NULL,
 SetValue NVARCHAR (20),
 SortValue NVARCHAR (20),
 Descending BIT,
@@ -130,25 +133,25 @@ RevisionStatus BIT,
 Groups BIT,
 BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
 SearchValue nvarchar (150),
-RecordsPerPage int
+RecordsPerPage INT NOT NULL
 )
 
 
 CREATE TABLE TextGroups (
 TextGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 GroupTitle NVARCHAR(1000),
-OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
+OwnerID INT FOREIGN KEY REFERENCES SimpleUsers(UserID) NOT NULL,
 Notes NVARCHAR(Max),
-Locked BIT,
-[Hidden] BIT,
-BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
-SavedViewId INT FOREIGN KEY REFERENCES SavedViews(SavedViewID)
+Locked BIT NOT NULL DEFAULT 0,
+[Hidden] BIT NOT NULL DEFAULT 0,
+BinderID INT FOREIGN KEY REFERENCES Binders(BinderID) NOT NULL,
+SavedViewId INT FOREIGN KEY REFERENCES SavedViews(SavedViewID) NOT NULL
 )
 
 
 CREATE TABLE TextHeaders (
 TextHeaderID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-TextID INT FOREIGN KEY REFERENCES Texts (TextID),
+TextID INT FOREIGN KEY REFERENCES Texts (TextID) NOT NULL,
 Title NVARCHAR(1000),
 Created DATETIME,
 CreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
@@ -168,8 +171,8 @@ BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 
 CREATE TABLE lnkTextHeadersTextGroups (
 lnkHeaderGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID),
-TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID)
+TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
+TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID) NOT NULL
 )
 
 CREATE TABLE TextRecord (
