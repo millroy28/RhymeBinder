@@ -16,17 +16,8 @@ namespace RhymeBinder.Controllers
             _modelHelper = modelHelper;
         }
 
-        public IActionResult Index()
-        {
-            int userId = GetUserId();
-            //check that a SimpleUser record has been created for this user; if not, create one;
-            if (userId == -1)
-            {
-                return RedirectToAction("SetupNewUser");
-            };
-            return RedirectToAction("ListTextsOnSessionStart");
-        }
         //-------USER:
+        #region UserMethods
         [HttpGet]
         public IActionResult SetupNewUser()
         {
@@ -49,13 +40,12 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ErrorPage", status);
             }
         }
-
         [HttpGet]
         public IActionResult EditUser()
         {
             int userId = GetUserId();
             SimpleUser user = _modelHelper.GetCurrentSimpleUser(userId);
-          
+
 
             if (user.UserId == -1)
             {
@@ -69,11 +59,10 @@ namespace RhymeBinder.Controllers
             }
             return View(user);
         }
-
         [HttpPost]
         public IActionResult EditUser(SimpleUser editedUser)
         {
-        
+
             Status status = _modelHelper.UpdateSimpleUser(editedUser);
 
             if (!status.success)
@@ -85,7 +74,10 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ListTextsOnSessionStart");
             }
         }
+        #endregion
+
         //-------TEXT:
+        #region TextMethods
         public IActionResult StartNewText()
         {
             int userId = GetUserId();
@@ -112,7 +104,7 @@ namespace RhymeBinder.Controllers
         public IActionResult EditText(int textHeaderID)
         {
             int userId = GetUserId();
-           
+
             TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
             return View(thisTextHeaderBodyUserRecord);
@@ -206,7 +198,7 @@ namespace RhymeBinder.Controllers
                 case "SaveDefault":
                     // Applies current view grid settings to default view settings
                     status = _modelHelper.SetDefaultView(userId, savedView.View);
-                    break;     
+                    break;
 
                 case "Hide":
                     status = _modelHelper.UpdateView(savedView);
@@ -264,7 +256,10 @@ namespace RhymeBinder.Controllers
             }
         }
 
+        #endregion
+
         //-------GROUP:
+        #region GroupMethods
         public IActionResult ListGroups()
         {
             int userId = GetUserId();
@@ -309,7 +304,7 @@ namespace RhymeBinder.Controllers
                     if (verifyClear != null)
                     {
                         status = _modelHelper.ClearTextsFromGroup(editedGroup.TextGroupId);
-                    }   
+                    }
                     break;
                 case "Delete Group":
                     if (verifyDeleteGroup != null)
@@ -319,12 +314,12 @@ namespace RhymeBinder.Controllers
                     break;
             }
 
-            if (!status.success) 
+            if (!status.success)
             {
-                 return RedirectToAction("ErrorPage", status);
+                return RedirectToAction("ErrorPage", status);
             }
-            else 
-            { 
+            else
+            {
                 return RedirectToAction("ListGroups");
             }
         }
@@ -334,7 +329,7 @@ namespace RhymeBinder.Controllers
         {
             return View(binderID);
         }
-        [HttpPost] 
+        [HttpPost]
         public IActionResult CreateGroup(TextGroup newGroup)
         {
             int userId = GetUserId();
@@ -350,15 +345,11 @@ namespace RhymeBinder.Controllers
             {
                 return RedirectToAction("ListGroups");
             }
-        }
-
-        public IActionResult Manage()
-        {
-            int userId = GetUserId();
-            return View(userId);
-        }
+        } 
+        #endregion
 
         //-------BINDER METHODS:
+        #region BinderMethods
         public IActionResult CreateBinder()
         {
             int userId = GetUserId();
@@ -373,7 +364,6 @@ namespace RhymeBinder.Controllers
 
             return Redirect($"/RhymeBinder/EditBinder?binderID={status.recordId}");
         }
-       
         public IActionResult ListBinders()
         {
             int userId = GetUserId();
@@ -407,7 +397,7 @@ namespace RhymeBinder.Controllers
         public IActionResult EditBinder(DisplayBinder editedBinder, string action, string verifyClear, string verifyDelete, string verifyDeleteAll)
         {
             int userId = GetUserId();
-            Status status = new Status() { success = true};
+            Status status = new Status() { success = true };
 
             switch (action)
             {
@@ -415,26 +405,26 @@ namespace RhymeBinder.Controllers
                     status = _modelHelper.UpdateBinder(userId, editedBinder);
                     break;
                 case "Clear":
-                    if(verifyClear != null)
+                    if (verifyClear != null)
                     {
                         status = _modelHelper.ClearBinder(userId, editedBinder.BinderId);
                     }
                     break;
                 case "Delete":
-                    if(verifyDelete != null)
+                    if (verifyDelete != null)
                     {
                         status = _modelHelper.DeleteBinder(userId, editedBinder.BinderId);
                     }
                     break;
                 case "DeleteAll":
 
-                    if(verifyDeleteAll != null)
+                    if (verifyDeleteAll != null)
                     {
                         status = _modelHelper.DeleteBinderAndContents(userId, editedBinder.BinderId);
                     }
                     break;
                 default:
-                    return RedirectToAction("ListBinders"); 
+                    return RedirectToAction("ListBinders");
             }
 
             if (status.success)
@@ -457,20 +447,40 @@ namespace RhymeBinder.Controllers
             return RedirectToAction("ListTextsOnSessionStart");
         }
 
+        #endregion
+
+        //-------MISC:
+        #region Misc
+        public IActionResult Index()
+        {
+            int userId = GetUserId();
+            //check that a SimpleUser record has been created for this user; if not, create one;
+            if (userId == -1)
+            {
+                return RedirectToAction("SetupNewUser");
+            };
+            return RedirectToAction("ListTextsOnSessionStart");
+        }
+        public IActionResult Manage()
+        {
+            int userId = GetUserId();
+            return View(userId);
+        }
+        public IActionResult About()
+        {
+            return View();
+        }
         public IActionResult ErrorPage(Status status)
         {
             status.userId = GetUserId();
             return View(status);
         }
-
-
-
         public int GetUserId()
         {
             string aspUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             int userId = _modelHelper.GetCurrentSimpleUserID(aspUserId);
             return userId;
         }
-
+        #endregion
     }
 }
