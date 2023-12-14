@@ -522,6 +522,7 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.LastModified).HasColumnType("datetime");
 
                 entity.Property(e => e.LastRead).HasColumnType("datetime");
+                entity.Property(e => e.VisionCreated).HasColumnType("datetime");
 
                 entity.Property(e => e.TextId).HasColumnName("TextID");
 
@@ -545,6 +546,12 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.TextHeaderLastModifiedByNavigations)
                     .HasForeignKey(d => d.LastModifiedBy)
                     .HasConstraintName("FK__TextHeade__LastM__4F9CCB9E");
+
+
+                entity.HasOne(d => d.VisionCreatedByNavigation)
+                    .WithMany(p => p.TextHeaderVisionCreatedByNavigations)
+                    .HasForeignKey(d => d.VisionCreatedBy)
+                    .HasConstraintName("FK__TextHeade__Visio__68F2894D");
 
                 entity.HasOne(d => d.LastReadByNavigation)
                     .WithMany(p => p.TextHeaderLastReadByNavigations)
