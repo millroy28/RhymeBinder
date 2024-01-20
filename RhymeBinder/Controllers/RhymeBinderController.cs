@@ -107,7 +107,12 @@ namespace RhymeBinder.Controllers
 
             TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
+            if((bool)thisTextHeaderBodyUserRecord.TextHeader.Locked == true)
+            {
+                return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
+            } 
             return View(thisTextHeaderBodyUserRecord);
+
         }
         [HttpPost]
         public IActionResult EditText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord, string action)
