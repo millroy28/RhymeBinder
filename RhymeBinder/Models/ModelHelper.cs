@@ -282,12 +282,14 @@ namespace RhymeBinder.Models
 
                 case "Hidden":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == savedView.UserId &&
+                                                                       x.Top == true &&
                                                                        x.Deleted == true &&
                                                                        x.BinderId == savedView.BinderId).ToList();
                     break;
 
                 case "All":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == savedView.UserId &&
+                                                                       x.Top == true &&
                                                                        x.BinderId == savedView.BinderId).ToList();
                     break;
 
