@@ -20,7 +20,7 @@ function reset_autosave_timer() {
 }
 
 function reset_keyup_timer() {
-    keyup_timer = 5;    //seconds wait for pause in typing before autosave
+    keyup_timer = 15;    //seconds wait for pause in typing before autosave
 }
 
 

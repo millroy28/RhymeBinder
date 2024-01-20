@@ -17,6 +17,7 @@ namespace RhymeBinder.Models
             TextHeaderCreatedByNavigations = new HashSet<TextHeader>();
             TextHeaderLastModifiedByNavigations = new HashSet<TextHeader>();
             TextHeaderLastReadByNavigations = new HashSet<TextHeader>();
+            TextHeaderVisionCreatedByNavigations = new HashSet<TextHeader>();
             TextRecords = new HashSet<TextRecord>();
         }
 
@@ -38,6 +39,7 @@ namespace RhymeBinder.Models
         public virtual ICollection<TextHeader> TextHeaderCreatedByNavigations { get; set; }
         public virtual ICollection<TextHeader> TextHeaderLastModifiedByNavigations { get; set; }
         public virtual ICollection<TextHeader> TextHeaderLastReadByNavigations { get; set; }
+        public virtual ICollection<TextHeader> TextHeaderVisionCreatedByNavigations { get; set; }
         public virtual ICollection<TextRecord> TextRecords { get; set; }
     }
 }

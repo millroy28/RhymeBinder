@@ -20,8 +20,14 @@
 
         <div class="menu-bar-escape mobile-menu-bar-escape">
             <div class="menu-bar-item-right-final">
-                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeader.TextHeaderId">Edit</a>
+                <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart">Return</a>
             </div>
+            @if(@Model.TextHeader.Locked == false)
+            {
+                <div class="menu-bar-item-right-final">
+                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeader.TextHeaderId">Edit</a>
+                </div>               
+            }
         </div>
 
 
@@ -45,6 +51,7 @@
     <div class="left-sidebar">
         <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
         <div class="left-sidebar-item">Vision No. @Model.TextHeader.VisionNumber</div>
+        <div class="left-sidebar-item">Created @Model.TextHeader.VisionCreated</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
             <div class="left-sidebar-item">Previous visions:</div>

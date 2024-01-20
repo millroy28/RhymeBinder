@@ -162,6 +162,8 @@ LastReadBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 TextRevisionStatusID INT FOREIGN KEY REFERENCES TextRevisionStatuses(TextRevisionStatusID),
 VisionNumber INT,
 VersionOf INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID), --parent id
+VisionCreated DATETIME,
+VisionCreatedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 Deleted BIT,
 Locked BIT,
 [Top] BIT,

@@ -282,12 +282,14 @@ namespace RhymeBinder.Models
 
                 case "Hidden":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == savedView.UserId &&
+                                                                       x.Top == true &&
                                                                        x.Deleted == true &&
                                                                        x.BinderId == savedView.BinderId).ToList();
                     break;
 
                 case "All":
                     theseTextHeaders = _context.TextHeaders.Where(x => x.CreatedBy == savedView.UserId &&
+                                                                       x.Top == true &&
                                                                        x.BinderId == savedView.BinderId).ToList();
                     break;
 
@@ -648,8 +650,8 @@ namespace RhymeBinder.Models
                 {
                     SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
                     {
-                        Created = textHeader.Created,
-                        CreatedBy = GetUserName(textHeader.CreatedBy),
+                        Created = textHeader.VisionCreated != null ? textHeader.VisionCreated : textHeader.Created,
+                        CreatedBy = textHeader.VisionCreatedBy != null ? GetUserName(textHeader.VisionCreatedBy) : GetUserName(textHeader.CreatedBy),
                         LastModified = textHeader.LastModified,
                         LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
                         Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
@@ -980,7 +982,7 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status CreateNewTextHeader(int userId, TextHeader parentHeader)
+        public Status CreateRevisionTextHeader(int userId, TextHeader parentHeader)
         {
             Status status = new Status();
             // Create a new TextHeader child (new "vision") of parentHeader:
@@ -994,6 +996,8 @@ namespace RhymeBinder.Models
                 LastModifiedBy = userId,
                 VisionNumber = parentHeader.VisionNumber + 1,
                 VersionOf = parentHeader.TextHeaderId,
+                VisionCreated = DateTime.Now,
+                VisionCreatedBy = userId,
                 Deleted = false,
                 Locked = false,
                 Top = true,
@@ -1279,7 +1283,7 @@ namespace RhymeBinder.Models
             Status status = new Status();
             TextHeader currentTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId);
 
-            status = CreateNewTextHeader(userId, currentTextHeader);
+            status = CreateRevisionTextHeader(userId, currentTextHeader);
             if (!status.success)
             {
                 return status;

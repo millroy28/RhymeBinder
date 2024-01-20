@@ -28,6 +28,8 @@ namespace RhymeBinder.Models
         public int? TextRevisionStatusId { get; set; }
         public int? VisionNumber { get; set; }
         public int? VersionOf { get; set; }
+        public DateTime? VisionCreated { get; set; }
+        public int? VisionCreatedBy { get; set; }
         public bool? Deleted { get; set; }
         public bool? Locked { get; set; }
         public bool? Top { get; set; }
@@ -37,6 +39,7 @@ namespace RhymeBinder.Models
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser LastReadByNavigation { get; set; }
+        public virtual SimpleUser VisionCreatedByNavigation { get; set; }
         public virtual Text Text { get; set; }
         public virtual TextRevisionStatus TextRevisionStatus { get; set; }
         public virtual TextHeader VersionOfNavigation { get; set; }

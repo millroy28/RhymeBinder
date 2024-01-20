@@ -113,11 +113,11 @@
                     Actions ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Trash")
+                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Hidden")
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
                     } 
-                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Trash" && Model.View.SetValue != "All")
+                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Hidden" && Model.View.SetValue != "All")
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
                     }
