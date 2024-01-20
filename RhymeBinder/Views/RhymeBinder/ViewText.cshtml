@@ -22,9 +22,12 @@
             <div class="menu-bar-item-right-final">
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart">Return</a>
             </div>
-            <div class="menu-bar-item-right-final">
-                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeader.TextHeaderId">Edit</a>
-            </div>
+            @if(@Model.TextHeader.Locked == false)
+            {
+                <div class="menu-bar-item-right-final">
+                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeader.TextHeaderId">Edit</a>
+                </div>               
+            }
         </div>
 
 
