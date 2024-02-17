@@ -863,9 +863,14 @@ namespace RhymeBinder.Models
             int userTimeZoneOffset = _context.TimeZones.Where(x => x.TimeZoneId == userTimeZoneId).Select(x => x.UTCOffset).First();
 
             TimeZoneInfo timeZoneInfo = TimeZoneInfo.Local;
-            double offsetDifference = userTimeZoneId - timeZoneInfo.BaseUtcOffset.TotalHours;
-
+            double offsetDifference = userTimeZoneOffset - timeZoneInfo.BaseUtcOffset.TotalHours;
             DateTime userLocalNow = DateTime.Now.AddHours(offsetDifference);
+
+            if (timeZoneInfo.IsDaylightSavingTime(userLocalNow))
+            {
+                userLocalNow = userLocalNow.AddHours(1);
+            }
+
             return userLocalNow;                        
         }
         #endregion
