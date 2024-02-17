@@ -44,7 +44,7 @@ namespace RhymeBinder.Controllers
         public IActionResult EditUser()
         {
             int userId = GetUserId();
-            SimpleUser user = _modelHelper.GetCurrentSimpleUser(userId);
+            DisplaySimpleUser user = _modelHelper.GetCurrentDisplaySimpleUser(userId);
 
 
             if (user.UserId == -1)

@@ -48,14 +48,30 @@ Example of organization:
 */
 
 
+CREATE TABLE TimeZones (
+    TimeZoneId INT PRIMARY KEY IDENTITY(1,1),
+    TimeZoneName VARCHAR(50),
+    UTCOffset INT
+)
 
+
+INSERT INTO TimeZones (TimeZoneName, UTCOffset)
+VALUES ('Hawaii Standard Time', -10),
+       ('Alaska Standard Time', -9),
+       ('Pacific Standard Time', -8),
+       ('Mountain Standard Time', -7),
+       ('Central Standard Time', -6),
+       ('Eastern Standard Time', -5)
+
+	   		  
 CREATE TABLE SimpleUsers (
 UserID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 AspNetUserID NVARCHAR(450) FOREIGN KEY REFERENCES AspNetUsers(ID) NOT NULL,
 UserName NVARCHAR(300),
 DefaultRecordsPerPage INT NOT NULL,
 DefaultShowLineCount BIT NOT NULL,
-DefaultShowParagraphCount BIT NOT NULL
+DefaultShowParagraphCount BIT NOT NULL,
+TimeZone INT FOREIGN KEY REFERENCES TimeZones(TimeZoneId) NOT NULL DEFAULT 6
 )
 
 

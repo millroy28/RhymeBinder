@@ -91,6 +91,24 @@ namespace RhymeBinder.Models
             }
             return thisUser;
         }
+        public DisplaySimpleUser GetCurrentDisplaySimpleUser(int userId)
+        {
+            SimpleUser thisUser = GetCurrentSimpleUser(userId);
+            List<TimeZone> timeZones = _context.TimeZones.OrderBy(x => x.TimeZoneId).ToList();
+            DisplaySimpleUser thisDisplaySimpleUser = new DisplaySimpleUser()
+            {
+                UserId = thisUser.UserId,
+                AspNetUserId = thisUser.AspNetUserId,
+                UserName = thisUser.UserName,
+                DefaultRecordsPerPage = thisUser.DefaultRecordsPerPage,
+                DefaultShowLineCount = thisUser.DefaultShowLineCount,
+                DefaultShowParagraphCount = thisUser.DefaultShowParagraphCount,
+                TimeZone = thisUser.TimeZone,
+                TimeZones = timeZones
+            };
+
+            return thisDisplaySimpleUser;
+        }
         public int GetCurrentSimpleUserID(string aspUserID)
         {
             // string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;

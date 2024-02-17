@@ -44,6 +44,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<TextHeader> TextHeaders { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
+        public virtual DbSet<TimeZone> TimeZones { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -418,11 +419,16 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.UserName).HasMaxLength(300);
 
+                entity.Property(e => e.TimeZone)
+                    .IsRequired()
+                    .HasDefaultValue(6);
+
                 entity.HasOne(d => d.AspNetUser)
                     .WithMany(p => p.SimpleUsers)
                     .HasForeignKey(d => d.AspNetUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__SimpleUse__AspNe__39AD8A7F");
+
             });
 
             modelBuilder.Entity<Submission>(entity =>
@@ -616,6 +622,8 @@ namespace RhymeBinder.Models
                     .IsUnicode(false)
                     .HasColumnName("TextRevisionStatus");
             });
+
+
 
             OnModelCreatingPartial(modelBuilder);
         }
