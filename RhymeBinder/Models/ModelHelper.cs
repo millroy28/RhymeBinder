@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace RhymeBinder.Models
 {
     public class ModelHelper 
@@ -857,6 +856,18 @@ namespace RhymeBinder.Models
 
             return same;
         } 
+        public DateTime GetUserLocalTime(int userId)
+        {
+            // Gets current local time for user
+            int userTimeZoneId = _context.SimpleUsers.Where(x => x.UserId == userId).Select(x => x.TimeZone).First();
+            int userTimeZoneOffset = _context.TimeZones.Where(x => x.TimeZoneId == userTimeZoneId).Select(x => x.UTCOffset).First();
+
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.Local;
+            double offsetDifference = userTimeZoneId - timeZoneInfo.BaseUtcOffset.TotalHours;
+
+            DateTime userLocalNow = DateTime.Now.AddHours(offsetDifference);
+            return userLocalNow;                        
+        }
         #endregion
 
         //  USER Methods: 
@@ -920,8 +931,8 @@ namespace RhymeBinder.Models
             // Create a new blank Text
             Text newText = new Text();
             newText.TextBody = "";
-            newText.Created = DateTime.Now;
-
+            newText.Created = GetUserLocalTime(userId);
+            
             try
             {
                 _context.Texts.Add(newText);
@@ -937,14 +948,14 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status CreateNewText(string textBody)
+        public Status CreateNewText(int userId, string textBody)
         {
             Status status = new Status();
 
             Text newText = new Text()
             {
                 TextBody = textBody,
-                Created = DateTime.Now
+                Created = GetUserLocalTime(userId)
             };
 
             try
@@ -967,20 +978,21 @@ namespace RhymeBinder.Models
             Status status = new Status();
             // Create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             int binderId = GetCurrentBinderID(userId);
+            DateTime userLocalNow = GetUserLocalTime(userId);
 
             TextHeader newTextHeader = new TextHeader()
             {
-                Title = GetNewTextTitle(binderId),
-                Created = DateTime.Now,
+                Title = GetNewTextTitle(userId, binderId),
+                Created = userLocalNow,
                 CreatedBy = userId,
-                LastModified = DateTime.Now,
+                LastModified = userLocalNow,
                 LastModifiedBy = userId,
                 VisionNumber = 1,
                 Deleted = false,
                 Locked = false,
                 Top = true,
                 TextRevisionStatusId = 1,
-                LastRead = DateTime.Now,
+                LastRead = userLocalNow,
                 LastReadBy = userId,
                 TextId = newTextId,
                 BinderId = binderId
@@ -1004,23 +1016,25 @@ namespace RhymeBinder.Models
         {
             Status status = new Status();
             // Create a new TextHeader child (new "vision") of parentHeader:
+            DateTime userLocalNow = GetUserLocalTime(userId);
+
 
             TextHeader newTextHeader = new TextHeader()
             {
                 Title = parentHeader.Title,
                 Created = parentHeader.Created,
                 CreatedBy = parentHeader.CreatedBy,
-                LastModified = DateTime.Now,
+                LastModified = userLocalNow,
                 LastModifiedBy = userId,
                 VisionNumber = parentHeader.VisionNumber + 1,
                 VersionOf = parentHeader.TextHeaderId,
-                VisionCreated = DateTime.Now,
+                VisionCreated = userLocalNow,
                 VisionCreatedBy = userId,
                 Deleted = false,
                 Locked = false,
                 Top = true,
                 TextRevisionStatusId = parentHeader.TextRevisionStatusId,
-                LastRead = DateTime.Now,
+                LastRead = userLocalNow,
                 LastReadBy = userId,
                 TextId = parentHeader.TextId,
                 BinderId = parentHeader.BinderId
@@ -1040,7 +1054,7 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public string GetNewTextTitle(int binderId)
+        public string GetNewTextTitle(int userId, int binderId)
         {
             /*
              *          replacing :
@@ -1051,6 +1065,8 @@ namespace RhymeBinder.Models
             */
             string title = _context.Binders.Where(x => x.BinderId == binderId).First().TextHeaderTitleDefaultFormat;
             int textCount = 0;
+            DateTime userLocalNow = GetUserLocalTime(userId);
+
             if (title.Contains("[NUMBER]"))
             {
                 textCount = _context.TextHeaders.Where(x => x.BinderId == binderId
@@ -1058,9 +1074,9 @@ namespace RhymeBinder.Models
                                                          && x.Top == true).Count() + 1;
             }
 
-            title = title.Replace("[DATE TIME]", DateTime.Now.ToString());
-            title = title.Replace("[TIME]", DateTime.Now.ToShortTimeString());
-            title = title.Replace("[DATE]", DateTime.Now.ToShortDateString());
+            title = title.Replace("[DATE TIME]", userLocalNow.ToString());
+            title = title.Replace("[TIME]", userLocalNow.ToShortTimeString());
+            title = title.Replace("[DATE]", userLocalNow.ToShortDateString());
             title = title.Replace("[NUMBER]", textCount.ToString());
 
             return title;
@@ -1068,13 +1084,14 @@ namespace RhymeBinder.Models
         public Status CreateNewTextRecord(int textHeaderId, int textId, int userId)
         {
             Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(userId);
             //Create a new log entry for the TextRecord table
             TextRecord newTextRecord = new TextRecord()
             {
                 TextHeaderId = textHeaderId,
                 TextId = textId,
                 UserId = userId,
-                Recorded = DateTime.Now
+                Recorded = userLocalNow
             };
 
             try
@@ -1095,6 +1112,7 @@ namespace RhymeBinder.Models
         public Status CreateNewTextHeaderEditWindowProperty(int userId, int textHeaderId)
         {
             Status status = new Status();
+
             // EditWindowProperty entry helps autosave function/set ui elements to previous state on load after save
             try
             {
@@ -1195,7 +1213,7 @@ namespace RhymeBinder.Models
             if (!unchanged)
             {
                 //Create a new record in the Text table 
-                status = CreateNewText(editedTextHeaderBodyUserRecord.Text.TextBody);
+                status = CreateNewText(editedTextHeaderBodyUserRecord.User.UserId, editedTextHeaderBodyUserRecord.Text.TextBody);
                 if (!status.success) { return status; }
                 Text newText = GetText(status.recordId);
 
@@ -1511,14 +1529,16 @@ namespace RhymeBinder.Models
         public Status CreateNewUserBinderSet(int newUserId)
         {
             Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(newUserId);
+
             // Each New User gets a default binder
             Binder defaultBinder = new Binder()
             {
                 UserId = newUserId,
                 Name = "Your Binder",
                 Description = "Welcome to your first binder!",
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
+                Created = userLocalNow,
+                LastModified = userLocalNow,
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
@@ -1531,8 +1551,8 @@ namespace RhymeBinder.Models
                 UserId = newUserId,
                 Name = "Trash",
                 Description = "Texts that have been deleted (but they never go away completely).",
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
+                Created = userLocalNow,
+                LastModified = userLocalNow,
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
@@ -1545,8 +1565,8 @@ namespace RhymeBinder.Models
                 UserId = newUserId,
                 Name = "Loose Pages",
                 Description = "Texts without a home otherwise.",
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
+                Created = userLocalNow,
+                LastModified = userLocalNow,
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
@@ -1580,14 +1600,15 @@ namespace RhymeBinder.Models
         public Status CreateNewBinder(int userId)
         {
             Status status = new Status();
-
             SimpleUser simpleUser = GetCurrentSimpleUser(userId);
+            DateTime userLocalNow = GetUserLocalTime(userId);
+
 
             Binder newBinder = new Binder()
             {
                 UserId = userId,
                 CreatedBy = userId,
-                Created = DateTime.Now,
+                Created = userLocalNow,
                 Description = "",
                 Hidden = false,
                 Name = "New Binder",
@@ -1627,9 +1648,11 @@ namespace RhymeBinder.Models
         public Status CreateNewBinder(int userId, Binder newBinder)
         {
             Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(userId);
+
 
             newBinder.UserId = userId;
-            newBinder.Created = DateTime.Now;
+            newBinder.Created = userLocalNow;
             newBinder.CreatedBy = userId;
             newBinder.Hidden = false;
             newBinder.Selected = false;
@@ -1680,6 +1703,7 @@ namespace RhymeBinder.Models
              * Texts can be moved to a "deleted" state within a binder and they are effectively hidden from view
              * They can also be removed from the binder and sent to the trash binder.
              */
+
             SimpleUser user = GetCurrentSimpleUser(userId);
             if (user.UserId == -1)
             {
@@ -1801,7 +1825,9 @@ namespace RhymeBinder.Models
         public Status UpdateBinder(int userId, Binder editedBinder)
         {
             Status status = new Status();
-            editedBinder.LastModified = DateTime.Now;
+            DateTime userLocalNow = GetUserLocalTime(userId);
+
+            editedBinder.LastModified = userLocalNow;
             editedBinder.LastModifiedBy = userId;
 
             try
@@ -1823,6 +1849,8 @@ namespace RhymeBinder.Models
         public Status OpenBinder(int userId, int binderToOpenId)
         {
             Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(userId);
+
             // Only one Binder is to be "open" at a time,
             // So this method will find the user's Selected Binder
             // set Selected = false, and set the binder to open's Selected to True
@@ -1835,7 +1863,7 @@ namespace RhymeBinder.Models
 
                 currentlySelectedBinder.Selected = false;
                 binderToOpen.Selected = true;
-                binderToOpen.LastAccessed = DateTime.Now;
+                binderToOpen.LastAccessed = userLocalNow;
 
                 _context.Entry(currentlySelectedBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                 _context.Entry(binderToOpen).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
@@ -1856,8 +1884,9 @@ namespace RhymeBinder.Models
         public Status UpdateBinderLastAccessed(int binderId, int userId)
         {
             Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(userId);
             Binder thisBinder = _context.Binders.Single(x => x.BinderId == binderId);
-            thisBinder.LastAccessed = DateTime.Now;
+            thisBinder.LastAccessed = userLocalNow;
             thisBinder.LastAccessedBy = userId;
             try
             {
