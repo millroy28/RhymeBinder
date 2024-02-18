@@ -118,17 +118,24 @@ namespace RhymeBinder.Controllers
         public IActionResult EditText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord, string action)
         {
             int userId = GetUserId();
-            Status status = _modelHelper.SaveEditedText(editedTextHeaderBodyUserRecord);
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
+            Status status = new Status();
+
             //Where do we go from here?
             switch (action)
             {
                 case "Return":
+                    status = _modelHelper.SaveEditedText(editedTextHeaderBodyUserRecord);
+                    if (!status.success)
+                    {
+                        return RedirectToAction("ErrorPage", status);
+                    }
                     return RedirectToAction("ListTextsOnSessionStart");
                 case "Save":
+                    status = _modelHelper.SaveEditedText(editedTextHeaderBodyUserRecord);
+                    if (!status.success)
+                    {
+                        return RedirectToAction("ErrorPage", status);
+                    }
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
                 case "Revision":
                     status = _modelHelper.AddRevisionToText(userId, editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
@@ -140,6 +147,8 @@ namespace RhymeBinder.Controllers
                     {
                         return RedirectToAction("ErrorPage", status);
                     }
+                case "Timeout":
+                    return RedirectToAction("ListTextsOnSessionStart"); 
                 default:
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId}");
             }
