@@ -20,6 +20,7 @@
     <input type="hidden" name="TextHeader.VisionCreatedBy" value="@Model.TextHeader.VisionCreatedBy" />
     <input type="hidden" name="TextHeader.VisionNumber" value="@Model.TextHeader.VisionNumber" />
     <input type="hidden" name="TextHeader.VersionOf" value="@Model.TextHeader.VersionOf" />
+    <input type="hidden" name="TextHeader.TextNoteId" value="@Model.TextHeader.TextNoteId" />
     
     <input type="hidden" name="User.UserId" value="@Model.User.UserId" />
     <input type="hidden" name="User.UserName" value="@Model.User.UserName" />
@@ -27,6 +28,8 @@
 
     <input type="hidden" name="Text.TextId" value="@Model.Text.TextId" />
     <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
+    
+    <input type="hidden" name="TextHeader.TextNote.TextNoteId" value="@Model.TextHeader.TextNote.TextNoteId" />
 
     <input type="hidden" name="EditWindowProperty.CursorPosition" id="cursor_position" value="@Model.EditWindowProperty.CursorPosition" />
     <input type="hidden" name="EditWindowProperty.ActiveElement" id="form_focus" value="@Model.EditWindowProperty.ActiveElement" />
@@ -73,53 +76,6 @@
             </div>
         </div>
 
-@*        <div class="mobile-menu-bar-main">
-
-                <div class="menu-bar-title">
-                    Editing: 
-                </div>
-                <div class="menu-bar-item">
-                    <input type="submit" name="action" class="button menu-bar-button" value="Revision" id="save" />
-
-                </div>
-                <div class="menu-bar-item">
-                
-                  <div class="menu-bar-dropdown-item">
-                        <select name="TextHeader.TextRevisionStatusID" id="revision_status">
-                            @foreach (var revisionStatus in Model.AllRevisionStatuses)
-                            {
-                                if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
-                                {
-                                    <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
-                                }
-                                else
-                                {
-                                    <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>*@
-                @*<div class="menu-bar-dropdown-content">
-                    <input type="submit" name="action" class="menu-bar-dropdown-item" value="Revision" id="save" />
-                    <div class="menu-bar-dropdown-item">
-                        <select name="TextHeader.TextRevisionStatusID" id="revision_status">
-                            @foreach (var revisionStatus in Model.AllRevisionStatuses)
-                            {
-                                if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
-                                {
-                                    <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
-                                }
-                                else
-                                {
-                                    <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>*@
-            
-@*        </div>*@
 
         <div class="menu-bar-escape mobile-menu-bar-escape">
             <div class="menu-bar-item">
@@ -133,15 +89,9 @@
             </div>
         </div>
 
-@*        <div class="mobile-menu-bar-escape">
-            <div class="menu-bar-item">
-                <input type="submit" name="action" class="button mobile-menu-bar-button-save" value="Save" id="save" />
-            </div>
-            <div class="menu-bar-item">
-                <input type="submit" name="action" class="button mobile-menu-bar-button-return" value="Return" />
-            </div>
-        </div>*@
+
     </div>
+
 
     <div class="title-bar">
         <textarea name="TextHeader.Title" class="title-box" id="title_edit_field">@Model.TextHeader.Title</textarea>
@@ -156,6 +106,7 @@
     <div class="ruler-container-b">
         <textarea class="ruler-box" id="line_count" name="line_count" readonly></textarea>
     </div>
+
 
     <div class="left-sidebar">
         <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
@@ -175,11 +126,15 @@
         }
     </div>
 
+
     <div class="right-sidebar">
         <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified.Value.ToString("d")</div>
         <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
         <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created.Value.ToString("d")</div>
         <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
+        <div class="editor-container">
+            <textarea name="TextHeader.TextNote.Note" class="editor-box">@Model.TextHeader.TextNote.Note</textarea>
+        </div>
     </div>
 
 

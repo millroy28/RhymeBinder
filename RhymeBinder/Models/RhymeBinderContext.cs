@@ -42,6 +42,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<Text> Texts { get; set; }
         public virtual DbSet<TextGroup> TextGroups { get; set; }
         public virtual DbSet<TextHeader> TextHeaders { get; set; }
+        public virtual DbSet<TextNote> TextNotes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
         public virtual DbSet<TimeZone> TimeZones { get; set; }

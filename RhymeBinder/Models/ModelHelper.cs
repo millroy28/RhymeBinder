@@ -600,6 +600,9 @@ namespace RhymeBinder.Models
             //grab the related text (if it exists)
             Text thisText = GetText((int)thisTextHeader.TextId);
 
+            //grab the note for the text
+            thisTextHeader.TextNote = _context.TextNotes.Single(x => x.TextNoteId == thisTextHeader.TextNoteId);
+
             //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
 
@@ -984,6 +987,7 @@ namespace RhymeBinder.Models
             // Create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
             int binderId = GetCurrentBinderID(userId);
             DateTime userLocalNow = GetUserLocalTime(userId);
+            TextNote textNote = new TextNote { Note = "" };
 
             TextHeader newTextHeader = new TextHeader()
             {
@@ -1000,7 +1004,8 @@ namespace RhymeBinder.Models
                 LastRead = userLocalNow,
                 LastReadBy = userId,
                 TextId = newTextId,
-                BinderId = binderId
+                BinderId = binderId,
+                TextNote = textNote
             };
 
             try
@@ -1042,7 +1047,8 @@ namespace RhymeBinder.Models
                 LastRead = userLocalNow,
                 LastReadBy = userId,
                 TextId = parentHeader.TextId,
-                BinderId = parentHeader.BinderId
+                BinderId = parentHeader.BinderId,
+                TextNoteId = parentHeader.TextNoteId
             };
 
             try
@@ -1235,6 +1241,10 @@ namespace RhymeBinder.Models
                 updatedTextHeader.TextId = newText.TextId;
                 updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
                 updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
+                updatedTextHeader.TextNote = new TextNote(){
+                    TextNoteId = editedTextHeaderBodyUserRecord.TextHeader.TextNote.TextNoteId,
+                    Note = editedTextHeaderBodyUserRecord.TextHeader.TextNote.Note
+                };
 
                 status = UpdateTextHeader(updatedTextHeader);
                 if (!status.success) { return status; }
