@@ -1198,27 +1198,21 @@ namespace RhymeBinder.Models
         public Status SaveEditedText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord)
         {
             Status status = new Status();
-            //Check for change and only save if the text has changed
-            bool unchanged;
-            Text origText = new Text();
+            //Check for change and only save if something has changed
+            bool unchanged;           
 
-            origText = GetText((int)editedTextHeaderBodyUserRecord.TextHeader.TextId);
-            unchanged = TextsAreSame(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody);
+            Text origText = GetText((int)editedTextHeaderBodyUserRecord.TextHeader.TextId);
+            TextHeader origHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
+            TextNote origNote = _context.TextNotes.Find(editedTextHeaderBodyUserRecord.TextHeader.TextNoteId);
 
-            //also checking for status changes and title changes
-            if (unchanged)
-            {
-                TextHeader origHeader = new TextHeader();
-                origHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
-                if (origHeader.TextRevisionStatusId != editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId)
-                {
-                    unchanged = false;
-                }
-                if (unchanged)
-                {
-                    unchanged = TextsAreSame(origHeader.Title, editedTextHeaderBodyUserRecord.TextHeader.Title);
-                }
-            }
+            // Additional properites to Texts/Headers will have to be checked here.
+            unchanged = (
+                               TextsAreSame(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody)
+                            && TextsAreSame(origHeader.Title, editedTextHeaderBodyUserRecord.TextHeader.Title)
+                            && TextsAreSame(origNote.Note, editedTextHeaderBodyUserRecord.TextHeader.TextNote.Note)
+                            && origHeader.TextRevisionStatusId == editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId
+                        );
+
 
             // if something has changed, let's save it by creating a new Text and pointing the header towards it
             if (!unchanged)

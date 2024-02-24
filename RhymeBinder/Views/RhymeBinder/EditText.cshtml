@@ -132,8 +132,10 @@
         <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
         <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created.Value.ToString("d")</div>
         <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
+        <div class="right-sidebar-item"><hr></div>
+        <div class="right-sidebar-item-heading">Notes:</div>
         <div class="editor-container">
-            <textarea name="TextHeader.TextNote.Note" class="editor-box">@Model.TextHeader.TextNote.Note</textarea>
+            <textarea name="TextHeader.TextNote.Note" id="note_edit_field" class="editor-box">@Model.TextHeader.TextNote.Note</textarea>
         </div>
     </div>
 

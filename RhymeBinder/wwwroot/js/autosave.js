@@ -88,7 +88,9 @@ function wait_for_typing_to_finish_before_saving() {
         get_current_cursor_position_and_form_focus();
         document.getElementById('cursor_position').value = current_cursor_position;
         document.getElementById('form_focus').value = current_focus_element;
-        document.getElementById('edit').submit();
+        //document.getElementById('edit').submit();
+        button = document.getElementById('save');
+        button.click();
         return;
     } else {
         setTimeout('wait_for_typing_to_finish_before_saving()', 1000); //elapses one second before calling function again
@@ -112,16 +114,19 @@ function get_initial_content_values() {
     original_body_string = document.getElementById('body_edit_field').value;
     original_title_string = document.getElementById('title_edit_field').value;
     original_revision_status = document.getElementById('revision_status').value;
+    original_note_string = document.getElementById('note_edit_field').value;
 }
 
 function check_content_for_difference() {
     check_title_string = document.getElementById('title_edit_field').value;
     check_body_string = document.getElementById('body_edit_field').value;
     check_revision_status = document.getElementById('revision_status').value;
+    check_note_string = document.getElementById('note_edit_field').value;
 
     if (   (check_title_string != original_title_string)
         || (check_body_string != original_body_string)
         || (check_revision_status != original_revision_status)
+        || (check_note_string != original_note_string)
         ) {
         is_content_different = 1;
         document.getElementById('save').disabled = false;
