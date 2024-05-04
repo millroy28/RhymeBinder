@@ -4,40 +4,20 @@
 }
 @{
 }
-@model TextHeaderBodyUserRecord
+@model TextEdit
 
 
 <form class="editor-view-wrapper" action="EditText" method="post" id="edit">
-    <input type="hidden" name="TextHeader.TextHeaderId" value="@Model.TextHeader.TextHeaderId" />
-    <input type="hidden" name="TextHeader.TextId" value="@Model.TextHeader.TextId" />
-    <input type="hidden" name="TextHeader.Created" value="@Model.TextHeader.Created" />
-    <input type="hidden" name="TextHeader.CreatedBy" value="@Model.TextHeader.CreatedBy" />
-    <input type="hidden" name="TextHeader.LastModified" value="@Model.TextHeader.LastModified" />
-    <input type="hidden" name="TextHeader.LastModifiedBy" value="@Model.TextHeader.LastModifiedBy" />
-    <input type="hidden" name="TextHeader.LastRead" value="@Model.TextHeader.LastRead" />
-    <input type="hidden" name="TextHeader.LastReadBy" value="@Model.TextHeader.LastReadBy" />
-    <input type="hidden" name="TextHeader.VisionCreated" value="@Model.TextHeader.VisionCreated" />
-    <input type="hidden" name="TextHeader.VisionCreatedBy" value="@Model.TextHeader.VisionCreatedBy" />
-    <input type="hidden" name="TextHeader.VisionNumber" value="@Model.TextHeader.VisionNumber" />
-    <input type="hidden" name="TextHeader.VersionOf" value="@Model.TextHeader.VersionOf" />
-    <input type="hidden" name="TextHeader.TextNoteId" value="@Model.TextHeader.TextNoteId" />
-    
-    <input type="hidden" name="User.UserId" value="@Model.User.UserId" />
-    <input type="hidden" name="User.UserName" value="@Model.User.UserName" />
-    <input type="hidden" name="User.AspNetUserId" value="@Model.User.AspNetUserId" />
-
-    <input type="hidden" name="Text.TextId" value="@Model.Text.TextId" />
-    <input type="hidden" name="Text.Created" value="@Model.Text.Created" />
-    
-    <input type="hidden" name="TextHeader.TextNote.TextNoteId" value="@Model.TextHeader.TextNote.TextNoteId" />
-
-    <input type="hidden" name="EditWindowProperty.CursorPosition" id="cursor_position" value="@Model.EditWindowProperty.CursorPosition" />
-    <input type="hidden" name="EditWindowProperty.ActiveElement" id="form_focus" value="@Model.EditWindowProperty.ActiveElement" />
-    <input type="hidden" name="EditWindowProperty.ShowLineCount" id="show_line_count" value="@Model.EditWindowProperty.ShowLineCount" />
-    <input type="hidden" name="EditWindowProperty.ShowParagraphCount" id="show_paragraph_count" value="@Model.EditWindowProperty.ShowParagraphCount" />
-    <input type="hidden" name="EditWindowProperty.UserID" value="@Model.User.UserId" />
-    <input type="hidden" name="EditWindowProperty.TextHeaderID" value="@Model.TextHeader.TextHeaderId" />
-
+    <input type="hidden" name="TextHeaderId" value="@Model.TextHeaderId" />
+    <input type="hidden" name="TextId" value="@Model.TextId" />
+    <input type="hidden" name="TextNoteId" value="@Model.TextNoteId" />    
+ 
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="CursorPosition" id="cursor_position" value="@Model.CursorPosition" />
+    <input type="hidden" name="ActiveElement" id="form_focus" value="@Model.ActiveElement" />
+    <input type="hidden" name="ShowLineCount" id="show_line_count" value="@Model.ShowLineCount" />
+    <input type="hidden" name="ShowParagraphCount" id="show_paragraph_count" value="@Model.ShowParagraphCount" />
+   
     <div class="menu-bar">
 
 
@@ -49,10 +29,10 @@
                 Status:
             </div>
             <div class="menu-bar-item">
-                <select name="TextHeader.TextRevisionStatusID" id="revision_status">
+                <select name="TextRevisionStatusId" id="revision_status">
                     @foreach (var revisionStatus in Model.AllRevisionStatuses)
                     {
-                        if (revisionStatus.TextRevisionStatusId == @Model.TextHeader.TextRevisionStatusId)
+                        if (revisionStatus.TextRevisionStatusId == @Model.TextRevisionStatusId)
                         {
                             <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
                         }
@@ -94,11 +74,11 @@
 
 
     <div class="title-bar">
-        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field">@Model.TextHeader.Title</textarea>
+        <textarea name="Title" class="title-box" id="title_edit_field">@Model.Title</textarea>
     </div>
 
     <div class="editor-container">
-        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()">@Model.Text.TextBody</textarea>
+        <textarea name="TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()">@Model.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
         <textarea class="ruler-box ruler-box-b" id="paragraph_count" name="paragraph_count" readonly></textarea>
@@ -109,9 +89,9 @@
 
 
     <div class="left-sidebar">
-        <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
-        <div class="left-sidebar-item">Vision No. @Model.TextHeader.VisionNumber</div>
-        <div class="left-sidebar-item">Created @Model.TextHeader.VisionCreated</div>
+        <div class="left-sidebar-item-heading">@Model.Title</div>
+        <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
+        <div class="left-sidebar-item">Created @Model.VisionCreated</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
             <div class="left-sidebar-item">Previous visions:</div>
@@ -128,14 +108,14 @@
 
 
     <div class="right-sidebar">
-        <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified.Value.ToString("d")</div>
-        <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
-        <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created.Value.ToString("d")</div>
-        <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
+        <div class="right-sidebar-item-heading">Last Modified @Model.LastModified.Value.ToString("d")</div>
+        <div class="right-sidebar-item">by @Model.LastModifiedByUserName</div>
+        <div class="right-sidebar-item-heading">Created @Model.Created.Value.ToString("d")</div>
+        <div class="right-sidebar-item">by @Model.CreatedByUserName</div>
         <div class="right-sidebar-item"><hr></div>
         <div class="right-sidebar-item-heading">Notes:</div>
         <div class="editor-container">
-            <textarea name="TextHeader.TextNote.Note" id="note_edit_field" class="editor-box">@Model.TextHeader.TextNote.Note</textarea>
+            <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
         </div>
     </div>
 

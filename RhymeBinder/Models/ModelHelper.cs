@@ -591,7 +591,7 @@ namespace RhymeBinder.Models
             }
             return (groups);
         }
-        public TextHeaderBodyUserRecord GetTextHeaderBodyUserRecord(int userId, int textHeaderID)
+        public TextEdit GetTextHeaderBodyUserRecord(int userId, int textHeaderID)
         {
             // Build up a TextHeaderBodyUserRecord to pass into a view:
             // obvs, gonna need that TextHeader:
@@ -601,7 +601,7 @@ namespace RhymeBinder.Models
             Text thisText = GetText((int)thisTextHeader.TextId);
 
             //grab the note for the text
-            thisTextHeader.TextNote = _context.TextNotes.Single(x => x.TextNoteId == thisTextHeader.TextNoteId);
+            TextNote thisTextNote = _context.TextNotes.Single(x => x.TextNoteId == thisTextHeader.TextNoteId);
 
             //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
@@ -708,20 +708,49 @@ namespace RhymeBinder.Models
             }
 
             //wrap it up and send it
-            TextHeaderBodyUserRecord thisTextHeaderBodyUserRecord = new TextHeaderBodyUserRecord()
+            TextEdit textEdit = new TextEdit()
             {
-                TextHeader = thisTextHeader,
-                Text = thisText,
-                User = currentUser,
-                CreatedByUser = createdUser,
-                LastModifiedByUser = lastModifiedUser,
+                UserId = userId,
+
+                TextId = thisText.TextId,
+                TextBody = thisText.TextBody,
+
+                TextNoteId = thisTextNote.TextNoteId,
+                Note = thisTextNote.Note,
+
+                TextHeaderId = thisTextHeader.TextHeaderId,
+                Title = thisTextHeader.Title,
+                Created = thisTextHeader.Created,
+                CreatedBy = thisTextHeader.CreatedBy,
+                LastModified = thisTextHeader.LastModified,
+                LastModifiedBy = thisTextHeader.LastModifiedBy,
+                LastRead = thisTextHeader.LastRead,
+                LastReadBy = thisTextHeader.LastReadBy,
+                TextRevisionStatusId = thisTextHeader.TextRevisionStatusId,
+                VisionNumber = thisTextHeader.VisionNumber,
+                VisionCreated = thisTextHeader.VisionCreated,
+                VisionCreatedBy = thisTextHeader.VisionCreatedBy,
+                Deleted = thisTextHeader.Deleted,
+                Locked = thisTextHeader.Locked,
+                Top = thisTextHeader.Top,
+                BinderId = thisTextHeader.BinderId,
+
+                CreatedByUserName = createdUser.UserName,
+                LastModifiedByUserName = lastModifiedUser.UserName,
+                CurrentRevisionStatus = currentRevisionStatus,
+
+                EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
+                ActiveElement = thisEditWindowProperty.ActiveElement,
+                CursorPosition = thisEditWindowProperty.CursorPosition,
+                ShowLineCount = thisEditWindowProperty.ShowLineCount,
+                ShowParagraphCount = thisEditWindowProperty.ShowParagraphCount,
+
                 AllRevisionStatuses = revisionStatuses,
                 PreviousTexts = previousTextsAndHeaders,
-                CurrentRevisionStatus = currentRevisionStatus,
-                EditWindowProperty = thisEditWindowProperty
+              
             };
 
-            return (thisTextHeaderBodyUserRecord);
+            return (textEdit);
         }
         public List<TextHeader> GetTextHeadersInGroup(TextGroup group)
         {
@@ -1160,105 +1189,88 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status UpdateTextHeader(TextHeader updatedTextHeader)
+        public Status Update<T>(T updatedEntity)
         {
             Status status = new Status();
 
             try
             {
-                _context.Entry(updatedTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(updatedTextHeader);
+                _context.Entry(updatedEntity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(updatedEntity);
                 _context.SaveChanges();
                 status.success = true;
             }
             catch
             {
                 status.success = false;
-                status.message = "Failed to save updated TextHeader.";
+                string type = typeof(T).Name;
+                status.message = $"Failed to save {type}.";
             }
             return status;
         }
-        public Status UpdateEditWindowProperty(EditWindowProperty updatedEditWindowProperty)
-        {
-            Status status = new Status();
-            try
-            {
-                _context.Entry(updatedEditWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
-                _context.Update(updatedEditWindowProperty);
-                _context.SaveChanges();
-                status.success = true;
-            }
-            catch
-            {
-                status.success = false;
-                status.message = "Failed to save updated Edit Window Property";
-            }
-            return status;
-        }
-        public Status SaveEditedText(TextHeaderBodyUserRecord editedTextHeaderBodyUserRecord)
+
+        
+        public Status SaveEditedText(TextEdit textEdit)
         {
             Status status = new Status();
             //Check for change and only save if something has changed
-            bool unchanged;           
-
-            Text origText = GetText((int)editedTextHeaderBodyUserRecord.TextHeader.TextId);
-            TextHeader origHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
-            TextNote origNote = _context.TextNotes.Find(editedTextHeaderBodyUserRecord.TextHeader.TextNoteId);
-
-            // Additional properites to Texts/Headers will have to be checked here.
-            unchanged = (
-                               TextsAreSame(origText.TextBody, editedTextHeaderBodyUserRecord.Text.TextBody)
-                            && TextsAreSame(origHeader.Title, editedTextHeaderBodyUserRecord.TextHeader.Title)
-                            && TextsAreSame(origNote.Note, editedTextHeaderBodyUserRecord.TextHeader.TextNote.Note)
-                            && origHeader.TextRevisionStatusId == editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId
-                        );
+            bool noteUnchanged;
+            bool textUnchanged;
 
 
-            // if something has changed, let's save it by creating a new Text and pointing the header towards it
-            if (!unchanged)
+            Text origText = GetText((int)textEdit.TextId);
+            TextHeader origHeader = _context.TextHeaders.Find(textEdit.TextHeaderId);
+            TextNote origNote = _context.TextNotes.Find(textEdit.TextNoteId);
+
+            noteUnchanged = TextsAreSame(origNote.Note, textEdit.Note);
+            textUnchanged = TextsAreSame(origText.TextBody, textEdit.TextBody);
+
+
+            if (!textUnchanged)
             {
-                //Create a new record in the Text table 
-                status = CreateNewText(editedTextHeaderBodyUserRecord.User.UserId, editedTextHeaderBodyUserRecord.Text.TextBody);
+                status = CreateNewText(textEdit.UserId, textEdit.TextBody);  //New text created on each edit
                 if (!status.success) { return status; }
-                Text newText = GetText(status.recordId);
+                origHeader.TextId = status.recordId; //point header to new text id
 
-                status = CreateNewTextRecord(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId, newText.TextId, editedTextHeaderBodyUserRecord.User.UserId);
-                if (!status.success) { return status; }
-
-                //Update the TextHeader with the new TextID, etc
-                TextHeader updatedTextHeader = _context.TextHeaders.Find(editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId);
-
-                updatedTextHeader.LastModified = newText.Created;
-                updatedTextHeader.LastModifiedBy = editedTextHeaderBodyUserRecord.User.UserId;
-                updatedTextHeader.LastRead = newText.Created;
-                updatedTextHeader.LastReadBy = editedTextHeaderBodyUserRecord.User.UserId;
-                updatedTextHeader.TextId = newText.TextId;
-                updatedTextHeader.TextRevisionStatusId = editedTextHeaderBodyUserRecord.TextHeader.TextRevisionStatusId;
-                updatedTextHeader.Title = editedTextHeaderBodyUserRecord.TextHeader.Title;
-                updatedTextHeader.TextNote = new TextNote(){
-                    TextNoteId = editedTextHeaderBodyUserRecord.TextHeader.TextNote.TextNoteId,
-                    Note = editedTextHeaderBodyUserRecord.TextHeader.TextNote.Note
-                };
-
-                status = UpdateTextHeader(updatedTextHeader);
+                status = CreateNewTextRecord(textEdit.TextHeaderId, origHeader.TextId, textEdit.UserId);
                 if (!status.success) { return status; }
 
-                //  update that EditWindowStatus to save the view preferences for this text header
-                EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == editedTextHeaderBodyUserRecord.User.UserId
-                                                                                                && x.TextHeaderId == editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId).First();
+                
+            };
 
-                thisEditWindowProperty.CursorPosition = editedTextHeaderBodyUserRecord.EditWindowProperty.CursorPosition;
-                thisEditWindowProperty.ActiveElement = editedTextHeaderBodyUserRecord.EditWindowProperty.ActiveElement;
-                thisEditWindowProperty.ShowLineCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowLineCount;
-                thisEditWindowProperty.ShowParagraphCount = editedTextHeaderBodyUserRecord.EditWindowProperty.ShowParagraphCount;
-
-                status = UpdateEditWindowProperty(thisEditWindowProperty);
+            if (!noteUnchanged)
+            {
+                origNote.Note = textEdit.Note;
+                status = Update<TextNote>(origNote);
+                if (!status.success) { return status; }
             }
+
+
+            origHeader.Title = textEdit.Title;
+            origHeader.LastModified = GetUserLocalTime(textEdit.UserId);
+            origHeader.LastModifiedBy = textEdit.UserId;
+            origHeader.TextRevisionStatusId = textEdit.TextRevisionStatusId;
+
+            status = Update<TextHeader>(origHeader);
+            if (!status.success) { return status; }
+            
+
+            //  update that EditWindowStatus to save the view preferences for this text header
+            EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == textEdit.UserId
+                                                                                            && x.TextHeaderId == textEdit.TextHeaderId).First();
+
+            thisEditWindowProperty.CursorPosition = textEdit.CursorPosition;
+            thisEditWindowProperty.ActiveElement = textEdit.ActiveElement;
+            thisEditWindowProperty.ShowLineCount = textEdit.ShowLineCount;
+            thisEditWindowProperty.ShowParagraphCount = textEdit.ShowParagraphCount;
+
+            status = Update<EditWindowProperty>(thisEditWindowProperty);
+            if (!status.success) { return status; }           
             else
             {
                 // Still have to return a success status even if no new record was saved
                 status.success = true;
-                status.recordId = editedTextHeaderBodyUserRecord.TextHeader.TextHeaderId;
+                status.recordId = textEdit.TextHeaderId;
             }
             return status;
         }
