@@ -19,6 +19,7 @@ namespace RhymeBinder.Models
             TextHeaderLastReadByNavigations = new HashSet<TextHeader>();
             TextHeaderVisionCreatedByNavigations = new HashSet<TextHeader>();
             TextRecords = new HashSet<TextRecord>();
+
         }
 
         public int UserId { get; set; }
@@ -27,6 +28,7 @@ namespace RhymeBinder.Models
         public int DefaultRecordsPerPage { get; set; }
         public bool DefaultShowLineCount { get; set; }
         public bool DefaultShowParagraphCount { get; set; }
+        public int TimeZone { get; set; }
 
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual ICollection<Binder> BinderCreatedByNavigations { get; set; }

@@ -5,25 +5,54 @@ using System.Threading.Tasks;
 
 namespace RhymeBinder.Models
 {
-    public class TextHeaderBodyUserRecord
+    public class TextEdit
     {
-        public Text Text { get; set; }
-        
-        public TextHeader TextHeader { get; set; }
+        public int UserId { get;set; }
 
-        public SimpleUser User { get; set; }
+        // Text fields
+        public int TextId { get; set; }
+        public string TextBody { get; set; }
 
-        public SimpleUser CreatedByUser { get; set; }
+        // Text Note Fields
+        public int? TextNoteId { get; set; }
+        public string Note { get; set; }
 
-        public SimpleUser LastModifiedByUser { get; set; }
+        // Text Header Fields
+        public int TextHeaderId { get; set; }
+        public string Title { get; set; }
+        public DateTime? Created { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? LastModified { get; set; }
+        public int? LastModifiedBy { get; set; }
+        public DateTime? LastRead { get; set; }
+        public int? LastReadBy { get; set; }
+        public int? TextRevisionStatusId { get; set; }
+        public int? VisionNumber { get; set; }
+        public int? VersionOf { get; set; }
+        public DateTime? VisionCreated { get; set; }
+        public int? VisionCreatedBy { get; set; }
+        public bool? Deleted { get; set; }
+        public bool? Locked { get; set; }
+        public bool? Top { get; set; }
+        public int? BinderId { get; set; }
 
-        public List<TextRevisionStatus> AllRevisionStatuses { get; set; }
 
-        public List<SimpleTextHeaderAndText> PreviousTexts { get; set; }
-
+        //  Display fields
+        public string CreatedByUserName { get; set; }
+        public string LastModifiedByUserName { get; set; }
         public string CurrentRevisionStatus { get; set; }
-        
-        public EditWindowProperty EditWindowProperty { get; set; }
+
+        //  EditWindowProperty fields
+        public int EditWindowPropertyId { get; set; }
+        public string ActiveElement { get; set; }
+        public int? CursorPosition { get; set; }
+        public int? ShowLineCount { get; set; }
+        public int? ShowParagraphCount { get; set; }
+
+        //  Revision Status Dropdown fields
+        public List<TextRevisionStatus> AllRevisionStatuses { get; set; }
+        //  Previous Texts for left sidebar slideout
+        public List<SimpleTextHeaderAndText> PreviousTexts { get; set; }
 
     }
 }

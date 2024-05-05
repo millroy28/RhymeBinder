@@ -4,7 +4,7 @@
 }
 @{
 }
-@model TextHeaderBodyUserRecord
+@model TextEdit
 
 
 <div class="editor-view-wrapper">
@@ -22,10 +22,10 @@
             <div class="menu-bar-item-right-final">
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart">Return</a>
             </div>
-            @if(@Model.TextHeader.Locked == false)
+            @if(@Model.Locked == false)
             {
                 <div class="menu-bar-item-right-final">
-                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeader.TextHeaderId">Edit</a>
+                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeaderId">Edit</a>
                 </div>               
             }
         </div>
@@ -34,11 +34,11 @@
     </div>
 
     <div class="title-bar">
-        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field" readonly>@Model.TextHeader.Title</textarea>
+        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field" readonly>@Model.Title</textarea>
     </div>
 
     <div class="editor-container">
-        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" readonly>@Model.Text.TextBody</textarea>
+        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" readonly>@Model.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
        
@@ -49,9 +49,9 @@
 
 
     <div class="left-sidebar">
-        <div class="left-sidebar-item-heading">@Model.TextHeader.Title</div>
-        <div class="left-sidebar-item">Vision No. @Model.TextHeader.VisionNumber</div>
-        <div class="left-sidebar-item">Created @Model.TextHeader.VisionCreated</div>
+        <div class="left-sidebar-item-heading">@Model.Title</div>
+        <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
+        <div class="left-sidebar-item">Created @Model.VisionCreated</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
             <div class="left-sidebar-item">Previous visions:</div>
@@ -67,10 +67,10 @@
     </div>
 
     <div class="right-sidebar">
-        <div class="right-sidebar-item-heading">Last Modified @Model.TextHeader.LastModified.Value.ToString("d")</div>
-        <div class="right-sidebar-item">by @Model.LastModifiedByUser.UserName</div>
-        <div class="right-sidebar-item-heading">Created @Model.TextHeader.Created.Value.ToString("d")</div>
-        <div class="right-sidebar-item">by @Model.CreatedByUser.UserName</div>
+        <div class="right-sidebar-item-heading">Last Modified @Model.LastModified.Value.ToString("d")</div>
+        <div class="right-sidebar-item">by @Model.LastModifiedByUserName</div>
+        <div class="right-sidebar-item-heading">Created @Model.Created.Value.ToString("d")</div>
+        <div class="right-sidebar-item">by @Model.CreatedByUserName</div>
     </div>
 
 

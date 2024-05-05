@@ -34,6 +34,7 @@ namespace RhymeBinder.Models
         public bool? Locked { get; set; }
         public bool? Top { get; set; }
         public int? BinderId { get; set; }
+        public int? TextNoteId { get; set; }
 
         public virtual Binder Binder { get; set; }
         public virtual SimpleUser CreatedByNavigation { get; set; }
@@ -42,6 +43,7 @@ namespace RhymeBinder.Models
         public virtual SimpleUser VisionCreatedByNavigation { get; set; }
         public virtual Text Text { get; set; }
         public virtual TextRevisionStatus TextRevisionStatus { get; set; }
+        public virtual TextNote TextNote { get; set; }
         public virtual TextHeader VersionOfNavigation { get; set; }
         public virtual ICollection<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual ICollection<GroupHistory> GroupHistories { get; set; }
