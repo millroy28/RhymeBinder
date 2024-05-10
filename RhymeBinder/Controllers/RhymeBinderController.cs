@@ -79,7 +79,7 @@ namespace RhymeBinder.Controllers
         //-------TEXT:
         #region TextMethods
         public IActionResult StartNewText()
-        {
+        { 
             int userId = GetUserId();
             Status status = _modelHelper.StartNewText(userId);
 
@@ -129,7 +129,7 @@ namespace RhymeBinder.Controllers
                     {
                         return RedirectToAction("ErrorPage", status);
                     }
-                    return RedirectToAction("ListTextsOnSessionStart");
+                    return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 case "Save":
                     status = _modelHelper.SaveEditedText(textEdit);
                     if (!status.success)
@@ -148,16 +148,22 @@ namespace RhymeBinder.Controllers
                         return RedirectToAction("ErrorPage", status);
                     }
                 case "Timeout":
-                    return RedirectToAction("ListTextsOnSessionStart"); 
+                    return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 default:
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
             }
 
         }
-        public IActionResult ListTextsOnSessionStart()
+        public IActionResult ListTextsOnSessionStart(int? binderId)
         {   //grabs current user, then default view for that user, and sends viewID to ListTexts
             int userId = GetUserId();
-            int savedViewId = _modelHelper.GetSavedViewIdOnStart(userId);
+            
+            if (binderId == null)
+            {
+                binderId = 0;
+            };
+
+            int savedViewId = _modelHelper.GetSavedViewIdOnStart(userId, (int)binderId);
 
             if (savedViewId == -1)
             {
@@ -454,6 +460,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
             Status status = _modelHelper.OpenBinder(userId, binderId);
+
             if (!status.success)
             {
                 return RedirectToAction("ErrorPage", status);

@@ -44,11 +44,7 @@ namespace RhymeBinder.Models
             return binders;
         }
         public int GetCurrentBinderID(int userId)
-        { // There should be ONE selected binder at any time
-          // While usually code would return -1 on a failure
-          // There are cases where another function malfunctions and fails to select a binder
-          // So this function will ensure that there is always at least 1 currently selected binder...
-
+        { 
             int binderId;
             try
             {
@@ -823,16 +819,20 @@ namespace RhymeBinder.Models
             }
             return savedViewId;
         }
-        public int GetSavedViewIdOnStart(int userId)
+        public int GetSavedViewIdOnStart(int userId, int binderId)
         {
             Status status = ClearSavedViewSearchValues(userId);
+            if (binderId == 0)
+            {
+                binderId = GetCurrentBinderID(userId);
+            }
 
             if (status.recordId == -1)
             {
                 return status.recordId;
             }
 
-            status = ResetActiveViewToDefaults(userId);
+            status = ResetActiveViewToDefaults(binderId);
 
             return status.recordId;
         }
@@ -905,6 +905,7 @@ namespace RhymeBinder.Models
 
             return userLocalNow;                        
         }
+
         #endregion
 
         //  USER Methods: 
@@ -1473,18 +1474,10 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status ResetActiveViewToDefaults(int userId)
+        public Status ResetActiveViewToDefaults(int binderId)
         {
             Status status = new Status();
 
-            int binderId = GetCurrentBinderID(userId);
-
-            if (binderId == -1)
-            {
-                status.success = false;
-                status.message = $"Failed to retrieve current binder Id";
-                return status;
-            };
 
             SavedView activeView = _context.SavedViews.Single(x => x.BinderId == binderId
                                                                 && x.SetValue == "Active");
