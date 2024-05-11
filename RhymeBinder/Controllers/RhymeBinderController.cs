@@ -250,7 +250,7 @@ namespace RhymeBinder.Controllers
                     break;
 
                 case "ManageGroups":
-                    return RedirectToAction("ListGroups");
+                    return Redirect($"/RhymeBinder/ListGroups?binderId={savedView.View.BinderId}");
 
                 case "CreateGroup":
                     return Redirect($"/RhymeBinder/CreateGroup?binderID={savedView.View.BinderId}");
@@ -280,10 +280,10 @@ namespace RhymeBinder.Controllers
 
         //-------GROUP:
         #region GroupMethods
-        public IActionResult ListGroups()
+        public IActionResult ListGroups(int binderId)
         {
             int userId = GetUserId();
-            List<DisplayTextGroup> displayTextGroups = _modelHelper.GetDisplayTextGroups(userId);
+            List<DisplayTextGroup> displayTextGroups = _modelHelper.GetDisplayTextGroups(userId, binderId);
 
             if (displayTextGroups[0].TextGroupId == -1)
             {
@@ -340,7 +340,7 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return RedirectToAction("ListGroups");
+                return Redirect($"/Rhymebinder/ListGroups?binderId={editedGroup.BinderId}");
             }
         }
 
@@ -363,7 +363,7 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return RedirectToAction("ListGroups");
+                return Redirect($"/Rhymebinder/ListGroups?binderId={newGroup.BinderId}");
             }
         } 
         #endregion

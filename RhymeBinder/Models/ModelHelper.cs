@@ -71,6 +71,19 @@ namespace RhymeBinder.Models
 
             return binderId;
         }
+        public string GetBinderName (int binderId)
+        {
+            string name;
+            try
+            {
+                name = _context.Binders.Single(x=>x.BinderId == binderId).Name;
+            }
+            catch
+            {
+                name = "FailedToFetchBinderName";
+            }
+            return name;
+        }
         public SimpleUser GetCurrentSimpleUser(int userId)
         {
             // string aspUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -128,6 +141,21 @@ namespace RhymeBinder.Models
             {
                 defaultSavedView = _context.SavedViews.Single(x => x.UserId == userId
                                                                 && x.BinderId == currentBinderId
+                                                                && x.SetValue == "Default");
+            }
+            catch
+            {
+                defaultSavedView.SavedViewId = -1;
+            }
+            return defaultSavedView;
+        }
+        public SavedView GetDefaultSavedView(int userId, int binderId)
+        {
+            SavedView defaultSavedView = new SavedView();
+            try
+            {
+                defaultSavedView = _context.SavedViews.Single(x => x.UserId == userId
+                                                                && x.BinderId == binderId
                                                                 && x.SetValue == "Default");
             }
             catch
@@ -246,9 +274,8 @@ namespace RhymeBinder.Models
             }
             return (displayBinders);
         }
-        public List<DisplayTextGroup> GetDisplayTextGroups(int userId)
-        {
-            int binderId = GetCurrentBinderID(userId);
+        public List<DisplayTextGroup> GetDisplayTextGroups(int userId, int binderId)
+        { 
             List<TextGroup> groups = GetTextGroupsInBinder(userId, binderId);
             List<DisplayTextGroup> displayTextGroups = new List<DisplayTextGroup>();
 
@@ -260,7 +287,7 @@ namespace RhymeBinder.Models
                     {
                         TextGroupId = group.TextGroupId,
                         BinderId = group.BinderId,
-                        Binder = group.Binder,
+                        BinderName = GetBinderName(group.BinderId),
                         GroupTitle = group.GroupTitle,
                         Notes = group.Notes,
                         Locked = group.Locked,
@@ -454,7 +481,7 @@ namespace RhymeBinder.Models
             };
 
             SavedView savedView = GetSavedView(viewId);
-            DisplayBinder binder = GetDisplayBinder(userId);
+            DisplayBinder binder = GetDisplayBinder(userId, (int)savedView.BinderId);
             List<TextGroup> groups = GetTextGroupsInBinder(userId, binder.BinderId);
 
             // Add default views to list of groups for display in dropdown.
@@ -2071,7 +2098,7 @@ namespace RhymeBinder.Models
             Status status = new Status();
             // Create a new group and a new view for that group
 
-            SavedView defaultSavedView = GetDefaultSavedView(userId);
+            SavedView defaultSavedView = GetDefaultSavedView(userId, newGroup.BinderId);
             SavedView newGroupView = new SavedView()
             {
                 UserId = userId,
