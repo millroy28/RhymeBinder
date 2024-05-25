@@ -665,7 +665,6 @@ namespace RhymeBinder.Models
 
                 previousTextHeaders = GetPreviousVisions(textHeaderID, previousTextHeaders);
 
-                //previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
                 foreach (var textHeader in previousTextHeaders)
                 {
                     SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
@@ -680,7 +679,6 @@ namespace RhymeBinder.Models
                         TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
                     };
                     previousTextsAndHeaders.Add(simpleTextHeaderAndText);
-                    //previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
                 }
 
                 //previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
@@ -706,6 +704,28 @@ namespace RhymeBinder.Models
             catch
             {
             }
+
+            //get text groups
+            List<TextGroup> memberOfGroups = (  from TextGroup textGroup in _context.TextGroups
+                                                join LnkTextHeadersTextGroup link in _context.LnkTextHeadersTextGroups
+                                                on textGroup.TextGroupId equals link.TextGroupId
+                                                where link.TextHeaderId == thisTextHeader.TextHeaderId
+                                                select new TextGroup
+                                                {
+                                                    GroupTitle = textGroup.GroupTitle,
+                                                    TextGroupId = textGroup.TextGroupId
+                                                }
+                                                ).ToList();
+
+            List<TextGroup> availableGroups = ( from TextGroup textGroup in _context.TextGroups
+                                                where (textGroup.BinderId == thisTextHeader.BinderId
+                                                && !memberOfGroups.Contains(textGroup)) //exclude group of which it's already a member
+                                                select new TextGroup
+                                                {
+                                                    GroupTitle = textGroup.GroupTitle,
+                                                    TextGroupId = textGroup.TextGroupId
+                                                }
+                                                ).ToList();
 
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
@@ -735,9 +755,12 @@ namespace RhymeBinder.Models
                 Top = thisTextHeader.Top,
                 BinderId = thisTextHeader.BinderId,
 
+                DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0,20) + "..." : thisTextHeader.Title,
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
                 CurrentRevisionStatus = currentRevisionStatus,
+                MemberOfGroups = memberOfGroups,
+                AvailableGroups = availableGroups,
 
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,
@@ -1094,7 +1117,7 @@ namespace RhymeBinder.Models
             }
 
             // Migrate, if any, group associations from previous header to new header
-            UpdateGroupsForNewVision(status.recordId);
+            status = UpdateGroupsForNewVision(status.recordId);
             if (status.success) { status.recordId = newTextHeader.TextHeaderId; } // ensure TextHeaderId is returned as status
 
             return status;

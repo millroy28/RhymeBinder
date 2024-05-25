@@ -7,6 +7,7 @@
 @model TextEdit
 
 
+
 <form class="editor-view-wrapper" action="EditText" method="post" id="edit">
     <input type="hidden" name="TextHeaderId" value="@Model.TextHeaderId" />
     <input type="hidden" name="TextId" value="@Model.TextId" />
@@ -22,8 +23,11 @@
 
 
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile">
-                Editing:
+            <div class="menu-bar-title menu-bar-title-mobile" style = "text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;">
+                Editing: @Model.DisplayTitle
             </div>
             <div class="menu-bar-item menu-bar-item-mobileHide">
                 Status:
@@ -89,12 +93,13 @@
 
 
     <div class="left-sidebar">
-        <div class="left-sidebar-item-heading">@Model.Title</div>
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
-        <div class="left-sidebar-item">Created @Model.VisionCreated</div>
+        <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
+        <div class="left-sidebar-item">Last Modified @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
-            <div class="left-sidebar-item">Previous visions:</div>
+            
+            <div class="left-sidebar-item-heading" style="text-indent: 1em">Previous visions:</div>
             foreach (var prev in Model.PreviousTexts)
             {
 
@@ -108,10 +113,14 @@
 
 
     <div class="right-sidebar">
-        <div class="right-sidebar-item-heading">Last Modified @Model.LastModified.Value.ToString("d")</div>
-        <div class="right-sidebar-item">by @Model.LastModifiedByUserName</div>
-        <div class="right-sidebar-item-heading">Created @Model.Created.Value.ToString("d")</div>
-        <div class="right-sidebar-item">by @Model.CreatedByUserName</div>
+        @if (Model.MemberOfGroups.Count > 0)
+        {
+            <div class="right-sidebar-item-heading">Member of Groups:</div>
+            @foreach(var group in Model.MemberOfGroups)
+            {
+                <div class="right-sidebar-item">@group.GroupTitle</div>
+            }
+        }
         <div class="right-sidebar-item-heading">Notes:</div>
             <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
 
