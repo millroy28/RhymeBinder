@@ -601,7 +601,8 @@
     }
 
     .right-sidebar-item {
-        align-self: flex-start;
+        display: flex;
+        justify-content: space-between;
         font-size: small;
         padding-left: 6px
     }

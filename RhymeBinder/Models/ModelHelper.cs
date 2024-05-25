@@ -713,19 +713,22 @@ namespace RhymeBinder.Models
                                                 select new TextGroup
                                                 {
                                                     GroupTitle = textGroup.GroupTitle,
-                                                    TextGroupId = textGroup.TextGroupId
+                                                    TextGroupId = textGroup.TextGroupId,
+                                                    Locked = textGroup.Locked
                                                 }
-                                                ).ToList();
+                                                ).OrderBy(x => x.GroupTitle).ToList();
+            
 
             List<TextGroup> availableGroups = ( from TextGroup textGroup in _context.TextGroups
                                                 where (textGroup.BinderId == thisTextHeader.BinderId
-                                                && !memberOfGroups.Contains(textGroup)) //exclude group of which it's already a member
+                                                && !memberOfGroups.Contains(textGroup) //exclude group of which it's already a member
+                                                && !textGroup.Locked)
                                                 select new TextGroup
                                                 {
                                                     GroupTitle = textGroup.GroupTitle,
                                                     TextGroupId = textGroup.TextGroupId
                                                 }
-                                                ).ToList();
+                                                ).OrderBy(x => x.GroupTitle).ToList();
 
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
@@ -2270,6 +2273,49 @@ namespace RhymeBinder.Models
                 status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
             }
 
+            return status;
+        }
+        public Status AddRemoveHeaderFromGroup(int textHeaderId, int groupId, bool add)
+        {
+            Status status = new Status();
+
+            if (add)
+            {
+                LnkTextHeadersTextGroup link = new LnkTextHeadersTextGroup()
+                {
+                    TextGroupId = groupId,
+                    TextHeaderId = textHeaderId
+                };
+                try
+                {
+                    _context.LnkTextHeadersTextGroups.Add(link);
+                    _context.SaveChanges();
+                    status.success = true;
+                    status.recordId = link.LnkHeaderGroupId;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.message = $"Failed to add text header with Id {textHeaderId} to group with id {groupId}";
+                }
+            }
+            else
+            {
+                try
+                {
+                    LnkTextHeadersTextGroup link = _context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeaderId
+                                                                                              && x.TextGroupId == groupId);
+                    _context.LnkTextHeadersTextGroups.Remove(link);
+                    _context.SaveChanges();
+                    status.success = true;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.message = $"Failed to remove text header with Id {textHeaderId} from group with id {groupId}";
+                }
+            }
+            
             return status;
         }
         public Status ClearTextsFromGroup(int groupId)
