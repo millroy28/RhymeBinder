@@ -1092,6 +1092,11 @@ namespace RhymeBinder.Models
                 status.success = false;
                 status.message = $"Failed creating new child header for parent header id {parentHeader.TextHeaderId}";
             }
+
+            // Migrate, if any, group associations from previous header to new header
+            UpdateGroupsForNewVision(status.recordId);
+            if (status.success) { status.recordId = newTextHeader.TextHeaderId; } // ensure TextHeaderId is returned as status
+
             return status;
         }
         public string GetNewTextTitle(int userId, int binderId)
@@ -2327,6 +2332,47 @@ namespace RhymeBinder.Models
                 status.recordId = newGroup.TextGroupId;
                 status.message = $"Failed to create a view for new group {newGroup.GroupTitle}";
             }
+            return status;
+        }
+        public Status UpdateGroupsForNewVision(int textHeaderId) 
+        {
+            Status status = new Status();
+
+            int? parentTextHeaderId = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId).VersionOf;
+
+            if (parentTextHeaderId == null)
+            {
+                status.success = false;
+                status.message = "Attempted to update groups from parent to child header when no parent header exists";
+                status.recordId = -1;
+                return status;
+            }
+
+            List<LnkTextHeadersTextGroup> textHeadersTextGroups = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == (int)parentTextHeaderId).ToList();
+            if (textHeadersTextGroups.Count == 0)
+            {
+                status.success = true;
+                return status;
+            }
+
+            //foreach(LnkTextHeadersTextGroup link in textHeadersTextGroups)
+            //{
+            //    link.TextHeaderId = textHeaderId;
+            //}
+            textHeadersTextGroups.ForEach(x => x.TextHeaderId = textHeaderId);
+
+            try
+            {
+                _context.UpdateRange(textHeadersTextGroups);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to migrate text groups from parent to child header";
+            }
+
             return status;
         }
         public List<TextHeader> GetPreviousVisions(int textHeaderID, List<TextHeader> prevTextHeaders)
