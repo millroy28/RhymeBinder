@@ -1278,6 +1278,9 @@ namespace RhymeBinder.Models
         public Status SaveEditedText(TextEdit textEdit)
         {
             Status status = new Status();
+            //prevent blank from being saved as title (which would break navitgation)
+            if (textEdit.Title == null || textEdit.Title.Trim() == "") textEdit.Title = "(blank)";
+
             //Check for change and only save if something has changed
             bool noteUnchanged;
             bool textUnchanged;
