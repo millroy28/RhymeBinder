@@ -688,7 +688,6 @@ namespace RhymeBinder.Models
 
                 previousTextHeaders = GetPreviousVisions(textHeaderID, previousTextHeaders);
 
-                //previousTextHeaders = _context.TextHeaders.Where(x => x.TextGroupId == thisTextHeader.TextGroupId && x.Top == false).ToList();
                 foreach (var textHeader in previousTextHeaders)
                 {
                     SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
@@ -703,7 +702,6 @@ namespace RhymeBinder.Models
                         TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
                     };
                     previousTextsAndHeaders.Add(simpleTextHeaderAndText);
-                    //previousTexts.Add(_context.Texts.Where(x => x.TextId == textHeader.TextId).First());
                 }
 
                 //previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
@@ -729,6 +727,31 @@ namespace RhymeBinder.Models
             catch
             {
             }
+
+            //get text groups
+            List<TextGroup> memberOfGroups = (  from TextGroup textGroup in _context.TextGroups
+                                                join LnkTextHeadersTextGroup link in _context.LnkTextHeadersTextGroups
+                                                on textGroup.TextGroupId equals link.TextGroupId
+                                                where link.TextHeaderId == thisTextHeader.TextHeaderId
+                                                select new TextGroup
+                                                {
+                                                    GroupTitle = textGroup.GroupTitle,
+                                                    TextGroupId = textGroup.TextGroupId,
+                                                    Locked = textGroup.Locked
+                                                }
+                                                ).OrderBy(x => x.GroupTitle).ToList();
+            
+
+            List<TextGroup> availableGroups = ( from TextGroup textGroup in _context.TextGroups
+                                                where (textGroup.BinderId == thisTextHeader.BinderId
+                                                && !memberOfGroups.Contains(textGroup) //exclude group of which it's already a member
+                                                && !textGroup.Locked)
+                                                select new TextGroup
+                                                {
+                                                    GroupTitle = textGroup.GroupTitle,
+                                                    TextGroupId = textGroup.TextGroupId
+                                                }
+                                                ).OrderBy(x => x.GroupTitle).ToList();
 
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
@@ -758,9 +781,12 @@ namespace RhymeBinder.Models
                 Top = thisTextHeader.Top,
                 BinderId = thisTextHeader.BinderId,
 
+                DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0,20) + "..." : thisTextHeader.Title,
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
                 CurrentRevisionStatus = currentRevisionStatus,
+                MemberOfGroups = memberOfGroups,
+                AvailableGroups = availableGroups,
 
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,
@@ -1120,6 +1146,11 @@ namespace RhymeBinder.Models
                 status.success = false;
                 status.message = $"Failed creating new child header for parent header id {parentHeader.TextHeaderId}";
             }
+
+            // Migrate, if any, group associations from previous header to new header
+            status = UpdateGroupsForNewVision(status.recordId);
+            if (status.success) { status.recordId = newTextHeader.TextHeaderId; } // ensure TextHeaderId is returned as status
+
             return status;
         }
         public string GetNewTextTitle(int userId, int binderId)
@@ -2264,6 +2295,49 @@ namespace RhymeBinder.Models
 
             return status;
         }
+        public Status AddRemoveHeaderFromGroup(int textHeaderId, int groupId, bool add)
+        {
+            Status status = new Status();
+
+            if (add)
+            {
+                LnkTextHeadersTextGroup link = new LnkTextHeadersTextGroup()
+                {
+                    TextGroupId = groupId,
+                    TextHeaderId = textHeaderId
+                };
+                try
+                {
+                    _context.LnkTextHeadersTextGroups.Add(link);
+                    _context.SaveChanges();
+                    status.success = true;
+                    status.recordId = link.LnkHeaderGroupId;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.message = $"Failed to add text header with Id {textHeaderId} to group with id {groupId}";
+                }
+            }
+            else
+            {
+                try
+                {
+                    LnkTextHeadersTextGroup link = _context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeaderId
+                                                                                              && x.TextGroupId == groupId);
+                    _context.LnkTextHeadersTextGroups.Remove(link);
+                    _context.SaveChanges();
+                    status.success = true;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.message = $"Failed to remove text header with Id {textHeaderId} from group with id {groupId}";
+                }
+            }
+            
+            return status;
+        }
         public Status ClearTextsFromGroup(int groupId)
         {
             Status status = new Status();
@@ -2347,6 +2421,47 @@ namespace RhymeBinder.Models
                 status.recordId = newGroup.TextGroupId;
                 status.message = $"Failed to create a view for new group {newGroup.GroupTitle}";
             }
+            return status;
+        }
+        public Status UpdateGroupsForNewVision(int textHeaderId) 
+        {
+            Status status = new Status();
+
+            int? parentTextHeaderId = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId).VersionOf;
+
+            if (parentTextHeaderId == null)
+            {
+                status.success = false;
+                status.message = "Attempted to update groups from parent to child header when no parent header exists";
+                status.recordId = -1;
+                return status;
+            }
+
+            List<LnkTextHeadersTextGroup> textHeadersTextGroups = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == (int)parentTextHeaderId).ToList();
+            if (textHeadersTextGroups.Count == 0)
+            {
+                status.success = true;
+                return status;
+            }
+
+            //foreach(LnkTextHeadersTextGroup link in textHeadersTextGroups)
+            //{
+            //    link.TextHeaderId = textHeaderId;
+            //}
+            textHeadersTextGroups.ForEach(x => x.TextHeaderId = textHeaderId);
+
+            try
+            {
+                _context.UpdateRange(textHeadersTextGroups);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to migrate text groups from parent to child header";
+            }
+
             return status;
         }
         public List<TextHeader> GetPreviousVisions(int textHeaderID, List<TextHeader> prevTextHeaders)

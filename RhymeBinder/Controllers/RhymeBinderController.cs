@@ -115,7 +115,7 @@ namespace RhymeBinder.Controllers
 
         }
         [HttpPost]
-        public IActionResult EditText(TextEdit textEdit, string action)
+        public IActionResult EditText(TextEdit textEdit, string action, string value)
         {
             int userId = GetUserId();
             Status status = new Status();
@@ -142,6 +142,26 @@ namespace RhymeBinder.Controllers
                     if (status.success)
                     {
                         return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                    }
+                    else
+                    {
+                        return RedirectToAction("ErrorPage", status);
+                    }
+                case "AddGroup":
+                    status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
+                    if (status.success)
+                    {
+                        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                    }
+                    else
+                    {
+                        return RedirectToAction("ErrorPage", status);
+                    }
+                case "RemoveGroup":
+                    status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
+                    if (status.success)
+                    {
+                        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
                     }
                     else
                     {
