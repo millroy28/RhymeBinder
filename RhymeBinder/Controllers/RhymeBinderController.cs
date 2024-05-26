@@ -203,7 +203,7 @@ namespace RhymeBinder.Controllers
             int currentPage;
             if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
 
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage, searchValue);
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
 
             if (displayTextHeadersAndSavedView.View.SavedViewId != -1)
             {
