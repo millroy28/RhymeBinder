@@ -33,8 +33,8 @@ namespace RhymeBinder.Models
         public bool? Deleted { get; set; }
         public bool? Locked { get; set; }
         public bool? Top { get; set; }
-        public int? BinderId { get; set; }
-        public int? TextNoteId { get; set; }
+        public int BinderId { get; set; }
+        public int TextNoteId { get; set; }
 
         public virtual Binder Binder { get; set; }
         public virtual SimpleUser CreatedByNavigation { get; set; }

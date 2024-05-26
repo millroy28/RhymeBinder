@@ -361,6 +361,7 @@ namespace RhymeBinder.Models
                     TextHeaderId = textHeader.TextHeaderId,
                     TextId = textHeader.TextId,
                     TextRevisionStatusId = textHeader.TextRevisionStatusId,
+                    TextNoteId = textHeader.TextNoteId,
                     LastModifiedBy = textHeader.LastModifiedBy,
                     LastReadBy = textHeader.LastReadBy,
                     CreatedBy = textHeader.CreatedBy,
@@ -385,13 +386,18 @@ namespace RhymeBinder.Models
                 {
                     // search text bodies
                     List<Text> searchFilteredTexts = _context.Texts.Where(x => theseTextHeaders.Select(y => y.TextId).Contains(x.TextId)
-                                                                            && x.TextBody.Contains(savedView.SearchValue)
+                                                                            && x.TextBody.ToLower().Contains(savedView.SearchValue.ToLower())
+                                                                            ).ToList();
+
+                    // seach notes also and as well...
+                    List<TextNote> searchFilteredNotes = _context.TextNotes.Where(x => theseTextHeaders.Select(y => y.TextNoteId).Contains(x.TextNoteId)
+                                                                              && x.Note.ToLower().Contains(savedView.SearchValue.ToLower())
                                                                             ).ToList();
 
                     // search text titles too...
-                    List<DisplayTextHeader> searchFilteredDisplayTextHeaders = theseDisplayTextHeaders.Where(x => x.Title.Contains(savedView.SearchValue)
-                                                                                                               // || searchFilteredTexts.All(y => y.TextId == x.TextId)
+                    List<DisplayTextHeader> searchFilteredDisplayTextHeaders = theseDisplayTextHeaders.Where(x => x.Title.ToLower().Contains(savedView.SearchValue.ToLower())
                                                                                                                || searchFilteredTexts.Select(y => y.TextId).Contains(x.TextId)
+                                                                                                               || searchFilteredNotes.Select(z => z.TextNoteId).Contains(x.TextNoteId)
                                                                                                                ).ToList();
 
 
@@ -450,7 +456,7 @@ namespace RhymeBinder.Models
 
             return (theseDisplayTextHeaders);
         }
-        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page, string searchValue)
+        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page)
         {
             DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView()
             {
