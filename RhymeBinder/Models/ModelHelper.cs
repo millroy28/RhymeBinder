@@ -44,11 +44,7 @@ namespace RhymeBinder.Models
             return binders;
         }
         public int GetCurrentBinderID(int userId)
-        { // There should be ONE selected binder at any time
-          // While usually code would return -1 on a failure
-          // There are cases where another function malfunctions and fails to select a binder
-          // So this function will ensure that there is always at least 1 currently selected binder...
-
+        { 
             int binderId;
             try
             {
@@ -74,6 +70,19 @@ namespace RhymeBinder.Models
             }
 
             return binderId;
+        }
+        public string GetBinderName (int binderId)
+        {
+            string name;
+            try
+            {
+                name = _context.Binders.Single(x=>x.BinderId == binderId).Name;
+            }
+            catch
+            {
+                name = "FailedToFetchBinderName";
+            }
+            return name;
         }
         public SimpleUser GetCurrentSimpleUser(int userId)
         {
@@ -132,6 +141,21 @@ namespace RhymeBinder.Models
             {
                 defaultSavedView = _context.SavedViews.Single(x => x.UserId == userId
                                                                 && x.BinderId == currentBinderId
+                                                                && x.SetValue == "Default");
+            }
+            catch
+            {
+                defaultSavedView.SavedViewId = -1;
+            }
+            return defaultSavedView;
+        }
+        public SavedView GetDefaultSavedView(int userId, int binderId)
+        {
+            SavedView defaultSavedView = new SavedView();
+            try
+            {
+                defaultSavedView = _context.SavedViews.Single(x => x.UserId == userId
+                                                                && x.BinderId == binderId
                                                                 && x.SetValue == "Default");
             }
             catch
@@ -250,9 +274,8 @@ namespace RhymeBinder.Models
             }
             return (displayBinders);
         }
-        public List<DisplayTextGroup> GetDisplayTextGroups(int userId)
-        {
-            int binderId = GetCurrentBinderID(userId);
+        public List<DisplayTextGroup> GetDisplayTextGroups(int userId, int binderId)
+        { 
             List<TextGroup> groups = GetTextGroupsInBinder(userId, binderId);
             List<DisplayTextGroup> displayTextGroups = new List<DisplayTextGroup>();
 
@@ -264,7 +287,7 @@ namespace RhymeBinder.Models
                     {
                         TextGroupId = group.TextGroupId,
                         BinderId = group.BinderId,
-                        Binder = group.Binder,
+                        BinderName = GetBinderName(group.BinderId),
                         GroupTitle = group.GroupTitle,
                         Notes = group.Notes,
                         Locked = group.Locked,
@@ -458,7 +481,7 @@ namespace RhymeBinder.Models
             };
 
             SavedView savedView = GetSavedView(viewId);
-            DisplayBinder binder = GetDisplayBinder(userId);
+            DisplayBinder binder = GetDisplayBinder(userId, (int)savedView.BinderId);
             List<TextGroup> groups = GetTextGroupsInBinder(userId, binder.BinderId);
 
             // Add default views to list of groups for display in dropdown.
@@ -823,16 +846,20 @@ namespace RhymeBinder.Models
             }
             return savedViewId;
         }
-        public int GetSavedViewIdOnStart(int userId)
+        public int GetSavedViewIdOnStart(int userId, int binderId)
         {
             Status status = ClearSavedViewSearchValues(userId);
+            if (binderId == 0)
+            {
+                binderId = GetCurrentBinderID(userId);
+            }
 
             if (status.recordId == -1)
             {
                 return status.recordId;
             }
 
-            status = ResetActiveViewToDefaults(userId);
+            status = ResetActiveViewToDefaults(binderId);
 
             return status.recordId;
         }
@@ -905,6 +932,7 @@ namespace RhymeBinder.Models
 
             return userLocalNow;                        
         }
+
         #endregion
 
         //  USER Methods: 
@@ -1473,18 +1501,10 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status ResetActiveViewToDefaults(int userId)
+        public Status ResetActiveViewToDefaults(int binderId)
         {
             Status status = new Status();
 
-            int binderId = GetCurrentBinderID(userId);
-
-            if (binderId == -1)
-            {
-                status.success = false;
-                status.message = $"Failed to retrieve current binder Id";
-                return status;
-            };
 
             SavedView activeView = _context.SavedViews.Single(x => x.BinderId == binderId
                                                                 && x.SetValue == "Active");
@@ -2078,7 +2098,7 @@ namespace RhymeBinder.Models
             Status status = new Status();
             // Create a new group and a new view for that group
 
-            SavedView defaultSavedView = GetDefaultSavedView(userId);
+            SavedView defaultSavedView = GetDefaultSavedView(userId, newGroup.BinderId);
             SavedView newGroupView = new SavedView()
             {
                 UserId = userId,
