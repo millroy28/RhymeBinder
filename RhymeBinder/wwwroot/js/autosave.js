@@ -13,6 +13,8 @@ var current_cursor_position;
 var previous_cursor_position;
 var current_focus_element;
 var previous_focus_element;
+var current_scroll_position;
+var previous_scroll_position;
 var keyup_timer;
 var timeout_timer;
 
@@ -45,13 +47,13 @@ function autosave_counter() {
 
     } else
     {
-        autosave_timer--;
+      //  autosave_timer--;
         reset_timeout_timer();
-        if (autosave_timer == 0)
-        {
+        //if (autosave_timer == 0)
+        //{
             save_content();
             return;
-        }
+        //}
     }
     setTimeout('autosave_counter()', 1000); //elapses one second before calling function again
 }
@@ -66,9 +68,8 @@ function submit_timeout_action()
 
 function save_content() {
     get_current_cursor_position_and_form_focus();
-    console.log('preparing to autosave... current focus element: ' + current_focus_element);
-    console.log('preparing to autosave... current cursor position: ' + current_cursor_position);
-    console.log('preparing to autosave... waiting for user to stop typing...');
+    console.log('preparing to autosave...');
+    console.log('waiting for user to stop typing...');
 
     let input = document.getElementById(current_focus_element);
     input.addEventListener('keyup', function (e) {
@@ -81,13 +82,21 @@ function save_content() {
 
 function wait_for_typing_to_finish_before_saving() {
     keyup_timer--;
-    console.log('no-typing detected countown at: ' + keyup_timer);
+    if (keyup_timer % 5 == 0 || keyup_timer < 4) {
+        console.log('no-typing detected... saving in ' + keyup_timer + ' seconds');
+        // un-comment for debug console logging:
+        // console.log('CURRENT FOCUS ELEMENT: ' + current_focus_element);
+        // console.log('CURRENT CURSOR POSITION: ' + current_cursor_position);
+        // console.log('CURRENT SCROLL POSITION: ' + current_scroll_position);
+    }
+    
 
     if (keyup_timer == 0) {
         //set cursor position and form focus values in form to be saved to server
         get_current_cursor_position_and_form_focus();
         document.getElementById('cursor_position').value = current_cursor_position;
         document.getElementById('form_focus').value = current_focus_element;
+        document.getElementById('scroll_position').value = current_scroll_position;
         //document.getElementById('edit').submit();
         button = document.getElementById('save');
         button.click();
@@ -101,11 +110,15 @@ function wait_for_typing_to_finish_before_saving() {
 function get_current_cursor_position_and_form_focus() {
     current_focus_element = document.activeElement.id;
 
-    if (current_focus_element == 'body_edit_field' || current_focus_element == 'title_edit_field') {
+    if (current_focus_element == 'body_edit_field'
+        || current_focus_element == 'title_edit_field'
+        || current_focus_element == 'note_edit_field') {
         current_cursor_position = document.getElementById(current_focus_element).selectionEnd;
+        current_scroll_position = document.getElementById(current_focus_element).scrollTop;
     } else {
         current_focus_element = 'body_edit_field'
         current_cursor_position = 0;
+        current_scroll_position = 0;
     }
 }
 
@@ -145,6 +158,11 @@ function set_cursor_and_focus_to_previous() {
     previous_cursor_position = document.getElementById('cursor_position').value;
     console.log('setting cursor to previous position: ' + previous_cursor_position);
     document.getElementById(previous_focus_element).selectionStart = previous_cursor_position;
+
+    previous_scroll_position = document.getElementById('scroll_position').value;
+    console.log('setting scrollbar to previous position: ' + previous_scroll_position);
+    document.getElementById(previous_focus_element).scrollTop = previous_scroll_position;
+
 }
 
 function run_these_functions_on_page_load() {

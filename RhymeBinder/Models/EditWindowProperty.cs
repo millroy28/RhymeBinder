@@ -10,6 +10,7 @@ namespace RhymeBinder.Models
         public int TextHeaderId { get; set; }
         public string ActiveElement { get; set; }
         public int? CursorPosition { get; set; }
+        public int? ScrollPosition { get; set; }
         public int? ShowLineCount { get; set; }
         public int? ShowParagraphCount { get; set; }
 

@@ -674,6 +674,7 @@ namespace RhymeBinder.Models
                 newEditWindowProperty.UserId = currentUser.UserId;
                 newEditWindowProperty.TextHeaderId = textHeaderID;
                 newEditWindowProperty.CursorPosition = 0;
+                newEditWindowProperty.ScrollPosition = 0;
                 newEditWindowProperty.ActiveElement = "body_edit_field";
                 newEditWindowProperty.ShowLineCount = 1;
                 newEditWindowProperty.ShowParagraphCount = 1;
@@ -797,6 +798,7 @@ namespace RhymeBinder.Models
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,
                 CursorPosition = thisEditWindowProperty.CursorPosition,
+                ScrollPosition = thisEditWindowProperty.ScrollPosition,
                 ShowLineCount = thisEditWindowProperty.ShowLineCount,
                 ShowParagraphCount = thisEditWindowProperty.ShowParagraphCount,
 
@@ -1229,6 +1231,7 @@ namespace RhymeBinder.Models
                     UserId = userId,
                     ActiveElement = "body_edit_field", //ID of text body edit field
                     CursorPosition = 0,
+                    ScrollPosition = 0,
                     ShowLineCount = binder.NewTextDefaultShowLineCount ? 1 : 0,
                     ShowParagraphCount = binder.NewTextDefaultShowParagraphCount ? 1 : 0,
                 };
@@ -1328,6 +1331,7 @@ namespace RhymeBinder.Models
                                                                                             && x.TextHeaderId == textEdit.TextHeaderId).First();
 
             thisEditWindowProperty.CursorPosition = textEdit.CursorPosition;
+            thisEditWindowProperty.ScrollPosition = textEdit.ScrollPosition;
             thisEditWindowProperty.ActiveElement = textEdit.ActiveElement;
             thisEditWindowProperty.ShowLineCount = textEdit.ShowLineCount;
             thisEditWindowProperty.ShowParagraphCount = textEdit.ShowParagraphCount;
