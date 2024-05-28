@@ -9,12 +9,18 @@ var check_body_string;
 var is_content_different;
 var original_revision_status;
 var check_revision_status;
-var current_cursor_position;
-var previous_cursor_position;
 var current_focus_element;
 var previous_focus_element;
-var current_scroll_position;
-var previous_scroll_position;
+var current_body_cursor_position;
+var previous_body_cursor_position;
+var current_body_scroll_position;
+var previous_body_scroll_position;
+var current_note_cursor_position;
+var previous_note_cursor_position;
+var current_note_scroll_position;
+var previous_note_scroll_position;
+var current_title_cursor_position;
+var previous_title_cursor_position;
 var keyup_timer;
 var timeout_timer;
 
@@ -83,20 +89,28 @@ function save_content() {
 function wait_for_typing_to_finish_before_saving() {
     keyup_timer--;
     if (keyup_timer % 5 == 0 || keyup_timer < 4) {
-        console.log('no-typing detected... saving in ' + keyup_timer + ' seconds');
-        // un-comment for debug console logging:
-        // console.log('CURRENT FOCUS ELEMENT: ' + current_focus_element);
-        // console.log('CURRENT CURSOR POSITION: ' + current_cursor_position);
-        // console.log('CURRENT SCROLL POSITION: ' + current_scroll_position);
-    }
-    
+        console.log('no-typing detected... saving in ' + keyup_timer + ' seconds');       
+    }    
 
     if (keyup_timer == 0) {
         //set cursor position and form focus values in form to be saved to server
         get_current_cursor_position_and_form_focus();
-        document.getElementById('cursor_position').value = current_cursor_position;
+        // un-comment for debug console logging:
+        //console.log('CURRENT FOCUS ELEMENT: ' + current_focus_element);
+        //console.log('CURRENT TEXT CURSOR POSITION: ' + current_body_cursor_position);
+        //console.log('CURRENT TEXT SCROLL POSITION: ' + current_body_scroll_position);
+        //console.log('CURRENT NOTE CURSOR POSITION: ' + current_note_cursor_position);
+        //console.log('CURRENT NOTE SCROLL POSITION: ' + current_note_scroll_position);
+        //console.log('CURRENT TITLE CURSOR POSITION: ' + current_title_cursor_position);
+        //setTimeout(3000);
+
+
+        document.getElementById('body_cursor_position').value = current_body_cursor_position;
+        document.getElementById('body_scroll_position').value = current_body_scroll_position;
+        document.getElementById('note_cursor_position').value = current_note_cursor_position;
+        document.getElementById('note_scroll_position').value = current_note_scroll_position;
+        document.getElementById('title_cursor_position').value = current_title_cursor_position;
         document.getElementById('form_focus').value = current_focus_element;
-        document.getElementById('scroll_position').value = current_scroll_position;
         //document.getElementById('edit').submit();
         button = document.getElementById('save');
         button.click();
@@ -108,17 +122,18 @@ function wait_for_typing_to_finish_before_saving() {
 }
 
 function get_current_cursor_position_and_form_focus() {
+    current_body_cursor_position = document.getElementById('body_edit_field').selectionEnd;
+    current_body_scroll_position = document.getElementById('body_edit_field').scrollTop; 
+    current_note_cursor_position = document.getElementById('note_edit_field').selectionEnd;
+    current_note_scroll_position = document.getElementById('note_edit_field').scrollTop;
+    current_title_cursor_position = document.getElementById('title_edit_field').selectionEnd;
+
     current_focus_element = document.activeElement.id;
 
-    if (current_focus_element == 'body_edit_field'
-        || current_focus_element == 'title_edit_field'
-        || current_focus_element == 'note_edit_field') {
-        current_cursor_position = document.getElementById(current_focus_element).selectionEnd;
-        current_scroll_position = document.getElementById(current_focus_element).scrollTop;
-    } else {
+    if (current_focus_element != 'body_edit_field'
+        && current_focus_element != 'title_edit_field'
+        && current_focus_element != 'note_edit_field') {
         current_focus_element = 'body_edit_field'
-        current_cursor_position = 0;
-        current_scroll_position = 0;
     }
 }
 
@@ -155,13 +170,25 @@ function set_cursor_and_focus_to_previous() {
     console.log('setting focus to previously focused element: ' + previous_focus_element);
     document.getElementById(previous_focus_element).focus();
 
-    previous_cursor_position = document.getElementById('cursor_position').value;
-    console.log('setting cursor to previous position: ' + previous_cursor_position);
-    document.getElementById(previous_focus_element).selectionStart = previous_cursor_position;
+    previous_body_cursor_position = document.getElementById('body_cursor_position').value;
+    console.log('setting text cursor to previous position: ' + previous_body_cursor_position);
+    document.getElementById('body_edit_field').selectionStart = previous_body_cursor_position;
 
-    previous_scroll_position = document.getElementById('scroll_position').value;
-    console.log('setting scrollbar to previous position: ' + previous_scroll_position);
-    document.getElementById(previous_focus_element).scrollTop = previous_scroll_position;
+    previous_body_scroll_position = document.getElementById('body_scroll_position').value;
+    console.log('setting texr scroll to previous position: ' + previous_body_scroll_position);
+    document.getElementById('body_edit_field').scrollTop = previous_body_scroll_position;
+
+    previous_note_cursor_position = document.getElementById('note_cursor_position').value;
+    console.log('setting note cursor to previous position: ' + previous_note_cursor_position);
+    document.getElementById('note_edit_field').selectionStart = previous_note_cursor_position;
+
+    previous_note_scroll_position = document.getElementById('note_scroll_position').value;
+    console.log('setting note scroll to previous position: ' + previous_note_scroll_position);
+    document.getElementById('note_edit_field').scrollTop = previous_note_scroll_position;
+
+    previous_title_cursor_position = document.getElementById('title_cursor_position').value;
+    console.log('setting title cursor to previous position: ' + previous_title_cursor_position);
+    document.getElementById('title_edit_field').selectionStart = previous_title_cursor_position;
 
 }
 

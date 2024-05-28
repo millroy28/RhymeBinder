@@ -48,8 +48,11 @@ namespace RhymeBinder.Models
         //  EditWindowProperty fields
         public int EditWindowPropertyId { get; set; }
         public string ActiveElement { get; set; }
-        public int? CursorPosition { get; set; }
-        public int? ScrollPosition { get; set; }
+        public int? BodyCursorPosition { get; set; }
+        public int? BodyScrollPosition { get; set; }
+        public int? NoteCursorPosition { get; set; }
+        public int? NoteScrollPosition { get; set; }
+        public int? TitleCursorPosition { get; set; }
         public int? ShowLineCount { get; set; }
         public int? ShowParagraphCount { get; set; }
 

@@ -673,8 +673,6 @@ namespace RhymeBinder.Models
                 EditWindowProperty newEditWindowProperty = new EditWindowProperty();
                 newEditWindowProperty.UserId = currentUser.UserId;
                 newEditWindowProperty.TextHeaderId = textHeaderID;
-                newEditWindowProperty.CursorPosition = 0;
-                newEditWindowProperty.ScrollPosition = 0;
                 newEditWindowProperty.ActiveElement = "body_edit_field";
                 newEditWindowProperty.ShowLineCount = 1;
                 newEditWindowProperty.ShowParagraphCount = 1;
@@ -797,8 +795,11 @@ namespace RhymeBinder.Models
 
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,
-                CursorPosition = thisEditWindowProperty.CursorPosition,
-                ScrollPosition = thisEditWindowProperty.ScrollPosition,
+                BodyCursorPosition = thisEditWindowProperty.BodyCursorPosition,
+                BodyScrollPosition = thisEditWindowProperty.BodyScrollPosition,
+                NoteCursorPosition = thisEditWindowProperty.NoteCursorPosition,
+                NoteScrollPosition = thisEditWindowProperty.NoteScrollPosition,
+                TitleCursorPosition = thisEditWindowProperty.TitleCursorPosition,
                 ShowLineCount = thisEditWindowProperty.ShowLineCount,
                 ShowParagraphCount = thisEditWindowProperty.ShowParagraphCount,
 
@@ -1230,8 +1231,6 @@ namespace RhymeBinder.Models
                     TextHeaderId = textHeaderId,
                     UserId = userId,
                     ActiveElement = "body_edit_field", //ID of text body edit field
-                    CursorPosition = 0,
-                    ScrollPosition = 0,
                     ShowLineCount = binder.NewTextDefaultShowLineCount ? 1 : 0,
                     ShowParagraphCount = binder.NewTextDefaultShowParagraphCount ? 1 : 0,
                 };
@@ -1330,8 +1329,11 @@ namespace RhymeBinder.Models
             EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == textEdit.UserId
                                                                                             && x.TextHeaderId == textEdit.TextHeaderId).First();
 
-            thisEditWindowProperty.CursorPosition = textEdit.CursorPosition;
-            thisEditWindowProperty.ScrollPosition = textEdit.ScrollPosition;
+            thisEditWindowProperty.BodyCursorPosition = textEdit.BodyCursorPosition;
+            thisEditWindowProperty.BodyScrollPosition = textEdit.BodyScrollPosition;
+            thisEditWindowProperty.NoteCursorPosition = textEdit.NoteCursorPosition;
+            thisEditWindowProperty.NoteScrollPosition = textEdit.NoteScrollPosition;
+            thisEditWindowProperty.TitleCursorPosition = textEdit.TitleCursorPosition;
             thisEditWindowProperty.ActiveElement = textEdit.ActiveElement;
             thisEditWindowProperty.ShowLineCount = textEdit.ShowLineCount;
             thisEditWindowProperty.ShowParagraphCount = textEdit.ShowParagraphCount;
