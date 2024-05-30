@@ -3,75 +3,80 @@
     ViewData["Title"] = "Manage Binder: Groups: Edit Group:";
 }
 @model DisplaySimpleUser
-<div class="menu-bar-main">
-    <div class="menu-bar-title">
-       Edit User:
+
+<div class="view-wrapper">
+
+    <div class="menu-bar">
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile" >
+                Edit User:
+            </div>
+        </div>
     </div>
-</div>
 
-
-<form action="EditUser" method="post" class="form-wrapper">
-    <input type="hidden" name="UserId" value="@Model.UserId"/>
-    <input type="hidden" name="AspNetUserId" value="@Model.AspNetUserId"/>
+    <form action="EditUser" method="post" class="form-wrapper">
+        <input type="hidden" name="UserId" value="@Model.UserId"/>
+        <input type="hidden" name="AspNetUserId" value="@Model.AspNetUserId"/>
 
 
 
-    <div class="form-item-title">
-        User Name:
-    </div>
-    <div class="form-item-large-entry">
-        <textarea name="UserName" class="form-single-line-box">@Model.UserName</textarea> 
-    </div>
+        <div class="form-item-title">
+            User Name:
+        </div>
+        <div class="form-item-large-entry">
+            <textarea name="UserName" class="form-single-line-box">@Model.UserName</textarea> 
+        </div>
     
-    <div class="form-divider"><hr /></div>
+        <div class="form-divider"><hr /></div>
 
-    <div class="form-item-title">
-    Time Zone:
-    </div>
-    <div class="form-item-large-entry">
-        <select name="TimeZone">
-            @foreach (var timeZone in Model.TimeZones)
-            {
-                if (timeZone.TimeZoneId == @Model.TimeZone)
+        <div class="form-item-title">
+        Time Zone:
+        </div>
+        <div class="form-item-large-entry">
+            <select name="TimeZone">
+                @foreach (var timeZone in Model.TimeZones)
                 {
-                    <option value="@timeZone.TimeZoneId" selected>@timeZone.TimeZoneName</option>
+                    if (timeZone.TimeZoneId == @Model.TimeZone)
+                    {
+                        <option value="@timeZone.TimeZoneId" selected>@timeZone.TimeZoneName</option>
+                    }
+                    else
+                    {
+                        <option value="@timeZone.TimeZoneId">@timeZone.TimeZoneName</option>
+                    }
                 }
-                else
-                {
-                    <option value="@timeZone.TimeZoneId">@timeZone.TimeZoneName</option>
-                }
-            }
-        </select>
+            </select>
        
-    </div>
+        </div>
 
-    <div class="form-item-title">
-        Records Per Page:
-    </div>
-    <div class="form-item-large-entry">
-        @Html.EditorFor(m => m.DefaultRecordsPerPage)
-    </div>
+        <div class="form-item-title">
+            Records Per Page:
+        </div>
+        <div class="form-item-large-entry">
+            @Html.EditorFor(m => m.DefaultRecordsPerPage)
+        </div>
 
-    <div class="form-item-title">
-        New Texts Show Line Count:
-    </div>
-    <div class="form-item-descriptor-one">
-        @Html.EditorFor(m => m.DefaultShowLineCount)
-    </div>
+        <div class="form-item-title">
+            New Texts Show Line Count:
+        </div>
+        <div class="form-item-descriptor-one">
+            @Html.EditorFor(m => m.DefaultShowLineCount)
+        </div>
 
-    <div class="form-item-title">
-        New Texts Show Paragraph Count:
-    </div>
-    <div class="form-item-descriptor-one">
-        @Html.EditorFor(m => m.DefaultShowParagraphCount)
-    </div>
+        <div class="form-item-title">
+            New Texts Show Paragraph Count:
+        </div>
+        <div class="form-item-descriptor-one">
+            @Html.EditorFor(m => m.DefaultShowParagraphCount)
+        </div>
 
-    <div class="form-item-descriptor-two">
-        <input type="submit" name="action" class="button" value="Submit Changes"/>
-    </div>
+        <div class="form-item-descriptor-two">
+            <input type="submit" name="action" class="button" value="Submit Changes"/>
+        </div>
 
 
-</form>
+    </form>
+</div>
 
 
 

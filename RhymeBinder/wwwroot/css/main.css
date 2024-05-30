@@ -176,6 +176,13 @@
         background-color: #f4f5ef;
     }
 
+    .view-wrapper {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        background: #eff3d8;
+        flex-direction: column;
+    }
 
 
     /*``[Table Pages]*/
@@ -1156,6 +1163,15 @@ text-decoration-line: underline;
     .main{
         height: 100vh;
     }
+
+    .view-wrapper {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        background: #eff3d8;
+        flex-direction: column;
+    }
+
 
     /*``[Table Pages]*/
     .table-view-wrapper {
