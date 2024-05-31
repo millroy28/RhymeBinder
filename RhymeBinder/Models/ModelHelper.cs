@@ -502,7 +502,7 @@ namespace RhymeBinder.Models
                 });
                 groups.Add(new TextGroup()
                 {
-                    GroupTitle = "Active",
+                    GroupTitle = "Default",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
                                                                && x.SetValue == "Active").SavedViewId,
                     TextGroupId = -1
@@ -564,6 +564,9 @@ namespace RhymeBinder.Models
             }
 
             // put it all together
+            displayTextHeadersAndSavedView.MenuTitle = (binder.Name + ": " + savedView.ViewName).Length > 25
+                                                       ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
+                                                       : binder.Name + ": " + savedView.ViewName;
             displayTextHeadersAndSavedView.View = savedView;
             displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
@@ -1807,7 +1810,7 @@ namespace RhymeBinder.Models
                 UserId = userId,
                 SetValue = "Active",
                 SortValue = "title",
-                ViewName = "",
+                ViewName = "Default",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = true,
@@ -1829,7 +1832,7 @@ namespace RhymeBinder.Models
                 UserId = userId,
                 SetValue = "Default",
                 SortValue = "title",
-                ViewName = "Default - AutoCreated",
+                ViewName = "",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = true,
