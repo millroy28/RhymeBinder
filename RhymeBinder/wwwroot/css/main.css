@@ -7,6 +7,7 @@
         font-weight: 700;
         font-size: small;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
+        cursor: default;
     }
 
 
@@ -27,6 +28,7 @@
         float: left;
         display: block;
         text-decoration: none;
+        cursor: default;
         color: black !important;
     }
 
@@ -62,6 +64,7 @@
         color: black !important;
         letter-spacing: 1px;
         font-weight: 800;
+        cursor: default;
     }
 
 
@@ -274,7 +277,7 @@
         align-content: space-around;
         font-size: small;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
-
+        font-weight: 600;
     }
     
 /*    .mobile-menu-bar-main {
@@ -326,6 +329,7 @@
         border-right-color: #464936;
         padding-top: 4px;
         padding-bottom: 4px;
+        cursor:default;
     }
 
         .menu-bar-title a:link {
@@ -396,6 +400,7 @@
     border-top-right-radius: 4px;*/
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         text-decoration: none;
+        cursor: default;
     }
 
         .menu-bar-button:disabled {
@@ -664,6 +669,7 @@
         background-color: #eff3d8;
         width: 100%;
         border-collapse: collapse;
+        cursor: default;
     }
 
     th {
