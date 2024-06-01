@@ -8,17 +8,26 @@
 
 
     <div class="table-view-wrapper">
-        <div class="list-texts-menu-bar-main">
-            <div class="menu-bar-title" id="menu_bar_title">
-                Binder:  @Model.First().BinderName - Manage Groups
+        <div class="menu-bar">
+
+            <div class="list-texts-menu-bar-main">
+                <div class="menu-bar-title" id="menu_bar_title">
+                    Binder:  @Model.First().BinderName - Manage Groups
+                </div>
+
+                <div class="menu-bar-dropdown">
+                    <div class="menu-bar-button-dropdown">
+                        Actions ▼
+                    </div>
+                    <div class="menu-bar-dropdown-content">
+                        <a class="menu-bar-dropdown-item" href="/RhymeBinder/CreateGroup?binderID=@Model.First().BinderId">Create Group</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="menu-bar-dropdown">
-                <div class="menu-bar-button-dropdown">
-                    Actions ▼
-                </div>
-                <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" href="/RhymeBinder/CreateGroup?binderID=@Model.First().BinderId">Create Group</a>
+            <div class="menu-bar-escape mobile-menu-bar-escape">
+                <div class="menu-bar-item">
+                    <a class="menu-bar-button" href="/RhymeBinder/ListTextsOnSessionStart?binderID=@Model.First().BinderId">Return to Binder</a>
                 </div>
             </div>
         </div>
