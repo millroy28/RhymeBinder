@@ -138,7 +138,11 @@ namespace RhymeBinder.Controllers
                     }
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
                 case "Revision":
-                    status = _modelHelper.AddRevisionToText(userId, textEdit.TextHeaderId);
+                    status = _modelHelper.SaveEditedText(textEdit);
+                    if (status.success)
+                    {
+                        status = _modelHelper.AddRevisionToText(userId, textEdit.TextHeaderId);
+                    }
                     if (status.success)
                     {
                         return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
@@ -148,7 +152,11 @@ namespace RhymeBinder.Controllers
                         return RedirectToAction("ErrorPage", status);
                     }
                 case "AddGroup":
-                    status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
+                    status = _modelHelper.SaveEditedText(textEdit);
+                    if (status.success)
+                    {
+                        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
+                    }
                     if (status.success)
                     {
                         return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
@@ -158,7 +166,11 @@ namespace RhymeBinder.Controllers
                         return RedirectToAction("ErrorPage", status);
                     }
                 case "RemoveGroup":
-                    status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
+                    status = _modelHelper.SaveEditedText(textEdit);
+                    if (status.success)
+                    {
+                        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
+                    }
                     if (status.success)
                     {
                         return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");

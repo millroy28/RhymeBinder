@@ -3,97 +3,123 @@
     ViewData["Title"] = "About";
 }
 @model int
-<div class="menu-bar-main">
-    <div class="menu-bar-title">
-        About:
+<div class="view-wrapper">
+
+    <div class="menu-bar">
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile" >
+                About RhymeBinder:
+            </div>
+        </div>
+    </div>
+    <div style="padding-left: 10px;">
+        <h3>
+        Release Notes:
+        </h3>
+    </div>
+    <div>
+
+        <ul>
+            <li>
+                <h4>
+                06/01/2024  1.10.179
+                </h4>
+
+                <ul>
+                    <li>Fixed bug to prevent blank or all space titles that create unreachable texts.</li>
+                    <li>Fixed bugs related to autosave behavior:</li>
+                    <ul>
+                        <li>Ensure countdown pauses to prevent saving page while typing in notes</li>
+                        <li>Ensure cursor is returned to note area if that was its position prior to save.</li>
+                        <li>Return scroll to its posiiton prior to save.</li>
+                    </ul>
+                    <li>Minor changes to menu bar appearance across multipel pages.</li>
+                    <li>Added button to return to binder from group management screen.</li>
+                </ul>
+            </li>
+            <li>
+                <h4>
+                05/25/2024  1.09.169
+                </h4>
+
+                <ul>
+                    <li>Binder Behavior:</li>
+                    <ul>
+                        <li>Multiple tabs can now be opened to work simultaneously in different browsers.</li>
+                    </ul>
+                    <li>Group Changes:</li>
+                    <ul>
+                        <li>Fixed bug that allowed text to be added to a group multiple times.</li>
+                        <li>Fixed bug that removed group from text when new vision is created.</li>
+                        <li>Added group information to Edit and View text screens.</li>
+                        <li>Added ability to add/remove text from groups from the Edit text screen.</li>
+                    </ul>
+                    <li>Added notes to the search feature.</li>
+                </ul>
+            </li>
+            <li>
+                <h4>
+                05/04/2024  1.08.157
+                </h4>
+
+                <ul>
+                    <li>Add Notes:</li>
+                    <ul>
+                        <li>Notes can be entered along side of the text being worked on.</li>
+                        <li>Will be saved and track across revisions.</li>
+                        <li>Note history is not saved/archived the way Texts are, and previous versions will not be visible</li>
+                    </ul>
+                    <li>Add ability for user to specify time zone, and for that time zone to accurately reflect the create/update timestamps</li>
+                    <li>Change behavior so text edit screen redirects to view after a specified timeout period</li>
+                    <li>Adjust Autosave key-up timer from 5 seconds to 15</li>
+                </ul>
+            </li>
+            <li>
+                <h4>
+                01/20/2024  1.07.146
+                </h4>
+
+                <ul>
+                    <li>Track dates and creators of new Text Header Revisions</li>
+                    <li>Add return button to View Text page</li>
+                    <li>Adjust Autosave key-up timer from 5 seconds to 15</li>
+                    <li>Fix bugs:</li>
+                    <ul>
+                        <li>Selecting All when listing texts showed headers for previous revisions - which should be hidden</li>
+                        <li>Prevent locked headers (such as those for previous revisions) from being edited</li>
+                        <li>Allow hidden texts to be restored</li>
+                    </ul>
+                </ul>
+            </li>
+
+            <li>
+                <h4>
+                    12/10/2023  1.06.137
+                </h4>
+                <ul>
+                    <li>Move NEW button to List Texts view</li>
+                    <li>Add ability to set binder level default behaviors for:</li>
+                    <ul>
+                        <li>Ruler display on new texts</li>
+                        <li>Default title for new texts</li>
+                    </ul>
+                    <li>Change behavior on clicking on text title so user has the ability to view, but must click edit to enable editing</li>
+                    <li>Fix bug where user ids instead of names displayed in Binder List</li>
+                    <li>Numerous misc bug fixes</li>
+                    <li>Add about page.</li>
+                </ul>
+            </li>
+    
+            <li>
+                <h4>
+                11/16/2023  1.05.125
+                </h4>
+                <ul>
+                    <li>Final bugfixes for golive on Azure</li>
+                </ul>
+            </li>
+        </ul>    
     </div>
 </div>
-
-<h3>
-Release Notes:
-</h3>
-<ul>
-    <li>
-        <h4>
-        05/25/2024  1.09.169
-        </h4>
-
-        <ul>
-            <li>Binder Behavior:</li>
-            <ul>
-                <li>Multiple tabs can now be opened to work simultaneously in different browsers.</li>
-            </ul>
-            <li>Group Changes:</li>
-            <ul>
-                <li>Fixed bug that allowed text to be added to a group multiple times.</li>
-                <li>Fixed bug that removed group from text when new vision is created.</li>
-                <li>Added group information to Edit and View text screens.</li>
-                <li>Added ability to add/remove text from groups from the Edit text screen.</li>
-            </ul>
-            <li>Added notes to the search feature.</li>
-        </ul>
-    </li>
-    <li>
-        <h4>
-        05/04/2024  1.08.157
-        </h4>
-
-        <ul>
-            <li>Add Notes:</li>
-            <ul>
-                <li>Notes can be entered along side of the text being worked on.</li>
-                <li>Will be saved and track across revisions.</li>
-                <li>Note history is not saved/archived the way Texts are, and previous versions will not be visible</li>
-            </ul>
-            <li>Add ability for user to specify time zone, and for that time zone to accurately reflect the create/update timestamps</li>
-            <li>Change behavior so text edit screen redirects to view after a specified timeout period</li>
-            <li>Adjust Autosave key-up timer from 5 seconds to 15</li>
-        </ul>
-    </li>
-    <li>
-        <h4>
-        01/20/2024  1.07.146
-        </h4>
-
-        <ul>
-            <li>Track dates and creators of new Text Header Revisions</li>
-            <li>Add return button to View Text page</li>
-            <li>Adjust Autosave key-up timer from 5 seconds to 15</li>
-            <li>Fix bugs:</li>
-            <ul>
-                <li>Selecting All when listing texts showed headers for previous revisions - which should be hidden</li>
-                <li>Prevent locked headers (such as those for previous revisions) from being edited</li>
-                <li>Allow hidden texts to be restored</li>
-            </ul>
-        </ul>
-    </li>
-
-    <li>
-        <h4>
-            12/10/2023  1.06.137
-        </h4>
-        <ul>
-            <li>Move NEW button to List Texts view</li>
-            <li>Add ability to set binder level default behaviors for:</li>
-            <ul>
-                <li>Ruler display on new texts</li>
-                <li>Default title for new texts</li>
-            </ul>
-            <li>Change behavior on clicking on text title so user has the ability to view, but must click edit to enable editing</li>
-            <li>Fix bug where user ids instead of names displayed in Binder List</li>
-            <li>Numerous misc bug fixes</li>
-            <li>Add about page.</li>
-        </ul>
-    </li>
-    
-    <li>
-        <h4>
-        11/16/2023  1.05.125
-        </h4>
-        <ul>
-            <li>Final bugfixes for golive on Azure</li>
-        </ul>
-    </li>
-</ul>    
 
     

@@ -2,156 +2,161 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model DisplayBinder
-<div class="menu-bar-main">
-    <div class="menu-bar-title">
-        Edit Binder: @Model.Name: 
-    </div>
-</div>
+<div class="view-wrapper">
 
-<form action="EditBinder" method="post" class="form-wrapper">
-    <input type="hidden" name="BinderId" value="@Model.BinderId" />
-    <input type="hidden" name="UserId" value="@Model.UserId" />
-    <input type="hidden" name="Created" value="@Model.Created" />
-    <input type="hidden" name="CreatedBy" value="@Model.CreatedBy" />
-    <input type="hidden" name="LastModified" value="@Model.LastModified" />
-    <input type="hidden" name="LastModifiedBy" value="@Model.LastModifiedBy" />
-    <input type="hidden" name="Hidden" value="@Model.Hidden.ToString()" />
-    <input type="hidden" name="Selected" value="@Model.Selected.ToString()" />
-    <input type="hidden" name="LastAccessed" value="@Model.LastAccessed" />
-    <input type="hidden" name="LastAccessedBy" value="@Model.LastAccessedBy" />
+    <div class="menu-bar">
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile" >
+                Edit Binder: @Model.Name: 
+            </div>
+        </div>
+    </div>
+
+    <form action="EditBinder" method="post" class="form-wrapper">
+        <input type="hidden" name="BinderId" value="@Model.BinderId" />
+        <input type="hidden" name="UserId" value="@Model.UserId" />
+        <input type="hidden" name="Created" value="@Model.Created" />
+        <input type="hidden" name="CreatedBy" value="@Model.CreatedBy" />
+        <input type="hidden" name="LastModified" value="@Model.LastModified" />
+        <input type="hidden" name="LastModifiedBy" value="@Model.LastModifiedBy" />
+        <input type="hidden" name="Hidden" value="@Model.Hidden.ToString()" />
+        <input type="hidden" name="Selected" value="@Model.Selected.ToString()" />
+        <input type="hidden" name="LastAccessed" value="@Model.LastAccessed" />
+        <input type="hidden" name="LastAccessedBy" value="@Model.LastAccessedBy" />
 
     
-    <div class="form-item-title">
-        Binder Name:
-    </div>
-    <div class="form-item-large-entry">
-        <textarea name="Name" class="form-single-line-box">@Model.Name</textarea>
-    </div>
+        <div class="form-item-title">
+            Binder Name:
+        </div>
+        <div class="form-item-large-entry">
+            <textarea name="Name" class="form-single-line-box">@Model.Name</textarea>
+        </div>
 
-    <div class="form-item-title">
-        Description:
-    </div>
-    <div class="form-item-large-entry">
-        <textarea name="Description" class="form-multi-line-box">@Model.Description</textarea>
-    </div>
-    <div class="form-item-title">
-        New Text Default Title:
-    </div>
-    <div class="form-item-large-entry">
-        <textarea name="TextHeaderTitleDefaultFormat" class="form-single-line-box">@Model.TextHeaderTitleDefaultFormat</textarea>
-    </div>
-    <div class="form-item-descriptor-large">
-        <ul>
-            <li>[DATE TIME] - for current date and time</li>
-            <li>[TIME] - for current time</li>
-            <li>[DATE] - for current date</li>
-            <li>[NUMBER] - for latest number (based on active texts in binder - removing texts could cause duplicates)</li>
-        </ul>
-        Example: a value of 
-        <ul>
-            <li>
-                 <b>Dear Diary, it's [TIME] o'clock on [DATE]</b>
-            </li>
-        </ul>
-        would mean each new text in that binder would have a default title of 
-        <ul>
-            <li>
-                <b>Dear Diary, it's 8:44:10 AM o'clock on 3/24/2020</b> 
-            </li>
-        </ul>
-        ...with the current date and time, of course.
-    </div>
-    <div class="form-item-title">
-        New Texts Show Line Count:
-    </div>
-    <div class="form-item-large-entry">
-        @Html.EditorFor(m => m.NewTextDefaultShowLineCount)
-    </div>
-    <div class="form-item-title">
-        New Texts Show Paragraph Count:
-    </div>
-    <div class="form-item-large-entry">
-        @Html.EditorFor(m => m.NewTextDefaultShowParagraphCount)
-    </div>
-    <div class="form-item-descriptor-two">
-        <input type="submit" name="action" class="button" value="Submit Changes"/>
-    </div>
+        <div class="form-item-title">
+            Description:
+        </div>
+        <div class="form-item-large-entry">
+            <textarea name="Description" class="form-multi-line-box">@Model.Description</textarea>
+        </div>
+        <div class="form-item-title">
+            New Text Default Title:
+        </div>
+        <div class="form-item-large-entry">
+            <textarea name="TextHeaderTitleDefaultFormat" class="form-single-line-box">@Model.TextHeaderTitleDefaultFormat</textarea>
+        </div>
+        <div class="form-item-descriptor-large">
+            <ul>
+                <li>[DATE TIME] - for current date and time</li>
+                <li>[TIME] - for current time</li>
+                <li>[DATE] - for current date</li>
+                <li>[NUMBER] - for latest number (based on active texts in binder - removing texts could cause duplicates)</li>
+            </ul>
+            Example: a value of 
+            <ul>
+                <li>
+                     <b>Dear Diary, it's [TIME] o'clock on [DATE]</b>
+                </li>
+            </ul>
+            would mean each new text in that binder would have a default title of 
+            <ul>
+                <li>
+                    <b>Dear Diary, it's 8:44:10 AM o'clock on 3/24/2020</b> 
+                </li>
+            </ul>
+            ...with the current date and time, of course.
+        </div>
+        <div class="form-item-title">
+            New Texts Show Line Count:
+        </div>
+        <div class="form-item-large-entry">
+            @Html.EditorFor(m => m.NewTextDefaultShowLineCount)
+        </div>
+        <div class="form-item-title">
+            New Texts Show Paragraph Count:
+        </div>
+        <div class="form-item-large-entry">
+            @Html.EditorFor(m => m.NewTextDefaultShowParagraphCount)
+        </div>
+        <div class="form-item-descriptor-two">
+            <input type="submit" name="action" class="button" value="Submit Changes"/>
+        </div>
 
-    <div class="form-divider"><hr /></div>
+        <div class="form-divider"><hr /></div>
 
-    <div class="form-item-title">
-        Created:
-    </div>
-    <div class="form-item-descriptor-one">
-        @Model.Created
-    </div>
-    <div class="form-item-title">
-        Last Modified:
-    </div>
-    <div class="form-item-descriptor-one">
-        @Model.LastModified
-    </div>
-    <div class="form-item-title">
-        Number of Texts:
-    </div>
-    <div class="form-item-descriptor-one">
-        @Model.PageCount
-    </div>
-    <div class="form-item-title">
-        Number of Groups:
-    </div>
-    <div class="form-item-descriptor-one">
-        @Model.GroupCount
-    </div>
+        <div class="form-item-title">
+            Created:
+        </div>
+        <div class="form-item-descriptor-one">
+            @Model.Created
+        </div>
+        <div class="form-item-title">
+            Last Modified:
+        </div>
+        <div class="form-item-descriptor-one">
+            @Model.LastModified
+        </div>
+        <div class="form-item-title">
+            Number of Texts:
+        </div>
+        <div class="form-item-descriptor-one">
+            @Model.PageCount
+        </div>
+        <div class="form-item-title">
+            Number of Groups:
+        </div>
+        <div class="form-item-descriptor-one">
+            @Model.GroupCount
+        </div>
 
-    <div class="form-divider"><hr /></div>
+        <div class="form-divider"><hr /></div>
 
-    <div class="form-item-title">
-        Clear Binder:
-    </div>
-    <div class="form-item-descriptor-one">
-        Remove all groups and pages from the binder. Pages will appear in 'Loose Pages' Binder.
-    </div>
-    <div class="form-item-descriptor-two">
-        <input type="submit" name="action" class="button" value="Clear" />
-    </div>
-    <div class="form-item-verify-prompt">
-        Are you sure?
-    </div>
-    <div class="form-item-far-right-entry">
-        <input type="checkbox" name="verifyClear" />
-    </div>
+        <div class="form-item-title">
+            Clear Binder:
+        </div>
+        <div class="form-item-descriptor-one">
+            Remove all groups and pages from the binder. Pages will appear in 'Loose Pages' Binder.
+        </div>
+        <div class="form-item-descriptor-two">
+            <input type="submit" name="action" class="button" value="Clear" />
+        </div>
+        <div class="form-item-verify-prompt">
+            Are you sure?
+        </div>
+        <div class="form-item-far-right-entry">
+            <input type="checkbox" name="verifyClear" />
+        </div>
 
-    <div class="form-item-title">
-        Delete Binder:
-    </div>
-    <div class="form-item-descriptor-one">
-        Delete this binder. Pages will appear in 'Loose Pages' Binder.
-    </div>
-    <div class="form-item-descriptor-two">
-        <input type="submit" name="action" class="button" value="Delete" />
-    </div>
-    <div class="form-item-verify-prompt">
-        Are you sure?
-    </div>
-    <div class="form-item-far-right-entry">
-        <input type="checkbox" name="verifyDelete" />
-    </div>
+        <div class="form-item-title">
+            Delete Binder:
+        </div>
+        <div class="form-item-descriptor-one">
+            Delete this binder. Pages will appear in 'Loose Pages' Binder.
+        </div>
+        <div class="form-item-descriptor-two">
+            <input type="submit" name="action" class="button" value="Delete" />
+        </div>
+        <div class="form-item-verify-prompt">
+            Are you sure?
+        </div>
+        <div class="form-item-far-right-entry">
+            <input type="checkbox" name="verifyDelete" />
+        </div>
 
-    <div class="form-item-title">
-        Delete Binder and Texts:
-    </div>
-    <div class="form-item-descriptor-one">
-        Delete this binder as well as all texts within.
-    </div>
-    <div class="form-item-descriptor-two">
-        <input type="submit" name="action" class="button" value="DeleteAll" />
-    </div>
-    <div class="form-item-verify-prompt">
-        Are you sure?
-    </div>
-    <div class="form-item-far-right-entry">
-        <input type="checkbox" name="verifyDeleteAll" />
-    </div>
+        <div class="form-item-title">
+            Delete Binder and Texts:
+        </div>
+        <div class="form-item-descriptor-one">
+            Delete this binder as well as all texts within.
+        </div>
+        <div class="form-item-descriptor-two">
+            <input type="submit" name="action" class="button" value="DeleteAll" />
+        </div>
+        <div class="form-item-verify-prompt">
+            Are you sure?
+        </div>
+        <div class="form-item-far-right-entry">
+            <input type="checkbox" name="verifyDeleteAll" />
+        </div>
 
-</form>
+    </form>
+</div>

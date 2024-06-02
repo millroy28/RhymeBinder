@@ -203,7 +203,7 @@ namespace RhymeBinder.Models
                 displayBinder.LastModified = binder.LastModified;
                 displayBinder.LastModifiedBy = binder.LastModifiedBy;
                 displayBinder.Hidden = binder.Hidden;
-                displayBinder.Name = binder.Name;
+                displayBinder.Name = binder.Name.Length > 25 ? binder.Name.Substring(0,25) + "..." : binder.Name;
                 displayBinder.Description = binder.Description;
                 displayBinder.Selected = binder.Selected;
                 displayBinder.GroupCount = groupCount;
@@ -502,7 +502,7 @@ namespace RhymeBinder.Models
                 });
                 groups.Add(new TextGroup()
                 {
-                    GroupTitle = "Active",
+                    GroupTitle = "Default",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
                                                                && x.SetValue == "Active").SavedViewId,
                     TextGroupId = -1
@@ -564,6 +564,9 @@ namespace RhymeBinder.Models
             }
 
             // put it all together
+            displayTextHeadersAndSavedView.MenuTitle = (binder.Name + ": " + savedView.ViewName).Length > 25
+                                                       ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
+                                                       : binder.Name + ": " + savedView.ViewName;
             displayTextHeadersAndSavedView.View = savedView;
             displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
@@ -673,7 +676,6 @@ namespace RhymeBinder.Models
                 EditWindowProperty newEditWindowProperty = new EditWindowProperty();
                 newEditWindowProperty.UserId = currentUser.UserId;
                 newEditWindowProperty.TextHeaderId = textHeaderID;
-                newEditWindowProperty.CursorPosition = 0;
                 newEditWindowProperty.ActiveElement = "body_edit_field";
                 newEditWindowProperty.ShowLineCount = 1;
                 newEditWindowProperty.ShowParagraphCount = 1;
@@ -796,7 +798,11 @@ namespace RhymeBinder.Models
 
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,
-                CursorPosition = thisEditWindowProperty.CursorPosition,
+                BodyCursorPosition = thisEditWindowProperty.BodyCursorPosition,
+                BodyScrollPosition = thisEditWindowProperty.BodyScrollPosition,
+                NoteCursorPosition = thisEditWindowProperty.NoteCursorPosition,
+                NoteScrollPosition = thisEditWindowProperty.NoteScrollPosition,
+                TitleCursorPosition = thisEditWindowProperty.TitleCursorPosition,
                 ShowLineCount = thisEditWindowProperty.ShowLineCount,
                 ShowParagraphCount = thisEditWindowProperty.ShowParagraphCount,
 
@@ -1228,7 +1234,6 @@ namespace RhymeBinder.Models
                     TextHeaderId = textHeaderId,
                     UserId = userId,
                     ActiveElement = "body_edit_field", //ID of text body edit field
-                    CursorPosition = 0,
                     ShowLineCount = binder.NewTextDefaultShowLineCount ? 1 : 0,
                     ShowParagraphCount = binder.NewTextDefaultShowParagraphCount ? 1 : 0,
                 };
@@ -1278,6 +1283,9 @@ namespace RhymeBinder.Models
         public Status SaveEditedText(TextEdit textEdit)
         {
             Status status = new Status();
+            //prevent blank from being saved as title (which would break navitgation)
+            if (textEdit.Title == null || textEdit.Title.Trim() == "") textEdit.Title = "(blank)";
+
             //Check for change and only save if something has changed
             bool noteUnchanged;
             bool textUnchanged;
@@ -1324,7 +1332,11 @@ namespace RhymeBinder.Models
             EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == textEdit.UserId
                                                                                             && x.TextHeaderId == textEdit.TextHeaderId).First();
 
-            thisEditWindowProperty.CursorPosition = textEdit.CursorPosition;
+            thisEditWindowProperty.BodyCursorPosition = textEdit.BodyCursorPosition;
+            thisEditWindowProperty.BodyScrollPosition = textEdit.BodyScrollPosition;
+            thisEditWindowProperty.NoteCursorPosition = textEdit.NoteCursorPosition;
+            thisEditWindowProperty.NoteScrollPosition = textEdit.NoteScrollPosition;
+            thisEditWindowProperty.TitleCursorPosition = textEdit.TitleCursorPosition;
             thisEditWindowProperty.ActiveElement = textEdit.ActiveElement;
             thisEditWindowProperty.ShowLineCount = textEdit.ShowLineCount;
             thisEditWindowProperty.ShowParagraphCount = textEdit.ShowParagraphCount;
@@ -1798,7 +1810,7 @@ namespace RhymeBinder.Models
                 UserId = userId,
                 SetValue = "Active",
                 SortValue = "title",
-                ViewName = "",
+                ViewName = "Default",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = true,
@@ -1820,7 +1832,7 @@ namespace RhymeBinder.Models
                 UserId = userId,
                 SetValue = "Default",
                 SortValue = "title",
-                ViewName = "Default - AutoCreated",
+                ViewName = "",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
                 Default = true,

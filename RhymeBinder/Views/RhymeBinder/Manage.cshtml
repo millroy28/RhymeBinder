@@ -3,15 +3,20 @@
     ViewData["Title"] = "Manage Binder";
 }
 @model int
-<div class="menu-bar-main">
-    <div class="menu-bar-title">
-        Manage Binder:
+<div class="view-wrapper">
+
+    <div class="menu-bar">
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile" >
+                About RhymeBinder:
+            </div>
+        </div>
     </div>
-</div>
+        Manage Binder:
 
-    <p>To do: Build out list of menus </p>
-<ul>
-    <li><a href="/FileImport/Import?userID=@Model">Import files</a></li>
-</ul>    
+        <p>To do: Build out list of menus </p>
+    <ul>
+        <li><a href="/FileImport/Import?userID=@Model">Import files</a></li>
+    </ul>    
 
-    
+</div> 
