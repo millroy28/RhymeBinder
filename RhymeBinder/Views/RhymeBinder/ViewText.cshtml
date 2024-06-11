@@ -25,7 +25,7 @@
             @if(@Model.Locked == false)
             {
                 <div class="menu-bar-item-right-final">
-                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeaderId">Edit</a>
+                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/raEditText?textHeaderID=@Model.TextHeaderId">Edit</a>
                 </div>               
             }
         </div>
@@ -79,7 +79,7 @@
             }
         }
         <div class="right-sidebar-item-heading">Notes:</div>
-            <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
+            <textarea name="Note" id="note_edit_field" class="editor-box" readonly>@Model.Note</textarea>
 
     </div>
 

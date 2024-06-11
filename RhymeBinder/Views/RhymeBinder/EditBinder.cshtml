@@ -2,7 +2,9 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model DisplayBinder
-<div class="view-wrapper">
+
+<script language="Javascript" src="~/js/colorSample.js"></script>
+<div class="view-wrapper"  onclick="set_sample_colors()">
 
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
@@ -24,6 +26,9 @@
         <input type="hidden" name="LastAccessed" value="@Model.LastAccessed" />
         <input type="hidden" name="LastAccessedBy" value="@Model.LastAccessedBy" />
 
+        <input type="hidden" name="MainColor" value="" />
+        <input type="hidden" name="FontColor" value="" />
+
     
         <div class="form-item-title">
             Binder Name:
@@ -38,6 +43,41 @@
         <div class="form-item-large-entry">
             <textarea name="Description" class="form-multi-line-box">@Model.Description</textarea>
         </div>
+
+
+
+        <div class="form-item-title">
+            Color:
+        </div>
+
+        <div class="form-item-large-entry">
+            <input type="color" name="BinderColor" id="color" />
+        </div>
+        <div class="form-item-descriptor-large">
+            Color sample:
+                <div id="sampleBody" style="padding: 15px;border: solid; border-color: black;">
+                    <div style="height: 10px;"></div>
+                    <div class="menu-bar" id="sampleMenuBar" style="justify-content: flex-start">
+                        <div class="menu-bar-button" name="sampleButton">Menu</div>
+                        <div class="menu-bar-dropdown">
+
+                            <div class="button menu-bar-button-dropdown" name="sampleButton">Items ▼</div>
+                            <div class="menu-bar-dropdown-content">
+                                <a class="menu-bar-dropdown-item" name="sampleDropDown">Item 1</a> 
+                                <a class="menu-bar-dropdown-item" name="sampleDropDown">Item 2</a> 
+                                <a class="menu-bar-dropdown-item" name="sampleDropDown">Item 3</a> 
+                            </div>
+                        </div>
+                    </div>
+                    <div style="height: 10px;"></div>
+                    <textarea id="sampleText" class="editor-box" readonly>Text goes here</textarea>
+                    <div style="height: 50px;"></div>
+                </div>
+        </div>
+
+
+
+
         <div class="form-item-title">
             New Text Default Title:
         </div>
@@ -80,6 +120,7 @@
         <div class="form-item-descriptor-two">
             <input type="submit" name="action" class="button" value="Submit Changes"/>
         </div>
+
 
         <div class="form-divider"><hr /></div>
 

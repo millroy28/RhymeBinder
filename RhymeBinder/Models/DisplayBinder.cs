@@ -8,6 +8,7 @@ namespace RhymeBinder.Models
         public int GroupCount { get; set; }
         public string CreatedByName { get; set; }
         public string ModifyByName { get; set; }
+        public string BinderColor { get; set; }
 
     }
 }
