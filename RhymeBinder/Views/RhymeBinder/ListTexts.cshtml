@@ -84,7 +84,9 @@
                 </div>
                 <div class="menu-bar-dropdown-content">
                     <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">Create Group</a>
-                    @if(Model.Groups.Count > 3)
+                    <a class="menu-bar-dropdown-item" onclick="open_modal_with_id('groups')">Add/Remove From Groups</a>
+
+                    @*@if(Model.Groups.Count > 3)
                     {
                         <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Manage Groups</a>
                         <a class="menu-bar-dropdown-item" >――――――――</a>
@@ -104,7 +106,7 @@
                                 <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
                             }
                         }                        
-                    }
+                    }*@
 
                 </div>
             </div>
@@ -222,6 +224,15 @@
         <div class="table-view-table-container-right"> 
         </div>
     </div>
+
+    <div class="list-modal" id="groups">
+        <div class="list-modal-content">
+            Test yeah!
+
+        </div>
+    </div>
+
+
     <script language="Javascript">
     window.onload = on_start_get_form_sub_button('bttn_sub');
     window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');

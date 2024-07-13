@@ -80,6 +80,16 @@ function hide_element(element){
     element.hidden = true;
     return;
 }
+
+
+//--------MODALS------------------------------------------------------------------------
+function open_modal_with_id(elementId) {
+    document.getElementById(elementId).style.display = "block";
+    return;
+}
+
+
+
 //--------LIST VIEWS: BUTTON CLICKS ON VIEW CHANGES-------------------------------------
 function hidden_view_form_submit(actionValue, formElementID, clickElementID, hideableElementName) {
     toggle_hide_element(formElementID, clickElementID, hideableElementName);

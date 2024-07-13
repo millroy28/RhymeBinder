@@ -488,26 +488,26 @@ namespace RhymeBinder.Models
 
             SavedView savedView = GetSavedView(viewId);
             DisplayBinder binder = GetDisplayBinder(userId, (int)savedView.BinderId);
-            List<TextGroup> groups = GetTextGroupsInBinder(userId, binder.BinderId);
+            List<DisplayTextGroup> groups = GetDisplayTextGroupsInBinder(userId, binder.BinderId);
 
             // Add default views to list of groups for display in dropdown.
             try
             {
-                groups.Add(new TextGroup()
+                groups.Add(new DisplayTextGroup()
                 {
                     GroupTitle = "All",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
                                                                && x.SetValue == "All").SavedViewId,
                     TextGroupId = -1
                 });
-                groups.Add(new TextGroup()
+                groups.Add(new DisplayTextGroup()
                 {
                     GroupTitle = "Default",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
                                                                && x.SetValue == "Active").SavedViewId,
                     TextGroupId = -1
                 });
-                groups.Add(new TextGroup()
+                groups.Add(new DisplayTextGroup()
                 {
                     GroupTitle = "Hidden",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
@@ -622,6 +622,36 @@ namespace RhymeBinder.Models
                 groups = new List<TextGroup>();
             }
             return (groups);
+        }
+        public List<DisplayTextGroup> GetDisplayTextGroupsInBinder(int userId, int binderId)
+        {
+            // Currently building out to accept selections from the form - not populating all fields
+            List<TextGroup> groups = new List<TextGroup>();
+            List<DisplayTextGroup> displayGroups = new List<DisplayTextGroup>();
+            try
+            {
+                groups = _context.TextGroups.Where(x => x.OwnerId == userId
+                                                     && x.BinderId == binderId).ToList();
+            }
+            catch
+            {
+                
+            }
+
+            foreach(var group in groups)
+            {
+                displayGroups.Add(new DisplayTextGroup()
+                {
+                    TextGroupId = group.TextGroupId,
+                    GroupTitle = group.GroupTitle,
+                    Locked = group.Locked,
+                    Hidden = group.Hidden,
+                    HeaderCount = 0,
+                    BinderName = null,
+                    Selected = false
+                });
+            }
+            return (displayGroups);
         }
         public TextEdit GetTextHeaderBodyUserRecord(int userId, int textHeaderID)
         {

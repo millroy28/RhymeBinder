@@ -9,6 +9,7 @@ namespace RhymeBinder.Models
     {
         public int HeaderCount { get; set; }
         public string BinderName { get; set; }
+        public bool? Selected { get; set; }
 
     }
 }
