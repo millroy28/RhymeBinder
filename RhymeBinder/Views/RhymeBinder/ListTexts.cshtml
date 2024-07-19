@@ -225,10 +225,32 @@
         </div>
     </div>
 
-    <div class="list-modal" id="groups">
+    <div class="list-modal" id="groups"  >
+        <div class="list-modal-header">
+            Add / Remove Groups:
+        </div>
         <div class="list-modal-content">
-            Test yeah!
 
+
+                @foreach(var group in Model.Groups)
+                {
+                    if (!group.Locked && group.TextGroupId > 0)
+                    {
+                        <div class = "list-modal-content-item">
+                            <input type="hidden" name="Groups[@index].TextGroupId" value="@group.TextGroupId" />
+                            <input type="checkbox" name="Groups[@index].Selected" value="true" />
+                            <div>@group.GroupTitle</div>
+                        </div>
+                    }
+                }
+             
+
+        </div>
+        <div class="list-modal-footer">
+            <div id="recordCountMessage" style="padding-right: 10px;"></div>
+            
+            <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Cancel</a>
+            <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Submit</a>
         </div>
     </div>
 

@@ -84,11 +84,35 @@ function hide_element(element){
 
 //--------MODALS------------------------------------------------------------------------
 function open_modal_with_id(elementId) {
-    document.getElementById(elementId).style.display = "block";
+    populate_list_modal_footer_with_record_count_message();
+    document.getElementById(elementId).style.display = "inline";
+    document.body.style.pointerEvents = 'none';
     return;
 }
 
+function close_modal_with_id(elementId) {
+    document.getElementById(elementId).style.display = "none";
+    document.body.style.pointerEvents = 'all';
+}
 
+function populate_list_modal_footer_with_record_count_message() {
+    var checkedBoxes = 0;
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "checkbox" && inputs[i].checked == true && inputs[i].name.startsWith("TextHeaders")) {
+            checkedBoxes++;
+        }
+    }
+
+    if (checkedBoxes == 0) {
+        document.getElementById("recordCountMessage").innerText = "No records selected!"
+    } else {
+        document.getElementById("recordCountMessage").innerText = "Apply changes to " + checkedBoxes + " selected records:";
+    }
+
+    return;
+}
 
 //--------LIST VIEWS: BUTTON CLICKS ON VIEW CHANGES-------------------------------------
 function hidden_view_form_submit(actionValue, formElementID, clickElementID, hideableElementName) {
@@ -182,7 +206,9 @@ function on_start_mark_sorted_column(sortValueID, sortOrderValueID) {
     console.log('Marking sort column :' + newSortValue);
     return;
 }
+
 function on_start_get_form_sub_button(buttonID) {
     button = document.getElementById(buttonID);
     return;
 }
+
