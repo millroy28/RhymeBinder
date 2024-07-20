@@ -164,7 +164,7 @@
                     <tr>
 
                         <td style="text-align: right">
-                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
+                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" id="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
                         </td>
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
@@ -234,11 +234,22 @@
 
                 @foreach(var group in Model.Groups)
                 {
-                    if (!group.Locked && group.TextGroupId > 0)
+                    <div name = "GroupId" style="display: none;">@group.TextGroupId</div>
+
+                string groupIdName = $"Group{group.TextGroupId}";
+                string groupTextIdName =  $"Group{group.TextGroupId}TextId";
+                string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
+
+                if (!group.Locked && group.TextGroupId > 0)
                     {
-                        <div class = "list-modal-content-item">
+                        <div class = "list-modal-content-item" name = @groupIdName>
                             <input type="hidden" name="Groups[@index].TextGroupId" value="@group.TextGroupId" />
                             <input type="checkbox" name="Groups[@index].Selected" value="true" />
+                            @foreach(var textHeaderId in group.LinkedTextHeaderIds)
+                            {
+                                <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
+                            }
+                            <div id=@groupSelectedTextCountName> (0) </div>
                             <div>@group.GroupTitle</div>
                         </div>
                     }

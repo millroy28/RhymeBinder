@@ -85,6 +85,7 @@ function hide_element(element){
 //--------MODALS------------------------------------------------------------------------
 function open_modal_with_id(elementId) {
     populate_list_modal_footer_with_record_count_message();
+    populate_group_selected_text_header_counts();
     document.getElementById(elementId).style.display = "inline";
     document.body.style.pointerEvents = 'none';
     return;
@@ -111,8 +112,61 @@ function populate_list_modal_footer_with_record_count_message() {
         document.getElementById("recordCountMessage").innerText = "Apply changes to " + checkedBoxes + " selected records:";
     }
 
+    document.GetElements
     return;
 }
+
+function populate_group_selected_text_header_counts() {
+    // very specific for list text form.  Form changes may break this
+    var groupIds = document.getElementsByName("GroupId");
+
+    var inputs = document.getElementsByTagName("input");
+    var selectedTextHeaderIds = [];
+    
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "checkbox" && inputs[i].checked == true && inputs[i].name.startsWith("TextHeaders")) {
+            var index = inputs[i].name.replace("TextHeaders[", "").replace("].Selected", "");
+
+            //console.log("got index " + index);
+            selectedTextHeaderIds.push(document.getElementById("TextHeaders[" + index + "].TextHeaderId").value);
+
+        }
+    }
+
+    for (var i = 0; i < groupIds.length; i++) {
+
+        var elementName = "Group" + groupIds[i].innerHTML + "TextId";
+        //console.log("getting text header ids from divs with name " + elementName);
+        var groupTextHeaderIds = document.getElementsByName(elementName);
+
+        if (groupTextHeaderIds.length > 0) {
+
+            elementName = "Group" + groupIds[i].innerHTML + "SelectedTextCount";
+            //console.log("setting count value at div with id " + elementName);
+
+            var matchCount = 0;
+
+            for (var j = 0; j < groupTextHeaderIds.length; j++) {
+               
+                for (var k = 0; k < selectedTextHeaderIds.length; k++) {
+                    // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
+                    if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
+                        matchCount++;
+                    }
+                }
+            }
+
+
+            document.getElementById(elementName).innerHTML = " (" + matchCount + ") ";
+
+
+
+        }
+    }
+    return;
+}
+
+
 
 //--------LIST VIEWS: BUTTON CLICKS ON VIEW CHANGES-------------------------------------
 function hidden_view_form_submit(actionValue, formElementID, clickElementID, hideableElementName) {

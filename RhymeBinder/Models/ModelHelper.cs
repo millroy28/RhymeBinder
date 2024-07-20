@@ -640,6 +640,7 @@ namespace RhymeBinder.Models
 
             foreach(var group in groups)
             {
+                List<int> textHeaderIds = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == group.TextGroupId).Select(x => x.TextHeaderId).ToList(); 
                 displayGroups.Add(new DisplayTextGroup()
                 {
                     TextGroupId = group.TextGroupId,
@@ -648,7 +649,8 @@ namespace RhymeBinder.Models
                     Hidden = group.Hidden,
                     HeaderCount = 0,
                     BinderName = null,
-                    Selected = false
+                    Selected = false,
+                    LinkedTextHeaderIds = textHeaderIds
                 });
             }
             return (displayGroups);
