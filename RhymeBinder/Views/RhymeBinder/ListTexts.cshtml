@@ -244,12 +244,12 @@
                     {
                         <div class = "list-modal-content-item" name = @groupIdName>
                             <input type="hidden" name="Groups[@index].TextGroupId" value="@group.TextGroupId" />
-                            <input type="checkbox" name="Groups[@index].Selected" value="true" />
+                            <input type="checkbox" name="Groups[@index].Selected" id=@groupIdName value="true" />
                             @foreach(var textHeaderId in group.LinkedTextHeaderIds)
                             {
                                 <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
                             }
-                            <div id=@groupSelectedTextCountName> (0) </div>
+                            <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller;"></div>
                             <div>@group.GroupTitle</div>
                         </div>
                     }

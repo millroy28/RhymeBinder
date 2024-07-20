@@ -117,9 +117,35 @@ function populate_list_modal_footer_with_record_count_message() {
 }
 
 function populate_group_selected_text_header_counts() {
-    // very specific for list text form.  Form changes may break this
+    /*
+     * I want a modal of groups to be added/removed to the selected texts
+     *  If all of the selected texts are in a group, that group will be checked
+     *      If that check is un-selected, back end will remove all selected texts from that group
+     *      If it remains checked, nothing changes
+     *  If none of the selected texts are in a group, that group will be un-checked
+     *      ...behavior obvious from here
+     *  If SOME of the selected texts are in a group, that group check box will be indeterminate
+     *      If the user does not check/uncheck the box, no changes are made
+     *      If the users checks the box, all selected texts not already in group are added to the group
+     *      If the user unchecks the box, all selected texts already in group are removed
+     *      
+     *      
+     * This is some non-scalable very specific business using the names and ids from the ListTexts form
+     * 
+     * If I had an API I could query this would be necessary
+     * 
+     * As it is now:
+     * Back end gets a list of texts header ids associated with a group
+     * This function gets all selected text header IDs
+     * ...gets all text header IDs associated with groups from a list of hidden div tags
+     * compares the two, gives the user a count
+     * sets the checkboxes accordingly
+     * 
+     * */
     var groupIds = document.getElementsByName("GroupId");
 
+
+    // Get Selected Text Header IDs
     var inputs = document.getElementsByTagName("input");
     var selectedTextHeaderIds = [];
     
@@ -133,12 +159,15 @@ function populate_group_selected_text_header_counts() {
         }
     }
 
+    
     for (var i = 0; i < groupIds.length; i++) {
 
+        // Get text header IDs associated with group
         var elementName = "Group" + groupIds[i].innerHTML + "TextId";
         //console.log("getting text header ids from divs with name " + elementName);
         var groupTextHeaderIds = document.getElementsByName(elementName);
 
+        // count number of matches between selected text headers and group text headers
         if (groupTextHeaderIds.length > 0) {
 
             elementName = "Group" + groupIds[i].innerHTML + "SelectedTextCount";
@@ -156,11 +185,16 @@ function populate_group_selected_text_header_counts() {
                 }
             }
 
+            // compare match count with total selected and set checkboxes accordingly
 
-            document.getElementById(elementName).innerHTML = " (" + matchCount + ") ";
-
-
-
+            if (selectedTextHeaderIds.length == matchCount) {
+                document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
+            } else if (matchCount == 0) {
+                document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
+            } else {
+                document.getElementById("Group" + groupIds[i].innerHTML).indeterminate = true;
+                document.getElementById(elementName).innerHTML = " (" + matchCount + ")  ";
+            }
         }
     }
     return;
