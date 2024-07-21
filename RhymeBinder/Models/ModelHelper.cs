@@ -2272,77 +2272,163 @@ namespace RhymeBinder.Models
             }
             return status;
         }
-        public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
+
+
+        //                    // previously used when setting groups individually from dropdowns
+        //public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView, int groupID, bool add)
+        //{
+        //    Status status = new Status();
+
+        //    try
+        //    {
+        //        //Get a list of all the headerIDs that we're going to update:
+        //        List<int> headerIDsToUpdate = savedView.TextHeaders.Where(x => x.Selected).Select(x => x.TextHeaderId).ToList();
+
+        //        // TODO - It's inelegant to grab ALL linked records and search them. This can be refactored 
+        //        //  Added a join on selected headers to limit results returned - previously was all. 
+        //        List<LnkTextHeadersTextGroup> existingLinks = _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Contains(x.TextHeaderId)).ToList();
+
+
+        //            // _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Any(y => y == x.TextHeaderId)).ToList();
+
+        //        bool exists = true;
+
+        //        if (add)
+        //        {
+        //            foreach (int headerID in headerIDsToUpdate)
+        //            {
+        //                // Check for existing links to avoid inserting duplicates
+        //                exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
+        //                                                x.TextGroupId == groupID);
+
+        //                if (!exists)
+        //                {
+        //                    LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
+
+        //                    newLink.TextGroupId = groupID;
+        //                    newLink.TextHeaderId = headerID;
+
+        //                    _context.LnkTextHeadersTextGroups.Add(newLink);
+        //                }
+        //            }
+        //        }
+
+        //        if (!add)
+        //        {
+        //            foreach (int headerID in headerIDsToUpdate)
+        //            {
+        //                exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
+        //                                                x.TextGroupId == groupID);
+
+        //                if (exists)
+        //                {
+        //                    LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
+
+        //                    linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
+        //                                                                                x.TextGroupId == groupID).First();
+
+        //                    _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
+        //                }
+        //            }
+        //        }
+
+        //        _context.SaveChanges();
+        //        status.success = true;
+        //        status.recordId = savedView.View.SavedViewId;
+        //    }
+        //    catch
+        //    {
+        //        status.success = false;
+        //        status.recordId = savedView.View.SavedViewId;
+        //        string addOrRemove; string toOrFrom;
+        //        if (add) { addOrRemove = " add "; toOrFrom = " to "; } else { addOrRemove = " remove "; toOrFrom = " from "; };
+
+        //        status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
+        //    }
+
+        //    return status;
+        //}
+
+        public Status AddRemoveHeadersFromGroups(DisplayTextHeadersAndSavedView savedView)
         {
+            /*
+             * New approach: Selected texts are added to / removed from groups via modal where all groups are listed.
+             * 
+             * On modal load:
+             *  In UI, if all selected texts are in a group, the checkbox for that group is checked,
+             *  ...if none of the selected texts are in a group, the checkbox for that group is unchecked,
+             *  ...if some of the selected texts are in a group, the checkbox is indeterminate
+             * 
+             *  Checkbox values are returned as null, regardless of state on ui load, and are only set on click.
+             *  So assuming any groups in Saved View returning with null selected values require no action.
+             * 
+             *  groups with select = true - will add all selected texts to groups (checking against duplicateS)
+             *  groups with select = false - will remove all selected texts from groups
+             */
             Status status = new Status();
 
-            try
+            List<int> selectedTextHeaderIds = savedView.TextHeaders.Where(x => x.Selected == true).Select(x => x.TextHeaderId).ToList();
+            List<int> groupIdsToRemove = savedView.Groups.Where(x => x.Selected != null && x.Selected == false).Select(x => x.TextGroupId).ToList();
+            List<int> groupIdsToAdd = savedView.Groups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
+
+            // removals
+            if (groupIdsToRemove.Count > 0)
             {
-                //Get a list of all the headerIDs that we're going to update:
-                List<int> headerIDsToUpdate = savedView.TextHeaders.Where(x => x.Selected).Select(x => x.TextHeaderId).ToList();
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupsToRemove = _context.LnkTextHeadersTextGroups.Where(x => groupIdsToRemove.Select(y => y).Contains(x.TextGroupId)
+                                                                                                                   && selectedTextHeaderIds.Select(y => y).Contains(x.TextHeaderId)).ToList();
 
-                // TODO - It's inelegant to grab ALL linked records and search them. This can be refactored 
-                //  Added a join on selected headers to limit results returned - previously was all. 
-                List<LnkTextHeadersTextGroup> existingLinks = _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Contains(x.TextHeaderId)).ToList();
-                    
-                    
-                    // _context.LnkTextHeadersTextGroups.Where(x => headerIDsToUpdate.Any(y => y == x.TextHeaderId)).ToList();
-
-                bool exists = true;
-
-                if (add)
+                try
                 {
-                    foreach (int headerID in headerIDsToUpdate)
+                    _context.LnkTextHeadersTextGroups.RemoveRange(lnkTextHeadersTextGroupsToRemove);
+                    _context.SaveChanges();
+                    status.success = true;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.recordId = -1;
+                    status.message = "Failed to remove selected texts from selected groups";
+                }
+            }
+
+            // additions
+            if (groupIdsToAdd.Count > 0)
+            {
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupsToAdd = new List<LnkTextHeadersTextGroup>();
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupAlreadyExisting = _context.LnkTextHeadersTextGroups.Where(x => groupIdsToAdd.Select(y => y).Contains(x.TextGroupId)
+                                                                                                                   && selectedTextHeaderIds.Select(y => y).Contains(x.TextHeaderId)).ToList();
+
+
+                foreach(var groupId in groupIdsToAdd)
+                {
+                    foreach(var textId in selectedTextHeaderIds)
                     {
-                        // Check for existing links to avoid inserting duplicates
-                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
-                                                        x.TextGroupId == groupID);
-
-                        if (!exists)
+                        if (!lnkTextHeadersTextGroupAlreadyExisting.Any(x => x.TextGroupId == groupId && x.TextHeaderId == textId))
                         {
-                            LnkTextHeadersTextGroup newLink = new LnkTextHeadersTextGroup();
-
-                            newLink.TextGroupId = groupID;
-                            newLink.TextHeaderId = headerID;
-
-                            _context.LnkTextHeadersTextGroups.Add(newLink);
+                            lnkTextHeadersTextGroupsToAdd.Add( new LnkTextHeadersTextGroup(){
+                                TextGroupId = groupId,
+                                TextHeaderId = textId
+                            });
                         }
                     }
                 }
 
-                if (!add)
+                if (lnkTextHeadersTextGroupsToAdd.Count > 0)
                 {
-                    foreach (int headerID in headerIDsToUpdate)
+                    try
                     {
-                        exists = existingLinks.Any(x => x.TextHeaderId == headerID &&
-                                                        x.TextGroupId == groupID);
-
-                        if (exists)
-                        {
-                            LnkTextHeadersTextGroup linkToRemove = new LnkTextHeadersTextGroup();
-
-                            linkToRemove = _context.LnkTextHeadersTextGroups.Where(x => x.TextHeaderId == headerID &&
-                                                                                        x.TextGroupId == groupID).First();
-
-                            _context.LnkTextHeadersTextGroups.Remove(linkToRemove);
-                        }
+                        _context.LnkTextHeadersTextGroups.AddRange(lnkTextHeadersTextGroupsToAdd);
+                        _context.SaveChanges();
+                        status.success = true;
+                    }
+                    catch
+                    {
+                        status.success = false;
+                        status.recordId = -1;
+                        status.message = "Failed to add selected texts to selected groups";
                     }
                 }
-
-                _context.SaveChanges();
-                status.success = true;
-                status.recordId = savedView.View.SavedViewId;
             }
-            catch
-            {
-                status.success = false;
-                status.recordId = savedView.View.SavedViewId;
-                string addOrRemove; string toOrFrom;
-                if (add) { addOrRemove = " add "; toOrFrom = " to "; } else { addOrRemove = " remove "; toOrFrom = " from "; };
-
-                status.message = $"Failed to {addOrRemove} texts {toOrFrom} group {groupID} in view {savedView.View.SavedViewId}";
-            }
-
             return status;
         }
         public Status AddRemoveHeaderFromGroup(int textHeaderId, int groupId, bool add)

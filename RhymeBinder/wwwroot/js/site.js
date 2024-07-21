@@ -200,6 +200,16 @@ function populate_group_selected_text_header_counts() {
     return;
 }
 
+function set_group_selected_value_on_checkbox(groupId){
+    var checkbox = document.getElementById("Group" + groupId);
+
+    if (checkbox.checked) {
+        document.getElementById("Group" + groupId + "Selected").value = true;
+    } else {
+        document.getElementById("Group" + groupId + "Selected").value = false;
+    }
+    return;
+}
 
 
 //--------LIST VIEWS: BUTTON CLICKS ON VIEW CHANGES-------------------------------------

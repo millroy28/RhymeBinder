@@ -262,15 +262,22 @@ namespace RhymeBinder.Controllers
                     status = _modelHelper.ToggleHideSelectedHeaders(savedView, false);
                     break;
 
-                case "GroupAdd":
+                case "GroupAddRemove":
                     status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), true);
-                    break;
+                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    
 
-                case "GroupRemove":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), false);
-                    break;
+                    // previously used when setting groups individually from dropdowns
+                //case "GroupAdd": 
+                //    status = _modelHelper.UpdateView(savedView);
+                //    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), true);
+                //    break;
+
+                //case "GroupRemove":
+                //    status = _modelHelper.UpdateView(savedView);
+                //    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), false);
+                //    break;
 
                 case "GroupFilter":
                     status = _modelHelper.SwitchToViewBySet(userId, value);

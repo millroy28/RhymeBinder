@@ -5,7 +5,7 @@
 @{
 }
 @model DisplayTextHeadersAndSavedView
-@{ int index = 0; } 
+@{ int index = 0; int groupIndex = 0; } 
 
 
 <script language="Javascript" src="~/js/site.js"></script>
@@ -83,12 +83,14 @@
                     Groups ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">Create Group</a>
-                    <a class="menu-bar-dropdown-item" onclick="open_modal_with_id('groups')">Add/Remove From Groups</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">New Group</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
+                    <a class="menu-bar-dropdown-item" onclick="open_modal_with_id('groups')">Add to / Remove from Groups</a>
 
-                    @*@if(Model.Groups.Count > 3)
+                    @*                    // previously used when setting groups individually from dropdowns
+
+                        @if(Model.Groups.Count > 3)
                     {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Manage Groups</a>
                         <a class="menu-bar-dropdown-item" >――――――――</a>
                         <a class="menu-bar-dropdown-item">Add to Group... </a>
                         @foreach (var group in Model.Groups)
@@ -236,32 +238,35 @@
                 {
                     <div name = "GroupId" style="display: none;">@group.TextGroupId</div>
 
-                string groupIdName = $"Group{group.TextGroupId}";
+                string groupIdCheckboxName = $"Group{group.TextGroupId}";
+                string groupIdSelectedValueName = $"Group{group.TextGroupId}Selected";
                 string groupTextIdName =  $"Group{group.TextGroupId}TextId";
                 string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
 
                 if (!group.Locked && group.TextGroupId > 0)
                     {
-                        <div class = "list-modal-content-item" name = @groupIdName>
-                            <input type="hidden" name="Groups[@index].TextGroupId" value="@group.TextGroupId" />
-                            <input type="checkbox" name="Groups[@index].Selected" id=@groupIdName value="true" />
+                        <div class = "list-modal-content-item" name = @groupIdCheckboxName>
+                            <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
+                            <input type="checkbox" id=@groupIdCheckboxName value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
+                            <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName />
                             @foreach(var textHeaderId in group.LinkedTextHeaderIds)
                             {
                                 <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
                             }
-                            <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller;"></div>
+                            <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
                             <div>@group.GroupTitle</div>
                         </div>
+                        { groupIndex++; }
                     }
                 }
              
 
         </div>
         <div class="list-modal-footer">
-            <div id="recordCountMessage" style="padding-right: 10px;"></div>
+            <div id="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
             
             <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Cancel</a>
-            <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Submit</a>
+            <a class="button menu-bar-button" onclick="selected_action_form_submit('GroupAddRemove', 1)">Submit</a>
         </div>
     </div>
 

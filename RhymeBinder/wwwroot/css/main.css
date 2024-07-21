@@ -211,7 +211,7 @@
     }
 
     .list-modal-content {
-        padding: 2px 16px;
+        padding: 15px 20px;
         background-color: #f4f5ef;
         display: grid;
         grid-template-columns: repeat(3, auto);
@@ -221,6 +221,7 @@
 
     .list-modal-content-item {
         display: inline-flex;
+        padding-top: 5px;
     }
 
     .list-modal-footer {
