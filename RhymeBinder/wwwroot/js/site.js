@@ -310,3 +310,21 @@ function on_start_get_form_sub_button(buttonID) {
     return;
 }
 
+function toggle_select_all_text_headers() {
+    var selectAllCheckbox = document.getElementById("SelectAll");
+
+    //if (document.getElementById(SelectAll).checked == checked) {
+    //    checked = true;
+    //} else {
+    //    checked = false;
+    //}
+
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "checkbox" && inputs[i].name.startsWith("TextHeaders")) {
+            inputs[i].checked = selectAllCheckbox.checked;
+        }
+    }
+    return;
+}

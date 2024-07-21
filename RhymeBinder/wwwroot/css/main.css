@@ -236,20 +236,7 @@
         pointer-events:all;
     }
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    
+   
 
     /*``[Table Pages]*/
     .table-view-wrapper {
@@ -1239,6 +1226,55 @@ text-decoration-line: underline;
         box-sizing: border-box;
         background: #eff3d8;
         flex-direction: column;
+    }
+
+
+    /*``[Modals]*/
+
+    .list-modal {
+        display: none;
+        position: absolute;
+        z-index: 1;
+        left: 20%;
+        top: 10%;
+        width: 60%;
+        /*height: 60%;*/
+        overflow: auto;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+        border: 2px solid;
+    }
+
+    .list-modal-header {
+        padding: 2px 16px;
+        background-color: #d7e19d;
+        font-size: larger;
+        font-weight: 700;
+    }
+
+    .list-modal-content {
+        padding: 15px 20px;
+        background-color: #f4f5ef;
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        pointer-events: all;
+    }
+
+
+    .list-modal-content-item {
+        display: inline-flex;
+        padding-top: 5px;
+    }
+
+    .list-modal-footer {
+        width: 100%;
+        background-color: #d7e19d;
+        display: inline-flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-content: stretch;
+        align-items: baseline;
+        justify-content: flex-end;
+        pointer-events: all;
     }
 
 
