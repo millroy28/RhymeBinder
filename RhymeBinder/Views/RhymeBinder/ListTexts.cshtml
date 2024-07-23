@@ -247,7 +247,7 @@
                     {
                         <div class = "list-modal-content-item" name = @groupIdCheckboxName>
                             <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
-                            <input type="checkbox" id=@groupIdCheckboxName value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
+                            <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
                             <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName />
                             @foreach(var textHeaderId in group.LinkedTextHeaderIds)
                             {

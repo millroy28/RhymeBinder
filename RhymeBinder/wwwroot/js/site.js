@@ -159,41 +159,52 @@ function populate_group_selected_text_header_counts() {
         }
     }
 
-    
-    for (var i = 0; i < groupIds.length; i++) {
+    // If no headers, disable and move on
+    if (selectedTextHeaderIds.length == 0) {
 
-        // Get text header IDs associated with group
-        var elementName = "Group" + groupIds[i].innerHTML + "TextId";
-        //console.log("getting text header ids from divs with name " + elementName);
-        var groupTextHeaderIds = document.getElementsByName(elementName);
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].type == "checkbox" && inputs[i].name == "GroupCheckbox") {
+                inputs[i].disabled = true;
+            }
+        }
 
-        // count number of matches between selected text headers and group text headers
-        if (groupTextHeaderIds.length > 0) {
+        document.getElementById("GroupModalSubmit").hidden = true;
 
-            elementName = "Group" + groupIds[i].innerHTML + "SelectedTextCount";
-            //console.log("setting count value at div with id " + elementName);
+    } else {    
+        for (var i = 0; i < groupIds.length; i++) {
 
-            var matchCount = 0;
+            // Get text header IDs associated with group
+            var elementName = "Group" + groupIds[i].innerHTML + "TextId";
+            //console.log("getting text header ids from divs with name " + elementName);
+            var groupTextHeaderIds = document.getElementsByName(elementName);
 
-            for (var j = 0; j < groupTextHeaderIds.length; j++) {
+            // count number of matches between selected text headers and group text headers
+            if (groupTextHeaderIds.length > 0) {
+
+                elementName = "Group" + groupIds[i].innerHTML + "SelectedTextCount";
+                //console.log("setting count value at div with id " + elementName);
+
+                var matchCount = 0;
+
+                for (var j = 0; j < groupTextHeaderIds.length; j++) {
                
-                for (var k = 0; k < selectedTextHeaderIds.length; k++) {
-                    // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
-                    if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
-                        matchCount++;
+                    for (var k = 0; k < selectedTextHeaderIds.length; k++) {
+                        // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
+                        if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
+                            matchCount++;
+                        }
                     }
                 }
-            }
 
-            // compare match count with total selected and set checkboxes accordingly
-
-            if (selectedTextHeaderIds.length == matchCount) {
-                document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
-            } else if (matchCount == 0) {
-                document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
-            } else {
-                document.getElementById("Group" + groupIds[i].innerHTML).indeterminate = true;
-                document.getElementById(elementName).innerHTML = " (" + matchCount + ")  ";
+                // compare match count with total selected and set checkboxes accordingly
+                if (selectedTextHeaderIds.length == matchCount) {
+                    document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
+                } else if (matchCount == 0) {
+                    document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
+                } else {
+                    document.getElementById("Group" + groupIds[i].innerHTML).indeterminate = true;
+                    document.getElementById(elementName).innerHTML = " (" + matchCount + ")  ";
+                }
             }
         }
     }
@@ -313,14 +324,7 @@ function on_start_get_form_sub_button(buttonID) {
 function toggle_select_all_text_headers() {
     var selectAllCheckbox = document.getElementById("SelectAll");
 
-    //if (document.getElementById(SelectAll).checked == checked) {
-    //    checked = true;
-    //} else {
-    //    checked = false;
-    //}
-
     var inputs = document.getElementsByTagName("input");
-
     for (var i = 0; i < inputs.length; i++) {
         if (inputs[i].type == "checkbox" && inputs[i].name.startsWith("TextHeaders")) {
             inputs[i].checked = selectAllCheckbox.checked;
