@@ -83,13 +83,19 @@ function hide_element(element){
 
 
 //--------MODALS------------------------------------------------------------------------
-function open_modal_with_id(elementId) {
-    populate_list_modal_footer_with_record_count_message();
-    populate_group_selected_text_header_counts();
+function open_group_list_modal_with_id(elementId, view) {
+    if (view == 'ListTexts') {
+        populate_list_modal_footer_with_record_count_message();
+        populate_group_selected_text_header_counts();
+    }
+    if (view == 'EditText') {
+        populate_group_selected();
+    }
     document.getElementById(elementId).style.display = "inline";
     document.body.style.pointerEvents = 'none';
     return;
 }
+
 
 function close_modal_with_id(elementId) {
     document.getElementById(elementId).style.display = "none";
@@ -168,8 +174,6 @@ function populate_group_selected_text_header_counts() {
             }
         }
 
-        document.getElementById("GroupModalSubmit").hidden = true;
-
     } else {    
         for (var i = 0; i < groupIds.length; i++) {
 
@@ -208,6 +212,19 @@ function populate_group_selected_text_header_counts() {
             }
         }
     }
+    return;
+}
+
+function populate_group_selected() {
+    var groupIds = document.getElementsByName("GroupId");
+
+    for (var i = 0; i < groupIds.length; i++) {
+        if (document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value == "True") {
+            document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
+
+            }
+        }
+      
     return;
 }
 

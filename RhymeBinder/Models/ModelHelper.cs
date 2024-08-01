@@ -274,6 +274,38 @@ namespace RhymeBinder.Models
             }
             return (displayBinders);
         }
+        public List<DisplayTextGroup> GetDisplayTextGroups(int userId, int binderId, int textHeaderId)
+        {
+            List<TextGroup> groups = GetTextGroupsInBinder(userId, binderId);
+            List<DisplayTextGroup> displayTextGroups = new List<DisplayTextGroup>();
+
+            try
+            {
+                foreach (var group in groups)
+                {
+                    displayTextGroups.Add(new DisplayTextGroup()
+                    {
+                        TextGroupId = group.TextGroupId,
+                        BinderId = group.BinderId,
+                        BinderName = GetBinderName(group.BinderId),
+                        GroupTitle = group.GroupTitle,
+                        Notes = group.Notes,
+                        Locked = group.Locked,
+                        Selected = _context.LnkTextHeadersTextGroups.Any(x => x.TextGroupId == group.TextGroupId
+                                                                           && x.TextHeaderId == textHeaderId)
+                    });
+                }
+            }
+            catch
+            {
+                displayTextGroups.Add(new DisplayTextGroup()
+                {
+                    TextGroupId = -1,
+                });
+            }
+
+            return displayTextGroups;
+        }
         public List<DisplayTextGroup> GetDisplayTextGroups(int userId, int binderId)
         { 
             List<TextGroup> groups = GetTextGroupsInBinder(userId, binderId);
@@ -769,29 +801,31 @@ namespace RhymeBinder.Models
             }
 
             //get text groups
-            List<TextGroup> memberOfGroups = (  from TextGroup textGroup in _context.TextGroups
-                                                join LnkTextHeadersTextGroup link in _context.LnkTextHeadersTextGroups
-                                                on textGroup.TextGroupId equals link.TextGroupId
-                                                where link.TextHeaderId == thisTextHeader.TextHeaderId
-                                                select new TextGroup
-                                                {
-                                                    GroupTitle = textGroup.GroupTitle,
-                                                    TextGroupId = textGroup.TextGroupId,
-                                                    Locked = textGroup.Locked
-                                                }
-                                                ).OrderBy(x => x.GroupTitle).ToList();
+            List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
+
+            //List<TextGroup> memberOfGroups = (  from TextGroup textGroup in _context.TextGroups
+            //                                    join LnkTextHeadersTextGroup link in _context.LnkTextHeadersTextGroups
+            //                                    on textGroup.TextGroupId equals link.TextGroupId
+            //                                    where link.TextHeaderId == thisTextHeader.TextHeaderId
+            //                                    select new TextGroup
+            //                                    {
+            //                                        GroupTitle = textGroup.GroupTitle,
+            //                                        TextGroupId = textGroup.TextGroupId,
+            //                                        Locked = textGroup.Locked
+            //                                    }
+            //                                    ).OrderBy(x => x.GroupTitle).ToList();
             
 
-            List<TextGroup> availableGroups = ( from TextGroup textGroup in _context.TextGroups
-                                                where (textGroup.BinderId == thisTextHeader.BinderId
-                                                && !memberOfGroups.Contains(textGroup) //exclude group of which it's already a member
-                                                && !textGroup.Locked)
-                                                select new TextGroup
-                                                {
-                                                    GroupTitle = textGroup.GroupTitle,
-                                                    TextGroupId = textGroup.TextGroupId
-                                                }
-                                                ).OrderBy(x => x.GroupTitle).ToList();
+            //List<TextGroup> availableGroups = ( from TextGroup textGroup in _context.TextGroups
+            //                                    where (textGroup.BinderId == thisTextHeader.BinderId
+            //                                    && !memberOfGroups.Contains(textGroup) //exclude group of which it's already a member
+            //                                    && !textGroup.Locked)
+            //                                    select new TextGroup
+            //                                    {
+            //                                        GroupTitle = textGroup.GroupTitle,
+            //                                        TextGroupId = textGroup.TextGroupId
+            //                                    }
+            //                                    ).OrderBy(x => x.GroupTitle).ToList();
 
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
@@ -825,8 +859,9 @@ namespace RhymeBinder.Models
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
                 CurrentRevisionStatus = currentRevisionStatus,
-                MemberOfGroups = memberOfGroups,
-                AvailableGroups = availableGroups,
+                Groups = displayTextGroups,
+                //MemberOfGroups = memberOfGroups,
+                //AvailableGroups = availableGroups,
 
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,

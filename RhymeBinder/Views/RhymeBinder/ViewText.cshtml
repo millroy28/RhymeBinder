@@ -70,12 +70,15 @@
 
 
     <div class="right-sidebar">
-        @if (Model.MemberOfGroups.Count > 0)
+        @if (Model.Groups.Count > 0)
         {
             <div class="right-sidebar-item-heading">Member of Groups:</div>
-            @foreach(var group in Model.MemberOfGroups)
+            @foreach(var group in Model.Groups)
             {
-                <div class="right-sidebar-item">@group.GroupTitle</div>
+                @if(group.Selected == true)
+                {
+                    <div class="right-sidebar-item">@group.GroupTitle</div>
+                }
             }
         }
         <div class="right-sidebar-item-heading">Notes:</div>

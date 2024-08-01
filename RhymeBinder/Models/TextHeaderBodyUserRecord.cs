@@ -42,8 +42,9 @@ namespace RhymeBinder.Models
         public string CreatedByUserName { get; set; }
         public string LastModifiedByUserName { get; set; }
         public string CurrentRevisionStatus { get; set; }
-        public List<TextGroup> MemberOfGroups { get; set; }
-        public List<TextGroup> AvailableGroups { get; set; }
+        public List<DisplayTextGroup> Groups { get; set; }
+        //public List<TextGroup> MemberOfGroups { get; set; }
+        //public List<TextGroup> AvailableGroups { get; set; }
 
         //  EditWindowProperty fields
         public int EditWindowPropertyId { get; set; }
