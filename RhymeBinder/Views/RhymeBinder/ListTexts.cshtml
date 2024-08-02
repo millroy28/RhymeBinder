@@ -236,27 +236,36 @@
 
                 @foreach(var group in Model.Groups)
                 {
-                    <div name = "GroupId" style="display: none;">@group.TextGroupId</div>
-
-                string groupIdCheckboxName = $"Group{group.TextGroupId}";
-                string groupIdSelectedValueName = $"Group{group.TextGroupId}Selected";
-                string groupTextIdName =  $"Group{group.TextGroupId}TextId";
-                string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
-
-                if (!group.Locked && group.TextGroupId > 0)
+                    if (group.TextGroupId > 0)
                     {
-                        <div class = "list-modal-content-item" name = @groupIdCheckboxName>
-                            <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
-                            <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
-                            <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName />
-                            @foreach(var textHeaderId in group.LinkedTextHeaderIds)
+                       <div name = "GroupId" style="display: none;">@group.TextGroupId</div>
+
+                        string groupIdCheckboxName = $"Group{group.TextGroupId}";
+                        string groupIdSelectedValueName = $"Group{group.TextGroupId}Selected";
+                        string groupTextIdName =  $"Group{group.TextGroupId}TextId";
+                        string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
+
                             {
-                                <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
+                                <div class = "list-modal-content-item" name = @groupIdCheckboxName>
+                                    <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
+                                @if(group.Locked)
+                                {
+                                    <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" />
+                                }
+                                    <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName />
+                                    @foreach(var textHeaderId in group.LinkedTextHeaderIds)
+                                    {
+                                        <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
+                                    }
+                                    <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
+                                    <div>@group.GroupTitle</div>
+                                </div>
+                                { groupIndex++; }
                             }
-                            <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
-                            <div>@group.GroupTitle</div>
-                        </div>
-                        { groupIndex++; }
                     }
                 }
              
@@ -265,8 +274,8 @@
         <div class="list-modal-footer">
             <div id="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
             
-            <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Cancel</a>
-            <a class="button menu-bar-button" onclick="selected_action_form_submit('GroupAddRemove', 1)">Submit</a>
+            <a class="button menu-bar-button" onclick="close_modal_with_id('groups','ListTexts')">Cancel</a>
+            <a class="button menu-bar-button" onclick="submit_modal('ListTexts')">Submit</a>
         </div>
     </div>
 

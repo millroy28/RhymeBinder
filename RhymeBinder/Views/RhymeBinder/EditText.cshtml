@@ -182,11 +182,11 @@
                             <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
                             @if (group.Locked)
                             {
-                                <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
+                                <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled/>
                             }
                             else
                             {
-                                <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
+                                <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true"/>
                             }
                             <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
                             <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
@@ -200,11 +200,8 @@
         </div>
         
         <div class="list-modal-footer">
-                
-                <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Cancel</a>
-                 <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" value="Save" id="save" />
-
-                <a class="button menu-bar-button" onclick="selected_action_form_submit('Save', 1)">Submit</a>
+                <a class="button menu-bar-button" onclick="close_modal_with_id('groups','EditText')">Cancel</a>
+                <a class="button menu-bar-button" onclick="submit_modal('EditText')">Submit</a>
         </div>
     </div>
 

@@ -97,9 +97,28 @@ function open_group_list_modal_with_id(elementId, view) {
 }
 
 
-function close_modal_with_id(elementId) {
+function close_modal_with_id(elementId, view) {
+    if (view == 'ListTexts') {
+        populate_group_selected_text_header_counts();
+    }
+    if (view == 'EditText') {
+        populate_group_selected(); // reverts check boxes to state on load
+    }
     document.getElementById(elementId).style.display = "none";
     document.body.style.pointerEvents = 'all';
+    return;
+}
+
+function submit_modal(view) {
+    set_group_selected_values_to_checkbox_states(); // updates model values to pass back to controller
+
+    if (view == 'ListTexts') {
+        selected_action_form_submit('GroupAddRemove', 1);
+    }
+    if (view == 'EditText') {
+        selected_action_form_submit('Save', 1);
+    }
+    return;
 }
 
 function populate_list_modal_footer_with_record_count_message() {
@@ -203,7 +222,7 @@ function populate_group_selected_text_header_counts() {
                 // compare match count with total selected and set checkboxes accordingly
                 if (selectedTextHeaderIds.length == matchCount) {
                     document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
-                } else if (matchCount == 0) {
+                } else if (matchCount == 0 || matchCount == null) {
                     document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
                 } else {
                     document.getElementById("Group" + groupIds[i].innerHTML).indeterminate = true;
@@ -221,11 +240,28 @@ function populate_group_selected() {
     for (var i = 0; i < groupIds.length; i++) {
         if (document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value == "True") {
             document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
-
-            }
+        } else {
+            document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
         }
+    }
       
     return;
+}
+
+function set_group_selected_values_to_checkbox_states() {
+    var groupIds = document.getElementsByName("GroupId");
+
+    for (var i = 0; i < groupIds.length; i++) {
+        var checkbox = document.getElementById("Group" + groupIds[i].innerHTML);
+
+        if (checkbox.checked && !checkbox.indeterminate) {
+            document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value = true;
+        } else if (!checkbox.checked && !checkbox.indeterminate) { //specifically don't want indeterminate
+            document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value = false;
+        } 
+    }
+
+    return; 
 }
 
 function set_group_selected_value_on_checkbox(groupId){
