@@ -9,7 +9,7 @@ namespace RhymeBinder.Models
     {
         public List<DisplayTextHeader> TextHeaders { get; set; }
         public SavedView View { get; set; }
-        public List<TextGroup> Groups { get; set; }
+        public List<DisplayTextGroup> Groups { get; set; }
         public DisplayBinder Binder { get; set; }
         public List<Binder> UserBinders { get; set; }
         public string MenuTitle { get; set; }
