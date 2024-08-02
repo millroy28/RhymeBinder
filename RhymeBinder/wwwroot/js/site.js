@@ -80,6 +80,202 @@ function hide_element(element){
     element.hidden = true;
     return;
 }
+
+
+//--------MODALS------------------------------------------------------------------------
+function open_group_list_modal_with_id(elementId, view) {
+    if (view == 'ListTexts') {
+        populate_list_modal_footer_with_record_count_message();
+        populate_group_selected_text_header_counts();
+    }
+    if (view == 'EditText') {
+        populate_group_selected();
+    }
+    document.getElementById(elementId).style.display = "inline";
+    document.body.style.pointerEvents = 'none';
+    return;
+}
+
+
+function close_modal_with_id(elementId, view) {
+    if (view == 'ListTexts') {
+        populate_group_selected_text_header_counts();
+    }
+    if (view == 'EditText') {
+        populate_group_selected(); // reverts check boxes to state on load
+    }
+    document.getElementById(elementId).style.display = "none";
+    document.body.style.pointerEvents = 'all';
+    return;
+}
+
+function submit_modal(view) {
+    set_group_selected_values_to_checkbox_states(); // updates model values to pass back to controller
+
+    if (view == 'ListTexts') {
+        selected_action_form_submit('GroupAddRemove', 1);
+    }
+    if (view == 'EditText') {
+        selected_action_form_submit('Save', 1);
+    }
+    return;
+}
+
+function populate_list_modal_footer_with_record_count_message() {
+    var checkedBoxes = 0;
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "checkbox" && inputs[i].checked == true && inputs[i].name.startsWith("TextHeaders")) {
+            checkedBoxes++;
+        }
+    }
+
+    if (checkedBoxes == 0) {
+        document.getElementById("recordCountMessage").innerText = "No records selected!"
+    } else {
+        document.getElementById("recordCountMessage").innerText = "Apply changes to " + checkedBoxes + " selected records:";
+    }
+
+    document.GetElements
+    return;
+}
+
+function populate_group_selected_text_header_counts() {
+    /*
+     * I want a modal of groups to be added/removed to the selected texts
+     *  If all of the selected texts are in a group, that group will be checked
+     *      If that check is un-selected, back end will remove all selected texts from that group
+     *      If it remains checked, nothing changes
+     *  If none of the selected texts are in a group, that group will be un-checked
+     *      ...behavior obvious from here
+     *  If SOME of the selected texts are in a group, that group check box will be indeterminate
+     *      If the user does not check/uncheck the box, no changes are made
+     *      If the users checks the box, all selected texts not already in group are added to the group
+     *      If the user unchecks the box, all selected texts already in group are removed
+     *      
+     *      
+     * This is some non-scalable very specific business using the names and ids from the ListTexts form
+     * 
+     * If I had an API I could query this would be necessary
+     * 
+     * As it is now:
+     * Back end gets a list of texts header ids associated with a group
+     * This function gets all selected text header IDs
+     * ...gets all text header IDs associated with groups from a list of hidden div tags
+     * compares the two, gives the user a count
+     * sets the checkboxes accordingly
+     * 
+     * */
+    var groupIds = document.getElementsByName("GroupId");
+
+
+    // Get Selected Text Header IDs
+    var inputs = document.getElementsByTagName("input");
+    var selectedTextHeaderIds = [];
+    
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "checkbox" && inputs[i].checked == true && inputs[i].name.startsWith("TextHeaders")) {
+            var index = inputs[i].name.replace("TextHeaders[", "").replace("].Selected", "");
+
+            //console.log("got index " + index);
+            selectedTextHeaderIds.push(document.getElementById("TextHeaders[" + index + "].TextHeaderId").value);
+
+        }
+    }
+
+    // If no headers, disable and move on
+    if (selectedTextHeaderIds.length == 0) {
+
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].type == "checkbox" && inputs[i].name == "GroupCheckbox") {
+                inputs[i].disabled = true;
+            }
+        }
+
+    } else {    
+        for (var i = 0; i < groupIds.length; i++) {
+
+            // Get text header IDs associated with group
+            var elementName = "Group" + groupIds[i].innerHTML + "TextId";
+            //console.log("getting text header ids from divs with name " + elementName);
+            var groupTextHeaderIds = document.getElementsByName(elementName);
+
+            // count number of matches between selected text headers and group text headers
+            if (groupTextHeaderIds.length > 0) {
+
+                elementName = "Group" + groupIds[i].innerHTML + "SelectedTextCount";
+                //console.log("setting count value at div with id " + elementName);
+
+                var matchCount = 0;
+
+                for (var j = 0; j < groupTextHeaderIds.length; j++) {
+               
+                    for (var k = 0; k < selectedTextHeaderIds.length; k++) {
+                        // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
+                        if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
+                            matchCount++;
+                        }
+                    }
+                }
+
+                // compare match count with total selected and set checkboxes accordingly
+                if (selectedTextHeaderIds.length == matchCount) {
+                    document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
+                } else if (matchCount == 0 || matchCount == null) {
+                    document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
+                } else {
+                    document.getElementById("Group" + groupIds[i].innerHTML).indeterminate = true;
+                    document.getElementById(elementName).innerHTML = " (" + matchCount + ")  ";
+                }
+            }
+        }
+    }
+    return;
+}
+
+function populate_group_selected() {
+    var groupIds = document.getElementsByName("GroupId");
+
+    for (var i = 0; i < groupIds.length; i++) {
+        if (document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value == "True") {
+            document.getElementById("Group" + groupIds[i].innerHTML).checked = true;
+        } else {
+            document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
+        }
+    }
+      
+    return;
+}
+
+function set_group_selected_values_to_checkbox_states() {
+    var groupIds = document.getElementsByName("GroupId");
+
+    for (var i = 0; i < groupIds.length; i++) {
+        var checkbox = document.getElementById("Group" + groupIds[i].innerHTML);
+
+        if (checkbox.checked && !checkbox.indeterminate) {
+            document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value = true;
+        } else if (!checkbox.checked && !checkbox.indeterminate) { //specifically don't want indeterminate
+            document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value = false;
+        } 
+    }
+
+    return; 
+}
+
+function set_group_selected_value_on_checkbox(groupId){
+    var checkbox = document.getElementById("Group" + groupId);
+
+    if (checkbox.checked) {
+        document.getElementById("Group" + groupId + "Selected").value = true;
+    } else {
+        document.getElementById("Group" + groupId + "Selected").value = false;
+    }
+    return;
+}
+
+
 //--------LIST VIEWS: BUTTON CLICKS ON VIEW CHANGES-------------------------------------
 function hidden_view_form_submit(actionValue, formElementID, clickElementID, hideableElementName) {
     toggle_hide_element(formElementID, clickElementID, hideableElementName);
@@ -172,7 +368,20 @@ function on_start_mark_sorted_column(sortValueID, sortOrderValueID) {
     console.log('Marking sort column :' + newSortValue);
     return;
 }
+
 function on_start_get_form_sub_button(buttonID) {
     button = document.getElementById(buttonID);
+    return;
+}
+
+function toggle_select_all_text_headers() {
+    var selectAllCheckbox = document.getElementById("SelectAll");
+
+    var inputs = document.getElementsByTagName("input");
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "checkbox" && inputs[i].name.startsWith("TextHeaders")) {
+            inputs[i].checked = selectAllCheckbox.checked;
+        }
+    }
     return;
 }

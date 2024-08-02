@@ -151,34 +151,34 @@ namespace RhymeBinder.Controllers
                     {
                         return RedirectToAction("ErrorPage", status);
                     }
-                case "AddGroup":
-                    status = _modelHelper.SaveEditedText(textEdit);
-                    if (status.success)
-                    {
-                        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
-                    }
-                    if (status.success)
-                    {
-                        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
-                    }
-                    else
-                    {
-                        return RedirectToAction("ErrorPage", status);
-                    }
-                case "RemoveGroup":
-                    status = _modelHelper.SaveEditedText(textEdit);
-                    if (status.success)
-                    {
-                        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
-                    }
-                    if (status.success)
-                    {
-                        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
-                    }
-                    else
-                    {
-                        return RedirectToAction("ErrorPage", status);
-                    }
+                //case "AddGroup":
+                //    status = _modelHelper.SaveEditedText(textEdit);
+                //    if (status.success)
+                //    {
+                //        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
+                //    }
+                //    if (status.success)
+                //    {
+                //        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                //    }
+                //    else
+                //    {
+                //        return RedirectToAction("ErrorPage", status);
+                //    }
+                //case "RemoveGroup":
+                //    status = _modelHelper.SaveEditedText(textEdit);
+                //    if (status.success)
+                //    {
+                //        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
+                //    }
+                //    if (status.success)
+                //    {
+                //        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                //    }
+                //    else
+                //    {
+                //        return RedirectToAction("ErrorPage", status);
+                //    }
                 case "Timeout":
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 default:
@@ -262,15 +262,22 @@ namespace RhymeBinder.Controllers
                     status = _modelHelper.ToggleHideSelectedHeaders(savedView, false);
                     break;
 
-                case "GroupAdd":
+                case "GroupAddRemove":
                     status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), true);
-                    break;
+                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView);
+                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    
 
-                case "GroupRemove":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), false);
-                    break;
+                    // previously used when setting groups individually from dropdowns
+                //case "GroupAdd": 
+                //    status = _modelHelper.UpdateView(savedView);
+                //    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), true);
+                //    break;
+
+                //case "GroupRemove":
+                //    status = _modelHelper.UpdateView(savedView);
+                //    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), false);
+                //    break;
 
                 case "GroupFilter":
                     status = _modelHelper.SwitchToViewBySet(userId, value);

@@ -5,7 +5,7 @@
 @{
 }
 @model DisplayTextHeadersAndSavedView
-@{ int index = 0; } 
+@{ int index = 0; int groupIndex = 0; } 
 
 
 <script language="Javascript" src="~/js/site.js"></script>
@@ -83,10 +83,14 @@
                     Groups ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">Create Group</a>
-                    @if(Model.Groups.Count > 3)
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">New Group</a>
+                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
+                    <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
+
+                    @*                    // previously used when setting groups individually from dropdowns
+
+                        @if(Model.Groups.Count > 3)
                     {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Manage Groups</a>
                         <a class="menu-bar-dropdown-item" >――――――――</a>
                         <a class="menu-bar-dropdown-item">Add to Group... </a>
                         @foreach (var group in Model.Groups)
@@ -104,7 +108,7 @@
                                 <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
                             }
                         }                        
-                    }
+                    }*@
 
                 </div>
             </div>
@@ -145,7 +149,7 @@
         <div class="table-view-table-container">
             <table>
                 <tr>
-                    <th name="selected_col" id="Selected"></th>
+                    <th name="selected_col" id="Selected"><input type="checkbox" id="SelectAll" onclick="toggle_select_all_text_headers()"/></th>
                     <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
                     <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
                     <th name="last_modified_by_col" id="Last Modified By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified By</a></th>
@@ -162,7 +166,7 @@
                     <tr>
 
                         <td style="text-align: right">
-                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
+                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" id="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
                         </td>
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
@@ -222,6 +226,60 @@
         <div class="table-view-table-container-right"> 
         </div>
     </div>
+
+    <div class="list-modal" id="groups"  >
+        <div class="list-modal-header">
+            Add / Remove Groups:
+        </div>
+        <div class="list-modal-content">
+
+
+                @foreach(var group in Model.Groups)
+                {
+                    if (group.TextGroupId > 0)
+                    {
+                       <div name = "GroupId" style="display: none;">@group.TextGroupId</div>
+
+                        string groupIdCheckboxName = $"Group{group.TextGroupId}";
+                        string groupIdSelectedValueName = $"Group{group.TextGroupId}Selected";
+                        string groupTextIdName =  $"Group{group.TextGroupId}TextId";
+                        string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
+
+                            {
+                                <div class = "list-modal-content-item" name = @groupIdCheckboxName>
+                                    <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
+                                @if(group.Locked)
+                                {
+                                    <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" />
+                                }
+                                    <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName />
+                                    @foreach(var textHeaderId in group.LinkedTextHeaderIds)
+                                    {
+                                        <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
+                                    }
+                                    <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
+                                    <div>@group.GroupTitle</div>
+                                </div>
+                                { groupIndex++; }
+                            }
+                    }
+                }
+             
+
+        </div>
+        <div class="list-modal-footer">
+            <div id="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
+            
+            <a class="button menu-bar-button" onclick="close_modal_with_id('groups','ListTexts')">Cancel</a>
+            <a class="button menu-bar-button" onclick="submit_modal('ListTexts')">Submit</a>
+        </div>
+    </div>
+
+
     <script language="Javascript">
     window.onload = on_start_get_form_sub_button('bttn_sub');
     window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');
