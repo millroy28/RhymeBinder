@@ -151,34 +151,34 @@ namespace RhymeBinder.Controllers
                     {
                         return RedirectToAction("ErrorPage", status);
                     }
-                case "AddGroup":
-                    status = _modelHelper.SaveEditedText(textEdit);
-                    if (status.success)
-                    {
-                        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
-                    }
-                    if (status.success)
-                    {
-                        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
-                    }
-                    else
-                    {
-                        return RedirectToAction("ErrorPage", status);
-                    }
-                case "RemoveGroup":
-                    status = _modelHelper.SaveEditedText(textEdit);
-                    if (status.success)
-                    {
-                        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
-                    }
-                    if (status.success)
-                    {
-                        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
-                    }
-                    else
-                    {
-                        return RedirectToAction("ErrorPage", status);
-                    }
+                //case "AddGroup":
+                //    status = _modelHelper.SaveEditedText(textEdit);
+                //    if (status.success)
+                //    {
+                //        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
+                //    }
+                //    if (status.success)
+                //    {
+                //        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                //    }
+                //    else
+                //    {
+                //        return RedirectToAction("ErrorPage", status);
+                //    }
+                //case "RemoveGroup":
+                //    status = _modelHelper.SaveEditedText(textEdit);
+                //    if (status.success)
+                //    {
+                //        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
+                //    }
+                //    if (status.success)
+                //    {
+                //        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                //    }
+                //    else
+                //    {
+                //        return RedirectToAction("ErrorPage", status);
+                //    }
                 case "Timeout":
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 default:

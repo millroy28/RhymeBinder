@@ -1393,7 +1393,11 @@ namespace RhymeBinder.Models
 
             status = Update<TextHeader>(origHeader);
             if (!status.success) { return status; }
-            
+
+
+            //Update group association changes, if any
+            status = AddRemoveHeaderFromGroups(textEdit);
+            if (!status.success) { return status; }
 
             //  update that EditWindowStatus to save the view preferences for this text header
             EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == textEdit.UserId
@@ -2464,6 +2468,73 @@ namespace RhymeBinder.Models
                     }
                 }
             }
+            return status;
+        }
+        public Status AddRemoveHeaderFromGroups(TextEdit textEdit)
+        { 
+            Status status = new Status();
+
+            List<int> groupIdsToRemove = textEdit.Groups.Where(x => x.Selected != null && x.Selected == false).Select(x => x.TextGroupId).ToList();
+            List<int> groupIdsToAdd = textEdit.Groups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
+
+            //removals
+            if(groupIdsToRemove.Count > 0)
+            {
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupsToRemove = _context.LnkTextHeadersTextGroups.Where(x => groupIdsToRemove.Select(y => y).Contains(x.TextGroupId)
+                                                                                                                           && x.TextHeaderId == textEdit.TextHeaderId).ToList();
+
+                try
+                {
+                    _context.LnkTextHeadersTextGroups.RemoveRange(lnkTextHeadersTextGroupsToRemove);
+                    _context.SaveChanges();
+                    status.success = true;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.recordId = -1;
+                    status.message = "Failed to remove selected texts from selected groups";
+                }
+            }
+
+            // additions
+            if (groupIdsToAdd.Count > 0)
+            {
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupsToAdd = new List<LnkTextHeadersTextGroup>();
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupAlreadyExisting = _context.LnkTextHeadersTextGroups.Where(x => groupIdsToAdd.Select(y => y).Contains(x.TextGroupId)
+                                                                                                                   && x.TextHeaderId == textEdit.TextHeaderId).ToList();
+
+
+                foreach (var groupId in groupIdsToAdd)
+                {
+                    if (!lnkTextHeadersTextGroupAlreadyExisting.Any(x => x.TextGroupId == groupId))
+                    {
+                        lnkTextHeadersTextGroupsToAdd.Add(new LnkTextHeadersTextGroup()
+                        {
+                            TextGroupId = groupId,
+                            TextHeaderId = textEdit.TextHeaderId
+                        });
+                    }                    
+                }
+
+                if (lnkTextHeadersTextGroupsToAdd.Count > 0)
+                {
+                    try
+                    {
+                        _context.LnkTextHeadersTextGroups.AddRange(lnkTextHeadersTextGroupsToAdd);
+                        _context.SaveChanges();
+                        status.success = true;
+                    }
+                    catch
+                    {
+                        status.success = false;
+                        status.recordId = -1;
+                        status.message = "Failed to add selected texts to selected groups";
+                    }
+                }
+            }
+
+
             return status;
         }
         public Status AddRemoveHeaderFromGroup(int textHeaderId, int groupId, bool add)

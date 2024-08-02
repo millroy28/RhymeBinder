@@ -149,9 +149,6 @@
                 <div class="right-sidebar-item">
                     @if(group.Selected == true){
                         @group.GroupTitle
-                        @if(!group.Locked){
-                            <a href="#" onclick="selected_action_form_submit('RemoveGroup', @group.TextGroupId)" style="">Remove</a>
-                        }
                     }
                 </div>
             }
@@ -172,7 +169,7 @@
 
                 @foreach(var group in Model.Groups)
                 {
-                    if (!group.Locked && group.TextGroupId > 0)
+                    if (group.TextGroupId > 0)
                         {
                             <div name = "GroupId" style="display: none;">@group.TextGroupId</div>
 
@@ -183,14 +180,17 @@
 
                             <div class = "list-modal-content-item" name = @groupIdCheckboxName>
                             <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
-                            <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
-                            <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
-@*                            @foreach(var textHeaderId in group.LinkedTextHeaderIds)
+                            @if (group.Locked)
                             {
-                                <div name = @groupTextIdName style="display: none;">@textHeaderId.ToString()</div>
-                            }*@
+                                <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
+                            }
+                            else
+                            {
+                                <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" onclick="set_group_selected_value_on_checkbox(@group.TextGroupId)"/>
+                            }
+                            <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
                             <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
-                            <div>@group.GroupTitle - @group.Selected.ToString() - @groupIdSelectedValueName</div>
+                            <div>@group.GroupTitle</div>
                             </div>
                             { groupIndex++; }
                     }
@@ -202,7 +202,9 @@
         <div class="list-modal-footer">
                 
                 <a class="button menu-bar-button" onclick="close_modal_with_id('groups')">Cancel</a>
-                <a class="button menu-bar-button" onclick="selected_action_form_submit('GroupAddRemove', 1)">Submit</a>
+                 <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" value="Save" id="save" />
+
+                <a class="button menu-bar-button" onclick="selected_action_form_submit('Save', 1)">Submit</a>
         </div>
     </div>
 
