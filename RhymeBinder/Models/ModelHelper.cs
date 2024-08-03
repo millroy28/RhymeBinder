@@ -1546,6 +1546,7 @@ namespace RhymeBinder.Models
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
+            viewToUpdate.GroupSequence = (bool)savedView.View.GroupSequence;
             viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
             viewToUpdate.SearchValue = savedView.View.SearchValue;
 
@@ -1584,6 +1585,7 @@ namespace RhymeBinder.Models
             defaultSavedView.VisionNumber = newDefaults.VisionNumber;
             defaultSavedView.RevisionStatus = newDefaults.RevisionStatus;
             defaultSavedView.Groups = newDefaults.Groups;
+            defaultSavedView.GroupSequence = newDefaults.GroupSequence;
 
             try
             {
@@ -1645,6 +1647,7 @@ namespace RhymeBinder.Models
             activeView.VisionNumber = defaultView.VisionNumber;
             activeView.RevisionStatus = defaultView.RevisionStatus;
             activeView.Groups = defaultView.Groups;
+            activeView.GroupSequence = defaultView.GroupSequence;
 
             try
             {
@@ -1894,6 +1897,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId,
 
             };
@@ -1916,6 +1920,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId,
 
             };
@@ -1938,6 +1943,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId
             };
 
@@ -1959,6 +1965,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId
             };
 
@@ -2237,6 +2244,7 @@ namespace RhymeBinder.Models
                 RevisionStatus = defaultSavedView.RevisionStatus,
                 RecordsPerPage = defaultSavedView.RecordsPerPage,
                 Groups = defaultSavedView.Groups,
+                GroupSequence = true,
                 BinderId = defaultSavedView.BinderId
             };
 
@@ -2474,6 +2482,12 @@ namespace RhymeBinder.Models
         { 
             Status status = new Status();
 
+            if(!_context.TextGroups.Any(x => x.BinderId == textEdit.BinderId)) 
+            {
+                status.success = true;
+                return status; 
+            }
+
             List<int> groupIdsToRemove = textEdit.Groups.Where(x => x.Selected != null && x.Selected == false).Select(x => x.TextGroupId).ToList();
             List<int> groupIdsToAdd = textEdit.Groups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
 
@@ -2643,6 +2657,7 @@ namespace RhymeBinder.Models
                     VisionNumber = defaultSavedView.VisionNumber,
                     RevisionStatus = defaultSavedView.RevisionStatus,
                     Groups = defaultSavedView.Groups,
+                    GroupSequence = defaultSavedView.GroupSequence,
                     BinderId = defaultSavedView.BinderId
                 };
 

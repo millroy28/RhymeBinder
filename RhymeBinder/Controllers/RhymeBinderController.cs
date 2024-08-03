@@ -323,6 +323,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
             List<DisplayTextGroup> displayTextGroups = _modelHelper.GetDisplayTextGroups(userId, binderId);
+            if (displayTextGroups.Count == 0) { displayTextGroups.Add(new DisplayTextGroup()); };
 
             if (displayTextGroups[0].TextGroupId == -1)
             {
