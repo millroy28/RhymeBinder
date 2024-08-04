@@ -341,7 +341,7 @@ namespace RhymeBinder.Models
             //TO DO: make this less ponderous and introduce error handling?
             //Get all text headers for this view
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
-
+            List<LnkTextHeadersTextGroup> theseTextHeaderGroupLinks = new List<LnkTextHeadersTextGroup>();
             //Populate a list of TextHeaders based on these hard-coded categories
             switch (savedView.SetValue)
             {
@@ -374,6 +374,8 @@ namespace RhymeBinder.Models
                     {
                         TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
                         theseTextHeaders = GetTextHeadersInGroup(group);
+                        theseTextHeaderGroupLinks = _context.LnkTextHeadersTextGroups.Where(x => theseTextHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)
+                                                                                              && x.TextGroupId == groupId).ToList();
                     }
                     else
                     {   // Returning active set in the case of a parsing failure on group ID
@@ -411,6 +413,8 @@ namespace RhymeBinder.Models
                                   }
                       ).ToList();
 
+                int? groupSequence = theseTextHeaderGroupLinks.Where(x => x.TextHeaderId == textHeader.TextHeaderId).Select(x => x.Sequence).SingleOrDefault();
+
                 theseDisplayTextHeaders.Add(new DisplayTextHeader
                 {
                     TextHeaderId = textHeader.TextHeaderId,
@@ -429,9 +433,9 @@ namespace RhymeBinder.Models
                     CreatedByName = GetUserName(textHeader.CreatedBy),
                     ModifyByName = GetUserName(textHeader.LastModifiedBy),
                     ReadByName = GetUserName(textHeader.LastReadBy),
-                    RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1
-                }
-                    ); ;
+                    RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
+                    GroupSequence = groupSequence
+                }); 
             }
 
             //reduce results by search value
@@ -502,6 +506,9 @@ namespace RhymeBinder.Models
                     break;
                 case "Revision":
                     theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
+                    break;
+                case "Sequence":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.GroupSequence).ToList();
                     break;
             }
             if (savedView.Descending == true)
@@ -2317,6 +2324,45 @@ namespace RhymeBinder.Models
                 status.message = $"Failed to update group {editedGroup.GroupTitle}";
                 status.recordId = -1;
             }
+            return status;
+        }
+        public Status UpdateGroupSequence(DisplayTextHeadersAndSavedView savedView)
+        {
+            Status status = new Status();
+
+            bool isSetValueInt = int.TryParse(savedView.View.SetValue, out int groupId);
+            if(!isSetValueInt)
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Unable to parse group ID from saved view when attempting to update Group Sequences";
+                return status;
+            }
+            List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroup = _context.LnkTextHeadersTextGroups.Where(x => savedView.TextHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)
+                                                                                                        && x.TextGroupId == groupId).ToList();
+            if(lnkTextHeadersTextGroup.Count > 0)
+            {
+                foreach(var lnk in lnkTextHeadersTextGroup)
+                {
+                    lnk.Sequence = savedView.TextHeaders.Where(x => x.TextHeaderId == lnk.TextHeaderId).Select(x => x.GroupSequence).First();
+                }
+                try
+                {
+                    _context.UpdateRange(lnkTextHeadersTextGroup);
+                    _context.SaveChanges();
+                    status.success = true;
+                    status.recordId = savedView.View.SavedViewId;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.recordId = -1;
+                    status.message = "Unable to save group sequence";
+                    return status;
+                }
+            }
+
+
             return status;
         }
 

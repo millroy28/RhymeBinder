@@ -156,7 +156,7 @@
                     <th name="selected_col" id="Selected"><input type="checkbox" id="SelectAll" onclick="toggle_select_all_text_headers()"/></th>
                     @if(Model.View.GroupSequence == true)
                     {
-                        <th name="group_sequence_col" id="Group Sequence" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Sequence</a></th>
+                        <th name="group_sequence_col" id="Sequence" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');" width="5px"><a>Sequence</a></th>
                     }
                     <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
                     <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
@@ -179,7 +179,10 @@
                         </td>
                         @if(Model.View.GroupSequence == true)
                         {
-                            <td style="text-align: center" name="group_sequence_col">000</td>
+                            <td style="text-align: center" name="group_sequence_col">
+                                <input type="number" min="0" max="9999" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" onfocusout="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')"/>
+                     
+                            </td>
                         }
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
