@@ -603,9 +603,10 @@ namespace RhymeBinder.Models
             }
 
             // put it all together
-            displayTextHeadersAndSavedView.MenuTitle = (binder.Name + ": " + savedView.ViewName).Length > 25
-                                                       ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
-                                                       : binder.Name + ": " + savedView.ViewName;
+            //displayTextHeadersAndSavedView.MenuTitle = (binder.Name + ": " + savedView.ViewName).Length > 25
+            //                                           ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
+            //                                           : binder.Name + ": " + savedView.ViewName;
+            displayTextHeadersAndSavedView.MenuTitle = binder.Name + ": " + savedView.ViewName;
             displayTextHeadersAndSavedView.View = savedView;
             displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
@@ -2324,6 +2325,27 @@ namespace RhymeBinder.Models
                 status.message = $"Failed to update group {editedGroup.GroupTitle}";
                 status.recordId = -1;
             }
+
+            // Update saved view with new group name.
+
+            SavedView groupSavedView = _context.SavedViews.SingleOrDefault(x => x.SetValue == editedGroup.TextGroupId.ToString());
+            // bool isSetValueInt = int.TryParse(savedView.View.SetValue, out int groupId);
+            if(groupSavedView != null)
+            try
+            {
+                groupSavedView.ViewName = editedGroup.GroupTitle;
+                _context.Entry(editedGroup).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(editedGroup);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to update save view for group {editedGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+
             return status;
         }
         public Status UpdateGroupSequence(DisplayTextHeadersAndSavedView savedView)
