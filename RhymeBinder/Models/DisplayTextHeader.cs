@@ -16,6 +16,6 @@ namespace RhymeBinder.Models
         public string RevisionStatus { get; set; }
         public List<TextGroup> Groups { get; set; }
         public bool Selected { get; set; }
-
+        public int? GroupSequence { get; set; }
     }
 }

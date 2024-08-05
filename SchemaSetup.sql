@@ -147,6 +147,7 @@ CreatedBy BIT,
 VisionNumber BIT,
 RevisionStatus BIT,
 Groups BIT,
+GroupSequence BIT,
 BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
 SearchValue nvarchar (150),
 RecordsPerPage INT NOT NULL
@@ -196,7 +197,8 @@ BinderID INT FOREIGN KEY REFERENCES Binders(BinderID)
 CREATE TABLE lnkTextHeadersTextGroups (
 lnkHeaderGroupID INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 TextHeaderID INT FOREIGN KEY REFERENCES TextHeaders(TextHeaderID) NOT NULL,
-TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID) NOT NULL
+TextGroupID INT FOREIGN KEY REFERENCES TextGroups(TextGroupID) NOT NULL,
+[Sequence] INT
 )
 
 CREATE TABLE TextRecord (

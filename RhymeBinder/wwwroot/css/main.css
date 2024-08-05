@@ -243,7 +243,7 @@
         display: grid;
         grid-gap: 0px;
         grid-template-columns: 1% 98% 1%;
-        grid-template-rows: 30px auto;
+        /*grid-template-rows: 30px auto;*/
         width: 100%;
         box-sizing: border-box;
         /*  height: 90vh; */
@@ -380,6 +380,7 @@
         padding-top: 4px;
         padding-bottom: 4px;
         cursor:default;
+        width:170px;
     }
 
         .menu-bar-title a:link {

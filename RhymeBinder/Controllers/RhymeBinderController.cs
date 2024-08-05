@@ -266,9 +266,12 @@ namespace RhymeBinder.Controllers
                     status = _modelHelper.UpdateView(savedView);
                     status = _modelHelper.AddRemoveHeadersFromGroups(savedView);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
-                    
 
-                    // previously used when setting groups individually from dropdowns
+                case "UpdateGroupSequence":
+                    status = _modelHelper.UpdateGroupSequence(savedView);
+                    break;
+
+                // previously used when setting groups individually from dropdowns
                 //case "GroupAdd": 
                 //    status = _modelHelper.UpdateView(savedView);
                 //    status = _modelHelper.AddRemoveHeadersFromGroups(savedView, int.Parse(value), true);
@@ -323,6 +326,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
             List<DisplayTextGroup> displayTextGroups = _modelHelper.GetDisplayTextGroups(userId, binderId);
+            if (displayTextGroups.Count == 0) { displayTextGroups.Add(new DisplayTextGroup()); };
 
             if (displayTextGroups[0].TextGroupId == -1)
             {

@@ -17,6 +17,7 @@
 <form action="ListTexts" method="post" id="view">
     <input type="hidden" name="View.SavedViewId" value="@Model.View.SavedViewId" />
     <input type="hidden" name="View.UserId" value="@Model.View.UserId" />
+    <input type="hidden" name="View.GroupSequence" value="@Model.View.GroupSequence.ToString()" id="view_group_sequence" />
     <input type="hidden" name="View.SetValue" value="@Model.View.SetValue" id="view_set_value" />
     <input type="hidden" name="View.SortValue" value="@Model.View.SortValue" id="view_sort_value" />
     <input type="hidden" name="View.Descending" value="@Model.View.Descending.ToString()" id="view_descending" />
@@ -67,14 +68,14 @@
                     Views ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    @if(Model.Groups.Count > 0)
+                    @foreach(var group in Model.Groups)
                     {
-                        @foreach(var group in Model.Groups)
+                        if(group.TextGroupId < 0)
                         {
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
                         }
-                        <a class="menu-bar-dropdown-item" >――――――――</a>
                     }
+                    <a class="menu-bar-dropdown-item" >――――――――</a>
                     <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
                 </div>
             </div>
@@ -84,8 +85,11 @@
                 </div>
                 <div class="menu-bar-dropdown-content">
                     <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">New Group</a>
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
-                    <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
+                    @if(Model.Groups.Count > 3)  // 3 views created by default for each binder
+                    {
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
+                        <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
+                    }
 
                     @*                    // previously used when setting groups individually from dropdowns
 
@@ -150,6 +154,10 @@
             <table>
                 <tr>
                     <th name="selected_col" id="Selected"><input type="checkbox" id="SelectAll" onclick="toggle_select_all_text_headers()"/></th>
+                    @if(Model.View.GroupSequence == true)
+                    {
+                        <th name="group_sequence_col" id="Sequence" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');" width="5px"><a>Sequence</a></th>
+                    }
                     <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
                     <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
                     <th name="last_modified_by_col" id="Last Modified By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified By</a></th>
@@ -169,6 +177,13 @@
                             <input type="hidden" name="TextHeaders[@index].TextHeaderId" id="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
                             <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
                         </td>
+                        @if(Model.View.GroupSequence == true)
+                        {
+                            <td style="text-align: center" name="group_sequence_col">
+                                <input type="number" min="0" max="9999" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" onfocusout="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')"/>
+                     
+                            </td>
+                        }
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
                         <td style="text-align: center" name="last_modified_by_col">@text.ModifyByName</td>
