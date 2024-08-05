@@ -8,7 +8,7 @@ namespace RhymeBinder.Models
         public int LnkHeaderGroupId { get; set; }
         public int TextHeaderId { get; set; }
         public int TextGroupId { get; set; }
-
+        public int? Sequence { get; set; }
         public virtual TextGroup TextGroup { get; set; }
         public virtual TextHeader TextHeader { get; set; }
     }

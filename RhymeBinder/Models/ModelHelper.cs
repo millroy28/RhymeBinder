@@ -341,7 +341,7 @@ namespace RhymeBinder.Models
             //TO DO: make this less ponderous and introduce error handling?
             //Get all text headers for this view
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
-
+            List<LnkTextHeadersTextGroup> theseTextHeaderGroupLinks = new List<LnkTextHeadersTextGroup>();
             //Populate a list of TextHeaders based on these hard-coded categories
             switch (savedView.SetValue)
             {
@@ -374,6 +374,8 @@ namespace RhymeBinder.Models
                     {
                         TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
                         theseTextHeaders = GetTextHeadersInGroup(group);
+                        theseTextHeaderGroupLinks = _context.LnkTextHeadersTextGroups.Where(x => theseTextHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)
+                                                                                              && x.TextGroupId == groupId).ToList();
                     }
                     else
                     {   // Returning active set in the case of a parsing failure on group ID
@@ -411,6 +413,8 @@ namespace RhymeBinder.Models
                                   }
                       ).ToList();
 
+                int? groupSequence = theseTextHeaderGroupLinks.Where(x => x.TextHeaderId == textHeader.TextHeaderId).Select(x => x.Sequence).SingleOrDefault();
+
                 theseDisplayTextHeaders.Add(new DisplayTextHeader
                 {
                     TextHeaderId = textHeader.TextHeaderId,
@@ -429,9 +433,9 @@ namespace RhymeBinder.Models
                     CreatedByName = GetUserName(textHeader.CreatedBy),
                     ModifyByName = GetUserName(textHeader.LastModifiedBy),
                     ReadByName = GetUserName(textHeader.LastReadBy),
-                    RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1
-                }
-                    ); ;
+                    RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
+                    GroupSequence = groupSequence
+                }); 
             }
 
             //reduce results by search value
@@ -502,6 +506,9 @@ namespace RhymeBinder.Models
                     break;
                 case "Revision":
                     theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
+                    break;
+                case "Sequence":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.GroupSequence).ToList();
                     break;
             }
             if (savedView.Descending == true)
@@ -596,9 +603,10 @@ namespace RhymeBinder.Models
             }
 
             // put it all together
-            displayTextHeadersAndSavedView.MenuTitle = (binder.Name + ": " + savedView.ViewName).Length > 25
-                                                       ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
-                                                       : binder.Name + ": " + savedView.ViewName;
+            //displayTextHeadersAndSavedView.MenuTitle = (binder.Name + ": " + savedView.ViewName).Length > 25
+            //                                           ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
+            //                                           : binder.Name + ": " + savedView.ViewName;
+            displayTextHeadersAndSavedView.MenuTitle = binder.Name + ": " + savedView.ViewName;
             displayTextHeadersAndSavedView.View = savedView;
             displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
@@ -1546,6 +1554,7 @@ namespace RhymeBinder.Models
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
+            viewToUpdate.GroupSequence = (bool)savedView.View.GroupSequence;
             viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
             viewToUpdate.SearchValue = savedView.View.SearchValue;
 
@@ -1584,6 +1593,7 @@ namespace RhymeBinder.Models
             defaultSavedView.VisionNumber = newDefaults.VisionNumber;
             defaultSavedView.RevisionStatus = newDefaults.RevisionStatus;
             defaultSavedView.Groups = newDefaults.Groups;
+            defaultSavedView.GroupSequence = newDefaults.GroupSequence;
 
             try
             {
@@ -1645,6 +1655,7 @@ namespace RhymeBinder.Models
             activeView.VisionNumber = defaultView.VisionNumber;
             activeView.RevisionStatus = defaultView.RevisionStatus;
             activeView.Groups = defaultView.Groups;
+            activeView.GroupSequence = defaultView.GroupSequence;
 
             try
             {
@@ -1894,6 +1905,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId,
 
             };
@@ -1916,6 +1928,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId,
 
             };
@@ -1938,6 +1951,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId
             };
 
@@ -1959,6 +1973,7 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                GroupSequence = false,
                 BinderId = binderId
             };
 
@@ -2237,6 +2252,7 @@ namespace RhymeBinder.Models
                 RevisionStatus = defaultSavedView.RevisionStatus,
                 RecordsPerPage = defaultSavedView.RecordsPerPage,
                 Groups = defaultSavedView.Groups,
+                GroupSequence = true,
                 BinderId = defaultSavedView.BinderId
             };
 
@@ -2309,6 +2325,66 @@ namespace RhymeBinder.Models
                 status.message = $"Failed to update group {editedGroup.GroupTitle}";
                 status.recordId = -1;
             }
+
+            // Update saved view with new group name.
+
+            SavedView groupSavedView = _context.SavedViews.SingleOrDefault(x => x.SetValue == editedGroup.TextGroupId.ToString());
+            // bool isSetValueInt = int.TryParse(savedView.View.SetValue, out int groupId);
+            if(groupSavedView != null)
+            try
+            {
+                groupSavedView.ViewName = editedGroup.GroupTitle;
+                _context.Entry(editedGroup).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.Update(editedGroup);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = $"Failed to update save view for group {editedGroup.GroupTitle}";
+                status.recordId = -1;
+            }
+
+            return status;
+        }
+        public Status UpdateGroupSequence(DisplayTextHeadersAndSavedView savedView)
+        {
+            Status status = new Status();
+
+            bool isSetValueInt = int.TryParse(savedView.View.SetValue, out int groupId);
+            if(!isSetValueInt)
+            {
+                status.success = false;
+                status.recordId = -1;
+                status.message = "Unable to parse group ID from saved view when attempting to update Group Sequences";
+                return status;
+            }
+            List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroup = _context.LnkTextHeadersTextGroups.Where(x => savedView.TextHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)
+                                                                                                        && x.TextGroupId == groupId).ToList();
+            if(lnkTextHeadersTextGroup.Count > 0)
+            {
+                foreach(var lnk in lnkTextHeadersTextGroup)
+                {
+                    lnk.Sequence = savedView.TextHeaders.Where(x => x.TextHeaderId == lnk.TextHeaderId).Select(x => x.GroupSequence).First();
+                }
+                try
+                {
+                    _context.UpdateRange(lnkTextHeadersTextGroup);
+                    _context.SaveChanges();
+                    status.success = true;
+                    status.recordId = savedView.View.SavedViewId;
+                }
+                catch
+                {
+                    status.success = false;
+                    status.recordId = -1;
+                    status.message = "Unable to save group sequence";
+                    return status;
+                }
+            }
+
+
             return status;
         }
 
@@ -2473,6 +2549,12 @@ namespace RhymeBinder.Models
         public Status AddRemoveHeaderFromGroups(TextEdit textEdit)
         { 
             Status status = new Status();
+
+            if(!_context.TextGroups.Any(x => x.BinderId == textEdit.BinderId)) 
+            {
+                status.success = true;
+                return status; 
+            }
 
             List<int> groupIdsToRemove = textEdit.Groups.Where(x => x.Selected != null && x.Selected == false).Select(x => x.TextGroupId).ToList();
             List<int> groupIdsToAdd = textEdit.Groups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
@@ -2643,6 +2725,7 @@ namespace RhymeBinder.Models
                     VisionNumber = defaultSavedView.VisionNumber,
                     RevisionStatus = defaultSavedView.RevisionStatus,
                     Groups = defaultSavedView.Groups,
+                    GroupSequence = defaultSavedView.GroupSequence,
                     BinderId = defaultSavedView.BinderId
                 };
 
