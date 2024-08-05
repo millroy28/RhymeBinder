@@ -395,7 +395,7 @@ namespace RhymeBinder.Models
             List<TextGroup> selectedGroups = new List<TextGroup>(); // groups associated with text
             List<TextGroup> allGroups = _context.TextGroups.Where(x => x.BinderId == savedView.BinderId).ToList();
 
-            List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.ToList();
+            List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.Where(x => allGroups.Select(y => y.TextGroupId).Contains(x.TextGroupId)).ToList();
 
             foreach (TextHeader textHeader in theseTextHeaders)
             {
