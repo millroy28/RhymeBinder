@@ -46,7 +46,14 @@
                 @Model.MenuTitle
             </div>
             <div class="menu-bar-item">
-                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>
+                @if(Model.View.GroupSequence == true)
+                {
+                    <a class="menu-bar-button" onclick="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')">Update Sequence</a>
+                }
+                else
+                {
+                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>                    
+                }
             </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
@@ -91,28 +98,7 @@
                         <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
                     }
 
-                    @*                    // previously used when setting groups individually from dropdowns
-
-                        @if(Model.Groups.Count > 3)
-                    {
-                        <a class="menu-bar-dropdown-item" >――――――――</a>
-                        <a class="menu-bar-dropdown-item">Add to Group... </a>
-                        @foreach (var group in Model.Groups)
-                        {
-                            if (!group.Locked && group.TextGroupId > 0)
-                            {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
-                            }
-                        }
-                        <a class="menu-bar-dropdown-item">Remove from Group... </a>
-                        @foreach (var group in Model.Groups)
-                        {
-                            if (!group.Locked && group.TextGroupId > 0)
-                            {
-                                <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
-                            }
-                        }                        
-                    }*@
+                  
 
                 </div>
             </div>
@@ -180,8 +166,7 @@
                         @if(Model.View.GroupSequence == true)
                         {
                             <td style="text-align: center" name="group_sequence_col">
-                                <input type="number" min="0" max="9999" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" onfocusout="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')"/>
-                     
+                                <input type="number" min="0" max="9999" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence"/>                     
                             </td>
                         }
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
