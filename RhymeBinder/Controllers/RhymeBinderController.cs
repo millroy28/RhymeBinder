@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using RhymeBinder.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -316,6 +317,14 @@ namespace RhymeBinder.Controllers
             {
                 return RedirectToAction("ErrorPage", status);
             }
+        }
+        public IActionResult ViewTextsInSequence(int groupId)
+        {
+            int userId = GetUserId();
+
+            DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+
+            return View(sequencedTexts);
         }
 
         #endregion

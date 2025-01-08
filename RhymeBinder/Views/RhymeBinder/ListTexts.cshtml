@@ -154,6 +154,25 @@
                     <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
                 </tr>
 
+                @* Insert a row with a link to view all texts in sequence *@
+                @if(Model.View.GroupSequence == true && Model.TextHeaders.Any(x => x.GroupSequence.HasValue))
+                {
+                    <tr>
+
+                        <td style="text-align: right"></td>
+                        <td></td>
+                        <td><a class="link-item" href="/RhymeBinder/ViewTextsInSequence?groupId=@Model.View.SetValue">View All Texts in Sequence</a></td>
+                        <td style="text-align: center" name="last_modified_col"></td>
+                        <td style="text-align: center" name="last_modified_by_col"></td>
+                        <td style="text-align: center" name="created_col"></td>
+                        <td style="text-align: center" name="created_by_col"></td>
+                        <td style="text-align: center" name="vision_col"></td>
+                        <td style="text-align: center" name="revision_col"></td>
+                        <td name="groups_col">
+                        </td>
+                    </tr>
+                }
+
                 @foreach (var text in Model.TextHeaders)
                 {
 

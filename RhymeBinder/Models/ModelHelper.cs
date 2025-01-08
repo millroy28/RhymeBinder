@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace RhymeBinder.Models
 {
@@ -695,7 +696,7 @@ namespace RhymeBinder.Models
             }
             return (displayGroups);
         }
-        public TextEdit GetTextHeaderBodyUserRecord(int userId, int textHeaderID)
+        public TextEdit GetTextHeaderBodyUserRecord(int userId, int textHeaderID, bool details = true)
         {
             // Build up a TextHeaderBodyUserRecord to pass into a view:
             // obvs, gonna need that TextHeader:
@@ -738,22 +739,25 @@ namespace RhymeBinder.Models
 
             //grab the EditWindowStatus for the current user/header (if it exists; if not-create it)
             EditWindowProperty thisEditWindowProperty = new EditWindowProperty();
-            try
+            if (details)
             {
-                thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == currentUser.UserId
-                                                                               && x.TextHeaderId == textHeaderID).First();
-            }
-            catch
-            {
-                EditWindowProperty newEditWindowProperty = new EditWindowProperty();
-                newEditWindowProperty.UserId = currentUser.UserId;
-                newEditWindowProperty.TextHeaderId = textHeaderID;
-                newEditWindowProperty.ActiveElement = "body_edit_field";
-                newEditWindowProperty.ShowLineCount = 1;
-                newEditWindowProperty.ShowParagraphCount = 1;
+                try
+                {
+                    thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == currentUser.UserId
+                                                                                   && x.TextHeaderId == textHeaderID).First();
+                }
+                catch
+                {
+                    EditWindowProperty newEditWindowProperty = new EditWindowProperty();
+                    newEditWindowProperty.UserId = currentUser.UserId;
+                    newEditWindowProperty.TextHeaderId = textHeaderID;
+                    newEditWindowProperty.ActiveElement = "body_edit_field";
+                    newEditWindowProperty.ShowLineCount = 1;
+                    newEditWindowProperty.ShowParagraphCount = 1;
 
-                _context.EditWindowProperties.Add(newEditWindowProperty);
-                _context.SaveChanges();
+                    _context.EditWindowProperties.Add(newEditWindowProperty);
+                    _context.SaveChanges();
+                }
             }
 
 
@@ -763,77 +767,38 @@ namespace RhymeBinder.Models
             List<SimpleTextHeaderAndText> previousTextsAndHeaders = new List<SimpleTextHeaderAndText>();
             List<SimpleUser> users = _context.SimpleUsers.ToList();
 
-            try
+            if (details)
             {
-
-                previousTextHeaders = GetPreviousVisions(textHeaderID, previousTextHeaders);
-
-                foreach (var textHeader in previousTextHeaders)
+                try
                 {
-                    SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
+
+                    previousTextHeaders = GetPreviousVisions(textHeaderID, previousTextHeaders);
+
+                    foreach (var textHeader in previousTextHeaders)
                     {
-                        Created = textHeader.VisionCreated != null ? textHeader.VisionCreated : textHeader.Created,
-                        CreatedBy = textHeader.VisionCreatedBy != null ? GetUserName(textHeader.VisionCreatedBy) : GetUserName(textHeader.CreatedBy),
-                        LastModified = textHeader.LastModified,
-                        LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
-                        Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
-                        Title = textHeader.Title,
-                        VisionNumber = textHeader.VisionNumber,
-                        TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
-                    };
-                    previousTextsAndHeaders.Add(simpleTextHeaderAndText);
+                        SimpleTextHeaderAndText simpleTextHeaderAndText = new SimpleTextHeaderAndText()
+                        {
+                            Created = textHeader.VisionCreated != null ? textHeader.VisionCreated : textHeader.Created,
+                            CreatedBy = textHeader.VisionCreatedBy != null ? GetUserName(textHeader.VisionCreatedBy) : GetUserName(textHeader.CreatedBy),
+                            LastModified = textHeader.LastModified,
+                            LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
+                            Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
+                            Title = textHeader.Title,
+                            VisionNumber = textHeader.VisionNumber,
+                            TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
+                        };
+                        previousTextsAndHeaders.Add(simpleTextHeaderAndText);
+                    }
+
+                    previousTextsAndHeaders = previousTextsAndHeaders.OrderByDescending(x => x.VisionNumber).ToList();
                 }
-
-                //previousTextsAndHeaders = (from TextHeader textHeader in previousTextHeaders
-                //                           join Text text in previousTexts
-                //                             on textHeader.TextId equals text.TextId
-                //                           join TextRevisionStatus revisionStatus in revisionStatuses
-                //                             on textHeader.TextRevisionStatusId equals revisionStatus.TextRevisionStatusId
-                //                           select new SimpleTextHeaderAndText
-                //                           {
-                //                               Title = textHeader.Title,
-                //                               TextBody = text.TextBody,
-                //                               VisionNumber = textHeader.VisionNumber,
-                //                               Created = textHeader.Created,
-                //                               LastModified = textHeader.LastModified,
-                //                               CreatedBy = GetUserName(textHeader.CreatedBy),
-                //                               LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
-                //                               Status = revisionStatus.TextRevisionStatus1
-                //                           }
-                                          //).ToList();
-
-                previousTextsAndHeaders = previousTextsAndHeaders.OrderByDescending(x => x.VisionNumber).ToList();
-            }
-            catch
-            {
+                catch
+                {
+                }
             }
 
             //get text groups
             List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
-
-            //List<TextGroup> memberOfGroups = (  from TextGroup textGroup in _context.TextGroups
-            //                                    join LnkTextHeadersTextGroup link in _context.LnkTextHeadersTextGroups
-            //                                    on textGroup.TextGroupId equals link.TextGroupId
-            //                                    where link.TextHeaderId == thisTextHeader.TextHeaderId
-            //                                    select new TextGroup
-            //                                    {
-            //                                        GroupTitle = textGroup.GroupTitle,
-            //                                        TextGroupId = textGroup.TextGroupId,
-            //                                        Locked = textGroup.Locked
-            //                                    }
-            //                                    ).OrderBy(x => x.GroupTitle).ToList();
-            
-
-            //List<TextGroup> availableGroups = ( from TextGroup textGroup in _context.TextGroups
-            //                                    where (textGroup.BinderId == thisTextHeader.BinderId
-            //                                    && !memberOfGroups.Contains(textGroup) //exclude group of which it's already a member
-            //                                    && !textGroup.Locked)
-            //                                    select new TextGroup
-            //                                    {
-            //                                        GroupTitle = textGroup.GroupTitle,
-            //                                        TextGroupId = textGroup.TextGroupId
-            //                                    }
-            //                                    ).OrderBy(x => x.GroupTitle).ToList();
 
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
@@ -888,6 +853,39 @@ namespace RhymeBinder.Models
 
             return (textEdit);
         }
+        public DisplaySequencedTexts GetSequenceOfTextHeaderBodyUserRecord(int userId, int groupId)
+        {
+            // To serve view where user can read all texts in a sequence
+            TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
+            DisplaySequencedTexts displaySequencedTexts = new()
+            {
+                GroupName = group.GroupTitle,
+                BinderId = group.BinderId
+            };
+
+            List<TextHeader> textHeaders = GetTextHeadersInGroupSequence(groupId);
+            List<DisplaySimpleText> simpleTexts = new();
+
+            foreach (TextHeader textHeader in textHeaders)
+            {
+                simpleTexts.Add(new DisplaySimpleText
+                {
+                    TextHeaderId = textHeader.TextHeaderId,
+                    Title = textHeader.Title,
+                    TextBody = _context.Texts.Single(x => x.TextId == textHeader.TextId).TextBody,
+                    SequenceNumber = (int)_context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeader.TextHeaderId && x.TextGroupId == groupId).Sequence,
+                    MemberOfGroups = _context.TextGroups.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextHeaderId == textHeader.TextHeaderId)
+                                                                                                     .Select(y => y.TextGroupId)
+                                                                                                     .Contains(x.TextGroupId)
+                                                                                                     ).Select(x => x.GroupTitle).ToList()
+                });
+            };
+
+            displaySequencedTexts.SimpleTexts = simpleTexts;
+
+            return displaySequencedTexts;
+        }
+
         public List<TextHeader> GetTextHeadersInGroup(TextGroup group)
         {
             List<LnkTextHeadersTextGroup> groupLinks = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == group.TextGroupId).ToList();
@@ -919,6 +917,19 @@ namespace RhymeBinder.Models
                                BinderId = joinTextHeader.BinderId
                            }
                                   ).ToList();
+            return textHeaders;
+        }
+        public List<TextHeader> GetTextHeadersInGroupSequence(int textGroupId)
+        {
+            List<TextHeader> textHeaders = new();
+
+            textHeaders = _context.TextHeaders.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextGroupId == textGroupId
+                                                                                                    && y.Sequence != null)
+                                                                                           .OrderBy(y => y.Sequence)
+                                                                                           .Select(y => y.TextHeaderId)
+                                                                                           .Contains(x.TextHeaderId)
+                                                                                            ).ToList();
+
             return textHeaders;
         }
         public SavedView GetSavedView(int viewId)
