@@ -860,6 +860,7 @@ namespace RhymeBinder.Models
             DisplaySequencedTexts displaySequencedTexts = new()
             {
                 GroupName = group.GroupTitle,
+                GroupId = group.TextGroupId,
                 BinderId = group.BinderId
             };
 
@@ -882,6 +883,7 @@ namespace RhymeBinder.Models
             };
 
             displaySequencedTexts.SimpleTexts = simpleTexts;
+            displaySequencedTexts.EditedSimpleTexts = simpleTexts;
 
             return displaySequencedTexts;
         }

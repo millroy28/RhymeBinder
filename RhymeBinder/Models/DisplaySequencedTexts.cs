@@ -4,9 +4,15 @@ namespace RhymeBinder.Models
 {
     public class DisplaySequencedTexts
     {
+        //public string StartHeaderKey { get; } = "◮";
+        //public string EndHeaderKey { get; } = "◭";
+        //public string StartBodyKey { get; } = "◨";
+        //public string EndBodyKey { get; } = "◧";
         // intended to serve view of all texts sequenced in a group
         public List<DisplaySimpleText> SimpleTexts { get; set; }
+        public List<DisplaySimpleText> EditedSimpleTexts { get; set; }
         public string GroupName { get; set; }
+        public int GroupId { get; set; }
         public int BinderId { get; set; }
 
     }

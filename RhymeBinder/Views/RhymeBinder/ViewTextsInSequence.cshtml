@@ -20,6 +20,9 @@
 
         <div class="menu-bar-escape mobile-menu-bar-escape">
             <div class="menu-bar-item-right-final">
+                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>
+            </div>
+            <div class="menu-bar-item-right-final">
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
             </div>        
 
@@ -30,10 +33,10 @@
 
 
 @* <div class="sequence-block"> *@
+        <div class="sequence-block-body">
     @foreach(var text in Model.SimpleTexts)
     {
-            <div class="sequence-block-left-sidebar">
-               
+
                 <p>
                     <b>
                     @text.Title
@@ -41,32 +44,20 @@
                         <a href="/RhymeBinder/EditText?textHeaderID=@text.TextHeaderId" target="_blank">Edit</a>
                 </p>
 
-            </div>
 
-        <div class="sequence-block-item">
-
-                <textarea class="sequence-text">
+                <div class="sequence-text">
 
                         @text.TextBody
-                </textarea>
+                </div>
                 
-            </div>
 
-            <div class="sequence-block-right-sidebar">
-              
-                    Member of groups:
-                    @foreach(var group in text.MemberOfGroups)
-                    {
-                        <p>@group</p>
-                    }
-            </div>
 
-        
 
         
     }
 
 </div>
+            </div>
 
 <script language="Javascript" src="~/js/sequenceView.js"></script>
 <script language="Javascript">
