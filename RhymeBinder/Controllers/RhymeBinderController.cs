@@ -326,6 +326,21 @@ namespace RhymeBinder.Controllers
 
             return View(sequencedTexts);
         }
+        [HttpGet]
+        public IActionResult EditTextsInSequence(int groupId)
+        {
+            int userId = GetUserId();
+
+            DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+
+            return View(sequencedTexts);
+        }
+        [HttpPost]
+        public IActionResult EditTextsInSequence(DisplaySequencedTexts editedTexts)
+        {
+            var test = "what";
+            return Redirect($"/RhymeBinder/EditTextsInSequence?groupId={editedTexts.GroupId}");
+        }
 
         #endregion
 

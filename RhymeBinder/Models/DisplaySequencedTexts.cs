@@ -14,7 +14,6 @@ namespace RhymeBinder.Models
         public string GroupName { get; set; }
         public int GroupId { get; set; }
         public int BinderId { get; set; }
-
     }
     public class DisplaySimpleText
     {
@@ -23,6 +22,7 @@ namespace RhymeBinder.Models
         public string TextBody { get; set; }
         public int SequenceNumber { get; set; }
         public List<string> MemberOfGroups { get; set; }
+        public bool IsChanged { get; set; } = false;
         // Do I want edit/create information here, or will that clutter things up. Here is where you would add it in the future
     }
 }
