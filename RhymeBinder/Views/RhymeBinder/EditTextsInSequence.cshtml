@@ -12,7 +12,7 @@
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
             <div class="menu-bar-title menu-bar-title-mobile">
-                Viewing: @Model.GroupName
+                Viewing: @Model.BinderName - @Model.GroupName
             </div>
         </div>
 
@@ -21,7 +21,7 @@
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
             </div>
             <div class="menu-bar-item-right-final">
-                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" onclick="SetFormSubmit()" value="Save" id="save" />
+                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" onclick="SetFormSubmit()" value="Save" id="save" disabled/>
             </div>
         </div>
 

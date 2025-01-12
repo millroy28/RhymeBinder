@@ -64,7 +64,7 @@ function CopyContentToForm() {
             formSubmitTitles[i].value = editedTitles[i].textContent;
             editedTitles[i].style.cssText += "border-left-color: goldenrod; ";
         } else {
-            editedTitles[i].style.cssText += "border-left-color: darkseagrean; ";
+            editedTitles[i].style.cssText += "border-left-color: darkseagreen; ";
         }
 
         if (savedTexts[i].value != editedTexts[i].textContent) {
@@ -85,8 +85,11 @@ function CopyContentToForm() {
 
     if (unsavedCount > 0) {
         hasUnsavedChanges = true;
+        document.getElementById('save').disabled = false;
+
     } else {
         hasUnsavedChanges = false;
+        document.getElementById('save').disabled = true;
     }
 
 }

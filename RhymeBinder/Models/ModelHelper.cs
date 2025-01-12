@@ -861,7 +861,8 @@ namespace RhymeBinder.Models
             {
                 GroupName = group.GroupTitle,
                 GroupId = group.TextGroupId,
-                BinderId = group.BinderId
+                BinderId = group.BinderId,
+                BinderName = GetBinderName(group.BinderId)
             };
 
             List<TextHeader> textHeaders = GetTextHeadersInGroupSequence(groupId);
