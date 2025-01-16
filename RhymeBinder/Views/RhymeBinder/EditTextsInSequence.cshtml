@@ -22,11 +22,13 @@
             </div>
             <div class="menu-bar-item-right-final">
                 <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" onclick="SetFormSubmit()" value="Save" id="save" disabled/>
+
             </div>
         </div>
 
     </div>
 
+    <input type="hidden" name="UserId" value="@Model.UserId" />
     <div class="sequence-block-body" id="edit_area">
         @foreach (var text in Model.SimpleTexts)
         {
@@ -46,13 +48,12 @@
             <input type="hidden" name="EditedSimpleTexts[@i].SequenceNumber" class="editedSequenceNumber" value="@text.SequenceNumber" id="editedSequenceNumber" />
             <input type="hidden" name="EditedSimpleTexts[@i].IsChanged" class="editedTextIsChanged" value="@text.IsChanged" />
 
-
             i++;
         }
 
     </div>
 
-    </form>
+</form>
 
 
 <script language="Javascript" src="~/js/sequenceView.js"></script>

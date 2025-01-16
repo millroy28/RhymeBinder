@@ -859,6 +859,7 @@ namespace RhymeBinder.Models
             TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
             DisplaySequencedTexts displaySequencedTexts = new()
             {
+                UserId = userId,
                 GroupName = group.GroupTitle,
                 GroupId = group.TextGroupId,
                 BinderId = group.BinderId,
@@ -1442,6 +1443,42 @@ namespace RhymeBinder.Models
                 status.success = true;
                 status.recordId = textEdit.TextHeaderId;
             }
+            return status;
+        }
+        public Status SaveEditedTextsInSequence(DisplaySequencedTexts displaySequencedTexts)
+        {
+            Status status = new();
+            List<DisplaySimpleText> editedTexts = displaySequencedTexts.EditedSimpleTexts.Where(x => x.IsChanged == true).ToList();
+
+            if(editedTexts == null)
+            {
+                return status;
+            }
+
+            foreach (var text in editedTexts)
+            {
+                //prevent blank from being saved as title (which would break navitgation)
+                if (text.Title == null || text.Title.Trim() == "") text.Title = "(blank)";
+
+                TextHeader origHeader = _context.TextHeaders.Find(text.TextHeaderId);
+                Text origText = _context.Texts.Find(origHeader.TextId);
+                if(!TextsAreSame(origText.TextBody, text.TextBody))
+                {
+                    status = CreateNewText(displaySequencedTexts.UserId, text.TextBody);
+                    if (!status.success) { return status; }
+                    origHeader.TextId = status.recordId; //point header to new text id
+
+                    status = CreateNewTextRecord(origHeader.TextHeaderId, origHeader.TextId, displaySequencedTexts.UserId);
+                    if (!status.success) { return status; }
+                }
+
+                origHeader.Title = text.Title;
+                origHeader.LastModified = GetUserLocalTime(displaySequencedTexts.UserId);
+                origHeader.LastModifiedBy = displaySequencedTexts.UserId;
+                status = Update<TextHeader>(origHeader);
+                if (!status.success) { return status; }
+            }
+
             return status;
         }
         public Status ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
@@ -2627,6 +2664,10 @@ namespace RhymeBinder.Models
                         status.recordId = -1;
                         status.message = "Failed to add selected texts to selected groups";
                     }
+                }
+                else
+                {
+                    status.success = true;
                 }
             }
 

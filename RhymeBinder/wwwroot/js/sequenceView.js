@@ -7,19 +7,17 @@ function SetEventListeners() {
         CopyContentToForm();
     });
 
-    // Listener to submit on copy/save
+    // Listener to submit on ctrl+s
     var isCtrl = false;
     window.addEventListener('load', function () {
         window.addEventListener('keydown', function (e) {
             if (e.key === "Control") {
                 e.preventDefault();
                 isCtrl = true;
-                console.log("curtl!");
             }
 
             if (e.key === "s" && isCtrl) {
                 e.preventDefault();
-                console.log("salve!");
                 document.getElementById("save").click();
             }
         });
@@ -38,15 +36,23 @@ function SetEventListeners() {
         return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     });
 
-    // Tab tabs instead of tabbing
     input.addEventListener("keydown", (e) => {
+        // Tab tabs instead of tabbing
         if (e.key == "Tab") {
             e.preventDefault();
-            document.execCommand('insertHTML', false, '&#009');
+            document.execCommand('insertHTML', false, '&#009;');
         }
+        // Enter behaves like Shift+Enter, to insert line breaks instead of divs
+        if (e.key == "Enter") {
+            e.preventDefault();
+            document.execCommand('insertHTML', false, '&#013;&#010;');
+        }
+
     });
 
-}
+}  
+
+
 
 function CopyContentToForm() {
     var formSubmitTitles = document.getElementsByClassName("editedTextTitles");

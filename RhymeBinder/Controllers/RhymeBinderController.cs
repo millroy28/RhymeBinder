@@ -338,7 +338,11 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult EditTextsInSequence(DisplaySequencedTexts editedTexts)
         {
-            var test = "what";
+            Status status = _modelHelper.SaveEditedTextsInSequence(editedTexts);
+            if (!status.success)
+            {
+                return RedirectToAction("ErrorPage", status);
+            }
             return Redirect($"/RhymeBinder/EditTextsInSequence?groupId={editedTexts.GroupId}");
         }
 
