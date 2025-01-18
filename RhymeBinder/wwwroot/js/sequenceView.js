@@ -43,15 +43,35 @@ function SetEventListeners() {
             document.execCommand('insertHTML', false, '&#009;');
         }
         // Enter behaves like Shift+Enter, to insert line breaks instead of divs
-        if (e.key == "Enter") {
-            e.preventDefault();
-            document.execCommand('insertHTML', false, '&#013;&#010;');
-        }
+        //if (e.key == "Enter") {
+        //    e.preventDefault();
+        //    document.execCommand('insertHTML', false, '&#013;&#010;');
+        //}
 
+        if (e.key === "Enter") {
+            e.preventDefault();
+            insertLineBreak(e.target);
+        }
     });
 
 }  
 
+
+function insertLineBreak(target) {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const br = document.createElement("br");
+    range.deleteContents();
+    range.insertNode(br);
+    range.setStartAfter(br);
+    range.setEndAfter(br);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+function ReplaceBreakTags(input) {    
+    return input.replace(/<br>/g, "\r\n");
+}
 
 
 function CopyContentToForm() {
@@ -66,22 +86,25 @@ function CopyContentToForm() {
 
     for (let i = 0; i < formSubmitTitles.length; i++) {
 
-        if (savedTitles[i].value != editedTitles[i].textContent) {
-            formSubmitTitles[i].value = editedTitles[i].textContent;
+        var editedTitlesBreakReplace = ReplaceBreakTags(editedTitles[i].innerHTML);
+        var editedTextBreakReplace = ReplaceBreakTags(editedTexts[i].innerHTML);
+
+        if (savedTitles[i].value != editedTitlesBreakReplace) {
+            formSubmitTitles[i].value = editedTitlesBreakReplace;
             editedTitles[i].style.cssText += "border-left-color: goldenrod; ";
         } else {
             editedTitles[i].style.cssText += "border-left-color: darkseagreen; ";
         }
 
-        if (savedTexts[i].value != editedTexts[i].textContent) {
-            formSubmitTexts[i].value = editedTexts[i].textContent;
+        if (savedTexts[i].value != editedTextBreakReplace) {
+            formSubmitTexts[i].value = editedTextBreakReplace;
             editedTexts[i].style.cssText += "border-left-color: goldenrod; ";
         } else {
             editedTexts[i].style.cssText += "border-left-color: darkseagreen; ";
         }
 
-        if (savedTitles[i].value == editedTitles[i].textContent
-            && savedTexts[i].value == editedTexts[i].textContent) {
+        if (savedTitles[i].value == editedTitlesBreakReplace
+            && savedTexts[i].value == editedTextBreakReplace) {
             changedValues[i].value = false;
         } else {
             changedValues[i].value = true;
