@@ -1,4 +1,5 @@
 ﻿var button;
+var showSequence = 0;
 
 //--------HIDING/SHOWING ELEMENTS-------------------------------------------------------
 function toggle_hide_element(formElementID, clickElementID, hideableElementName, init) {
@@ -80,7 +81,23 @@ function hide_element(element){
     element.hidden = true;
     return;
 }
+function show_sequence_inputs(savedViewId) {
+    var inputs = document.getElementsByClassName("sequence-number-input");
+    var numbers = document.getElementsByName("groupSequence");
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].hidden = false;
+        numbers[i].hidden = true;
+    }
+    let sequenceButton = document.getElementById("updateSequenceButton");
+    //sequenceButton.onclick = "selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')";
+    sequenceButton.onclick = function () { selected_action_form_submit('UpdateGroupSequence', savedViewId); };
+    sequenceButton.innerText = "Update Sequence";
+}
 
+
+function test() {
+    document.getElementById("updateSequenceButton").innerText = "sharted!";
+}
 
 //--------MODALS------------------------------------------------------------------------
 function open_group_list_modal_with_id(elementId, view) {
@@ -291,6 +308,7 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
 
 //--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
 function selected_action_form_submit(actionValue, recordId) {
+    console.log("I am being submitted!");
     // group Id value stored in form under id 'record_id'
     document.getElementById("record_id").value = recordId;
     sub_form(actionValue);

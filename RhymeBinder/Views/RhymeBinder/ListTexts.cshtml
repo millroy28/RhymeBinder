@@ -48,7 +48,10 @@
             <div class="menu-bar-item">
                 @if(Model.View.GroupSequence == true)
                 {
-                    <a class="menu-bar-button" onclick="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')">Update Sequence</a>
+                    @* <a class="menu-bar-button" onclick="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')" id="updateSequenceButton" hidden disabled="true">Update Sequence</a> *@
+                    <a class="menu-bar-button" onclick="show_sequence_inputs(@Model.View.SavedViewId)" id="updateSequenceButton">Edit Sequence</a>
+
+                    @* <button class="menu-bar-button" onclick="show_sequence_inputs()" id="editSequenceButton">Edit Sequence</button> *@
                 }
                 else
                 {
@@ -143,6 +146,9 @@
                     @if(Model.View.GroupSequence == true)
                     {
                         <th name="group_sequence_col" id="Sequence" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');" width="5px"><a>Sequence</a></th>
+                    } else
+                    {
+                        <th></th>
                     }
                     <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
                     <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
@@ -185,8 +191,13 @@
                         @if(Model.View.GroupSequence == true)
                         {
                             <td style="text-align: center" name="group_sequence_col">
-                                <input type="number" min="0" max="9999" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence"/>                     
+                                <input type="number" min="0" max="99999" class="sequence-number-input" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" hidden/>
+                                <div name="groupSequence">@text.GroupSequence</div>
                             </td>
+                        }
+                        else
+                        {
+                            <td></td>
                         }
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td style="text-align: center" name="last_modified_col">@text.LastModified</td>

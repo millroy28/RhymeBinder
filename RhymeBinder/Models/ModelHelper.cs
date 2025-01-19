@@ -1942,7 +1942,7 @@ namespace RhymeBinder.Models
             {
                 UserId = userId,
                 SetValue = "Active",
-                SortValue = "title",
+                SortValue = "Title",
                 ViewName = "Default",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
@@ -1965,7 +1965,7 @@ namespace RhymeBinder.Models
             {
                 UserId = userId,
                 SetValue = "Default",
-                SortValue = "title",
+                SortValue = "Title",
                 ViewName = "",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
@@ -1988,7 +1988,7 @@ namespace RhymeBinder.Models
             {
                 UserId = userId,
                 SetValue = "Hidden",
-                SortValue = "title",
+                SortValue = "Title",
                 ViewName = "Hidden Texts",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,
@@ -2010,7 +2010,7 @@ namespace RhymeBinder.Models
             {
                 UserId = userId,
                 SetValue = "All",
-                SortValue = "title",
+                SortValue = "Title",
                 ViewName = "All Texts",
                 RecordsPerPage = user.DefaultRecordsPerPage,
                 Descending = false,

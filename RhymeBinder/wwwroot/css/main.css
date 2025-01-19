@@ -811,7 +811,7 @@
         padding: 3px;
     }
 
-        td:nth-child(1) {
+        td:nth-child(2) {
             font-weight: 600;
             border-right-style: double;
             border-right-color: indianred;
@@ -1923,7 +1923,7 @@ height: 70vh;
         padding: 3px;
     }
 
-        td:nth-child(1) {
+        td:nth-child(2) {
             font-weight: 600;
             border-right-style: double;
             border-right-color: indianred;
