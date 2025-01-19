@@ -89,15 +89,10 @@ function show_sequence_inputs(savedViewId) {
         numbers[i].hidden = true;
     }
     let sequenceButton = document.getElementById("updateSequenceButton");
-    //sequenceButton.onclick = "selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')";
     sequenceButton.onclick = function () { selected_action_form_submit('UpdateGroupSequence', savedViewId); };
     sequenceButton.innerText = "Update Sequence";
 }
 
-
-function test() {
-    document.getElementById("updateSequenceButton").innerText = "sharted!";
-}
 
 //--------MODALS------------------------------------------------------------------------
 function open_group_list_modal_with_id(elementId, view) {

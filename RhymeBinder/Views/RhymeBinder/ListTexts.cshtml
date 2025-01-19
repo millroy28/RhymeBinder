@@ -48,10 +48,7 @@
             <div class="menu-bar-item">
                 @if(Model.View.GroupSequence == true)
                 {
-                    @* <a class="menu-bar-button" onclick="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')" id="updateSequenceButton" hidden disabled="true">Update Sequence</a> *@
                     <a class="menu-bar-button" onclick="show_sequence_inputs(@Model.View.SavedViewId)" id="updateSequenceButton">Edit Sequence</a>
-
-                    @* <button class="menu-bar-button" onclick="show_sequence_inputs()" id="editSequenceButton">Edit Sequence</button> *@
                 }
                 else
                 {
