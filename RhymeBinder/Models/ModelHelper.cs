@@ -204,7 +204,7 @@ namespace RhymeBinder.Models
                 displayBinder.LastModified = binder.LastModified;
                 displayBinder.LastModifiedBy = binder.LastModifiedBy;
                 displayBinder.Hidden = binder.Hidden;
-                displayBinder.Name = binder.Name.Length > 25 ? binder.Name.Substring(0,25) + "..." : binder.Name;
+                displayBinder.Name = binder.Name;//binder.Name.Length > 25 ? binder.Name.Substring(0,25) + "..." : binder.Name;
                 displayBinder.Description = binder.Description;
                 displayBinder.Selected = binder.Selected;
                 displayBinder.GroupCount = groupCount;
