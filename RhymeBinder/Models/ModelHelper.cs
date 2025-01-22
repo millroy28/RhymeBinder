@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
+using NuGet.Protocol;
+using RhymeBinder.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,10 +13,13 @@ namespace RhymeBinder.Models
     public class ModelHelper 
     {
         private readonly RhymeBinderContext _context;
-       // private string _aspUserId;
-        public ModelHelper(RhymeBinderContext context)
+        private readonly ILogger<ModelHelper> _logger;
+
+        // private string _aspUserId;
+        public ModelHelper(RhymeBinderContext context, ILogger<ModelHelper> logger)
         {
             _context = context;
+            _logger = logger;
             
         }
         //  GET methods         -- on failures, models will return with -1 in the ID field
@@ -1577,6 +1585,11 @@ namespace RhymeBinder.Models
 
             return status;
         } 
+        public Status DuplicateTextHeader(int textHeaderId)
+        {
+            Status status = new();
+            return status;
+        }
         #endregion
 
         //  View Methods:
@@ -2274,7 +2287,288 @@ namespace RhymeBinder.Models
             }
 
             return status;
-        } 
+        }
+        public Status DuplicateBinder(int userId, int binderId)
+        {
+            // We want to create a copy of the binder and all its contents
+            Status status = new();
+
+
+            // Get all our models with the original IDs
+            Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
+            List<SavedView> savedViews = _context.SavedViews.Where(x => x.BinderId == binderId).ToList();
+            List<TextGroup> textGroups = _context.TextGroups.Where(x => x.BinderId == binderId).ToList();
+            List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.BinderId == binderId)
+                                                               .ToList();
+            List<TextNote> textNotes = _context.TextNotes.Where(x => textHeaders.Select(y => y.TextNoteId).Contains(x.TextNoteId)).ToList();
+            List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroups = _context.LnkTextHeadersTextGroups.Where(x => textHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)).ToList();
+            List<TextRecord> textRecords = _context.TextRecords.Where(x => textHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)).ToList();
+            List<Text> texts = _context.Texts.Where(x => textRecords.Select(y => y.TextId).Contains(x.TextId)).ToList();
+            List<EditWindowProperty> editWindowProperties = _context.EditWindowProperties.Where(x => textHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)).ToList();
+            // used in a query - not for changing/saving data
+            List<SavedView> groupViews = savedViews.Where(x => int.TryParse(x.SetValue, out int y)).ToList();
+
+
+            // Detatch all models (so we can change IDs and submit via add)
+            _context.Entry(binder).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            foreach (var savedView in savedViews)
+            {
+                _context.Entry(savedView).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var textGroup in textGroups)
+            {
+                _context.Entry(textGroup).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var textHeader in textHeaders)
+            {
+                _context.Entry(textHeader).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var textNote in textNotes)
+            {
+                _context.Entry(textNote).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var lnkTextHeadersTextGroup in lnkTextHeadersTextGroups)
+            {
+                _context.Entry(lnkTextHeadersTextGroup).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var textRecord in textRecords)
+            {
+                _context.Entry(textRecord).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var text in texts)
+            {
+                _context.Entry(text).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+            foreach (var editWindowProperty in editWindowProperties)
+            {
+                _context.Entry(editWindowProperty).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+
+
+            // Binder
+            binder.Name = binder.Name + " COPY";
+            binder.Created = GetUserLocalTime(userId);
+            binder.CreatedBy = userId;
+            binder.BinderId = 0;
+            binder.TextGroups = null;
+            binder.TextHeaders = null;
+            binder.SavedViews = null;
+
+            try
+            {
+                _context.Binders.Add(binder);
+                _context.SaveChanges();
+                status.success = true;
+                status.recordId = binder.BinderId;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Binder while duplicating from source Binder";
+                return status;
+            }
+
+
+            // Groups
+            // >> need to grab newly created SavedViewId for each
+            textGroups.ForEach(x => x.BinderId = binder.BinderId);
+            textGroups.ForEach(x => x.SavedViewId = groupViews.Where(y => int.Parse(y.SetValue) == x.TextGroupId)
+                                                              .Select(y => y.SavedViewId).First());
+            textGroups.ForEach(x => x.LnkTextHeadersTextGroups = null);
+            textGroups.ForEach(x => x.SavedView = null);
+            textGroups.ForEach(x => x.GroupHistories = null);
+
+            try
+            {
+                foreach (var textGroup in textGroups)
+                {
+                    int origTextGroupId = textGroup.TextGroupId;
+                    textGroup.TextGroupId = 0;
+                    _context.TextGroups.Add(textGroup);
+                    _context.SaveChanges();
+
+                    // Update lnkTextHeadersTextGroups
+                    lnkTextHeadersTextGroups.Where(x => x.TextGroupId == origTextGroupId).ToList().ForEach(x => x.TextGroupId = textGroup.TextGroupId);
+
+                    // Update SavedView
+                    savedViews.Where(x => int.TryParse(x.SetValue, out int y) && int.Parse(x.SetValue) == origTextGroupId).ToList().ForEach(x => x.SetValue = textGroup.TextGroupId.ToString());
+                }
+
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Text Groups for new Binder while duplicating";
+                return status;
+            }
+
+
+            // Saved Views
+            savedViews.ForEach(x => x.BinderId = binder.BinderId);
+            savedViews.ForEach(x => x.TextGroups = null);
+
+            try
+            {
+                foreach(var view in savedViews)
+                {
+                    int originalSavedViewId = view.SavedViewId;
+                    view.SavedViewId = 0;
+                    _context.SavedViews.Add(view);
+                    _context.SaveChanges();
+
+                    // circle back to update Text Group Saved View Id
+                    textGroups.Where(x => x.SavedViewId == originalSavedViewId).ToList().ForEach(x => x.SavedViewId = view.SavedViewId);
+                    _context.TextGroups.UpdateRange(textGroups);
+                    _context.SaveChanges();
+                }
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save SavedViews for new Binder while duplicating";
+                return status;
+            }
+
+            // Text Notes
+            textNotes.ForEach(x => x.TextHeaders = null);
+
+            try
+            {
+                foreach (var note in textNotes)
+                {
+                    int origNoteId = note.TextNoteId;
+                    note.TextNoteId = 0;
+                    _context.TextNotes.Add(note);
+                    _context.SaveChanges();
+
+                    // update TextHeader records
+                    textHeaders.Where(x => x.TextNoteId == origNoteId).ToList().ForEach(x => x.TextNoteId = note.TextNoteId);
+                }
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Text Notes for new Binder while duplicating";
+                return status;
+            }
+
+            // Texts
+            texts.ForEach(x => x.TextRecords = null);
+            texts.ForEach(x => x.TextHeaders = null);
+            try
+            {
+                foreach (var text in texts)
+                {
+                    int origTextId = text.TextId;
+                    text.TextId = 0;
+                    _context.Texts.Add(text);
+                    _context.SaveChanges();
+
+                    // update TextHeader records
+                    textHeaders.Where(x => x.TextId == origTextId).ToList().ForEach(x => x.TextId = text.TextId);
+
+                    // update text records
+                    textRecords.Where(x => x.TextId == origTextId).ToList().ForEach(x => x.TextId = text.TextId);
+                }
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Texts for new Binder while duplicating";
+                return status;
+            }
+
+
+            // Text Headers
+            textHeaders.ForEach(x => x.BinderId = binder.BinderId);
+            textHeaders.ForEach(x => x.TextRecords = null);
+            textHeaders.ForEach(x => x.Text = null);
+            textHeaders.ForEach(x => x.Binder = null);
+            textHeaders.ForEach(x => x.EditWindowProperties = null);
+            textHeaders.ForEach(x => x.GroupHistories = null);
+            textHeaders.ForEach(x => x.Submissions = null);
+            textHeaders.ForEach(x => x.TextNote = null);
+            textHeaders.ForEach(x => x.LnkTextHeadersTextGroups = null);
+            textHeaders.ForEach(x => x.LnkTextSubmissions = null);
+            textHeaders.ForEach(x => x.TextRevisionStatus = null);
+            textHeaders.ForEach(x => x.LastModifiedByNavigation = null);
+            textHeaders.ForEach(x => x.CreatedByNavigation = null);
+            textHeaders.ForEach(x => x.LastReadByNavigation = null);
+            textHeaders.ForEach(x => x.InverseVersionOfNavigation = null);
+
+            try
+            {
+                foreach (var textHeader in textHeaders)
+                {
+                    int origTextHeaderId = textHeader.TextHeaderId;
+                    textHeader.TextHeaderId = 0;
+                    _context.TextHeaders.Add(textHeader);
+                    _context.SaveChanges();
+
+                    // update lnkTextHeadersTextGroups
+                    lnkTextHeadersTextGroups.Where(x => x.TextHeaderId == origTextHeaderId).ToList().ForEach(x => x.TextHeaderId = textHeader.TextHeaderId);
+
+                    // update TextRecords
+                    textRecords.Where(x => x.TextHeaderId == origTextHeaderId).ToList().ForEach(x => x.TextHeaderId = textHeader.TextHeaderId);
+
+                    // update editWindowProperties
+                    editWindowProperties.Where(x => x.TextHeaderId == origTextHeaderId).ToList().ForEach(x => x.TextHeaderId = textHeader.TextHeaderId);
+                }
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Text Headers for new Binder while duplicating";
+                return status;
+            }
+
+
+
+            // lnkTextHeadersTextGroups
+            lnkTextHeadersTextGroups.ForEach(x => x.LnkHeaderGroupId = 0);
+            try
+            {
+                _context.LnkTextHeadersTextGroups.AddRange(lnkTextHeadersTextGroups);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save links between Text Headers and Text Groups for new Binder while duplicating";
+                return status;
+            }
+
+            // Text Records
+            textRecords.ForEach(x => x.TextRecordId = 0);
+            try
+            {
+                _context.TextRecords.AddRange(textRecords);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Text Records for new Binder while duplicating";
+                return status;
+            }
+
+            // EditWindowProperties
+            editWindowProperties.ForEach(x => x.EditWindowPropertyId = 0);
+            try
+            {
+                _context.EditWindowProperties.AddRange(editWindowProperties);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to save Edit Window Properties for new Binder while duplicating";
+                return status;
+            }
+
+            return status;
+        }
+
         #endregion
 
         //  Group Methods:

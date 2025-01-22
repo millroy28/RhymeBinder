@@ -485,7 +485,7 @@ namespace RhymeBinder.Controllers
             return View(binder);
         }
         [HttpPost]
-        public IActionResult EditBinder(DisplayBinder editedBinder, string action, string verifyClear, string verifyDelete, string verifyDeleteAll)
+        public IActionResult EditBinder(DisplayBinder editedBinder, string action, string verifyClear, string verifyDelete, string verifyDeleteAll, string verifyDuplicate)
         {
             int userId = GetUserId();
             Status status = new Status() { success = true };
@@ -494,6 +494,9 @@ namespace RhymeBinder.Controllers
             {
                 case "Submit Changes":
                     status = _modelHelper.UpdateBinder(userId, editedBinder);
+                    break;
+                case "Duplicate":
+                    status = _modelHelper.DuplicateBinder(userId, editedBinder.BinderId);
                     break;
                 case "Clear":
                     if (verifyClear != null)
@@ -507,7 +510,7 @@ namespace RhymeBinder.Controllers
                         status = _modelHelper.DeleteBinder(userId, editedBinder.BinderId);
                     }
                     break;
-                case "DeleteAll":
+                case "Delete All":
 
                     if (verifyDeleteAll != null)
                     {
@@ -526,7 +529,7 @@ namespace RhymeBinder.Controllers
             {
                 return ErrorPage(status);
             }
-        }
+         }
         public IActionResult OpenBinder(int binderId)
         {
             int userId = GetUserId();

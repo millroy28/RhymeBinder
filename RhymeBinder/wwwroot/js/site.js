@@ -108,7 +108,10 @@ function open_group_list_modal_with_id(elementId, view) {
     return;
 }
 
-
+function open_modal_with_Id(elementId) {
+    document.getElementById(elementId).style.display = "inline";
+    document.body.style.pointerEvents = "none";
+}
 function close_modal_with_id(elementId, view) {
     if (view == 'ListTexts') {
         populate_group_selected_text_header_counts();
@@ -119,6 +122,10 @@ function close_modal_with_id(elementId, view) {
     document.getElementById(elementId).style.display = "none";
     document.body.style.pointerEvents = 'all';
     return;
+}
+function close_modal_with_id(elementId) {
+    document.getElementById(elementId).style.display = "none";
+    document.body.style.pointerEvents = 'all';
 }
 
 function submit_modal(view) {

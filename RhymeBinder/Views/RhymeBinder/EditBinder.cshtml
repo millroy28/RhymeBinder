@@ -2,17 +2,45 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model DisplayBinder
+<script language="Javascript" src="~/js/site.js"></script>
 <div class="view-wrapper">
 
-    <div class="menu-bar">
-        <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" >
-                Edit Binder: @Model.Name: 
-            </div>
-        </div>
-    </div>
-
     <form action="EditBinder" method="post" class="form-wrapper">
+        <div class="menu-bar">
+            <div class="menu-bar-main mobile-menu-bar-main">
+                <div class="menu-bar-title menu-bar-title-mobile">
+                    Edit Binder: @Model.Name:
+                </div>
+
+                <div class="menu-bar-dropdown menu-bar-dropdown-mobile">
+                    <div class="button menu-bar-button-dropdown">
+                        Actions ▼
+                    </div>
+                    <div class="menu-bar-dropdown-content">
+                        <a class="menu-bar-dropdown-item" onclick="open_modal_with_Id('duplicate')">Duplicate</a>
+                        <a class="menu-bar-dropdown-item" onclick="open_modal_with_Id('clear')">Clear</a>
+                        <a class="menu-bar-dropdown-item" onclick="open_modal_with_Id('delete')">Delete Binder</a>
+                        <a class="menu-bar-dropdown-item" onclick="open_modal_with_Id('deleteAll')">Delete Binder and Contents</a>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="menu-bar-escape mobile-menu-bar-escape">
+                <div class="menu-bar-item">
+                    <a href="/RhymeBinder/ListBinders" class="button menu-bar-button">Return</a>
+                </div>
+                <div class="menu-bar-item-right-final">
+                    <input type="submit" name="action" class="button menu-bar-button" value="Submit Changes" />
+                </div>
+            </div>
+
+
+        </div>
+
+
+
         <input type="hidden" name="BinderId" value="@Model.BinderId" />
         <input type="hidden" name="UserId" value="@Model.UserId" />
         <input type="hidden" name="Created" value="@Model.Created" />
@@ -23,7 +51,7 @@
         <input type="hidden" name="Selected" value="@Model.Selected.ToString()" />
         <input type="hidden" name="LastAccessed" value="@Model.LastAccessed" />
         <input type="hidden" name="LastAccessedBy" value="@Model.LastAccessedBy" />
-
+        
     
         <div class="form-item-title">
             Binder Name:
@@ -77,9 +105,7 @@
         <div class="form-item-large-entry">
             @Html.EditorFor(m => m.NewTextDefaultShowParagraphCount)
         </div>
-        <div class="form-item-descriptor-two">
-            <input type="submit" name="action" class="button" value="Submit Changes"/>
-        </div>
+
 
         <div class="form-divider"><hr /></div>
 
@@ -110,53 +136,114 @@
 
         <div class="form-divider"><hr /></div>
 
-        <div class="form-item-title">
-            Clear Binder:
-        </div>
-        <div class="form-item-descriptor-one">
-            Remove all groups and pages from the binder. Pages will appear in 'Loose Pages' Binder.
-        </div>
-        <div class="form-item-descriptor-two">
-            <input type="submit" name="action" class="button" value="Clear" />
-        </div>
-        <div class="form-item-verify-prompt">
-            Are you sure?
-        </div>
-        <div class="form-item-far-right-entry">
-            <input type="checkbox" name="verifyClear" />
+
+        <div class="dialog-modal" id="duplicate">
+            <div class="dialog-modal-header">
+                Duplicate Binder:
+            </div>
+
+            <div class="dialog-modal-content">
+                <div class="dialog-modal-content-item-heading">
+                    Create a copy of this binder, including all texts and groups contained within.
+                </div>
+
+                <div class="dialog-modal-content-item-warn-confirm">
+                    Yes, I want to duplicate this binder: <input type="checkbox" name="verifyDuplicate" />
+                </div>
+            </div>
+
+            <div class="dialog-modal-footer">
+                <a class="button menu-bar-button" onclick="close_modal_with_id('duplicate')">Cancel</a>
+                <input type="submit" name="action" class="button menu-bar-button" value="Duplicate" />
+            </div>
         </div>
 
-        <div class="form-item-title">
-            Delete Binder:
-        </div>
-        <div class="form-item-descriptor-one">
-            Delete this binder. Pages will appear in 'Loose Pages' Binder.
-        </div>
-        <div class="form-item-descriptor-two">
-            <input type="submit" name="action" class="button" value="Delete" />
-        </div>
-        <div class="form-item-verify-prompt">
-            Are you sure?
-        </div>
-        <div class="form-item-far-right-entry">
-            <input type="checkbox" name="verifyDelete" />
+
+        <div class="dialog-modal" id="clear">
+            <div class="dialog-modal-header">
+                Clear Binder:
+            </div>
+
+            <div class="dialog-modal-content">
+                <div class="dialog-modal-content-item-heading">
+                    Clear this binder - all texts contained within will appear in the 'Loose Pages' binder. Groups will be deleted.
+                </div>
+                <div class="dialog-modal-content-item-warn">
+                    This can not be undone!
+                </div>
+                <div class="dialog-modal-content-item">
+                    Check the box below confirming you would like to clear this binder:
+                </div>
+                <div class="dialog-modal-content-item">
+                </div>
+                <div class="dialog-modal-content-item-warn-confirm">
+                    Yes, I want to clear this binder: <input type="checkbox" name="verifyClear" />
+                </div>
+            </div>
+
+            <div class="dialog-modal-footer">
+                <a class="button menu-bar-button" onclick="close_modal_with_id('clear')">Cancel</a>
+                <input type="submit" name="action" class="button menu-bar-button" value="Clear" />
+            </div>
         </div>
 
-        <div class="form-item-title">
-            Delete Binder and Texts:
+        <div class="dialog-modal" id="delete">
+            <div class="dialog-modal-header">
+                Delete Binder:
+            </div>
+
+            <div class="dialog-modal-content">
+                <div class="dialog-modal-content-item-heading">
+                    Delete this binder - all texts contained within will appear in the 'Loose Pages' binder. Groups will be deleted.
+                </div>
+                <div class="dialog-modal-content-item-warn">
+                    This can not be undone!
+                </div>
+                <div class="dialog-modal-content-item">
+                    Check the box below confirming you would like to delete this binder:
+                </div>
+                <div class="dialog-modal-content-item">
+                </div>
+                <div class="dialog-modal-content-item-warn-confirm">
+                    Yes, I want to delete this binder: <input type="checkbox" name="verifyDelete" />
+                </div>
+            </div>
+
+            <div class="dialog-modal-footer">
+                <a class="button menu-bar-button" onclick="close_modal_with_id('delete')">Cancel</a>
+                <input type="submit" name="action" class="button menu-bar-button" value="Delete" />
+            </div>
         </div>
-        <div class="form-item-descriptor-one">
-            Delete this binder as well as all texts within.
-        </div>
-        <div class="form-item-descriptor-two">
-            <input type="submit" name="action" class="button" value="DeleteAll" />
-        </div>
-        <div class="form-item-verify-prompt">
-            Are you sure?
-        </div>
-        <div class="form-item-far-right-entry">
-            <input type="checkbox" name="verifyDeleteAll" />
+
+        <div class="dialog-modal" id="deleteAll">
+            <div class="dialog-modal-header">
+                Delete Binder and Texts:
+            </div>
+
+            <div class="dialog-modal-content">
+                <div class="dialog-modal-content-item-heading">
+                    Delete this binder as well as all texts within.
+                </div>
+                <div class="dialog-modal-content-item-warn">
+                    This can
+                    not be undone!
+                </div>
+                <div class="dialog-modal-content-item">
+                    Check the box below confirming you would like to delete both this binder and all contained texts:
+                </div>
+                <div class="dialog-modal-content-item">
+                </div>
+                <div class="dialog-modal-content-item-warn-confirm">
+                        Yes, I want to delete this binder and all contents within: <input type="checkbox" name="verifyDeleteAll" />
+                </div>
+            </div>
+
+            <div class="dialog-modal-footer">
+                <a class="button menu-bar-button" onclick="close_modal_with_id('deleteAll')">Cancel</a>
+                <input type="submit" name="action" class="button menu-bar-button" value="Delete All" />
+            </div>
         </div>
 
     </form>
 </div>
+
