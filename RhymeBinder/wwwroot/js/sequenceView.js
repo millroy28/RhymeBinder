@@ -43,10 +43,6 @@ function SetEventListeners() {
             document.execCommand('insertHTML', false, '&#009;');
         }
         // Enter behaves like Shift+Enter, to insert line breaks instead of divs
-        //if (e.key == "Enter") {
-        //    e.preventDefault();
-        //    document.execCommand('insertHTML', false, '&#013;&#010;');
-        //}
 
         if (e.key === "Enter") {
             e.preventDefault();
@@ -128,38 +124,26 @@ function SetFormSubmit(){
 }
 
 function SubmitForm() {
-    SetFormSubmit();
-    RemoveUnchangedElements();
-    submitButton.click();
+    if (hasUnsavedChanges)
+    {
+        SetFormSubmit();
+        RemoveUnchangedElements();
+        submitButton.click();
+    }
 }
 
 function RemoveUnchangedElements() {
     // Running  up against an error when submitting a long (novel length) text
     // to address -- removing all entries that are unchanged and wouldn't need to be saved
     // to minimuze post space
-    var savedTextHeaderIds = document.getElementsByClassName("textHeaderIds");
-    var savedTitles = document.getElementsByClassName("textTitles");
-    var savedTexts = document.getElementsByClassName("textBodies");
-    var savedSequenceNumber = document.getElementsByClassName("sequenceNumber");
-
-    var formTextHeaderIds = document.getElementsByClassName("editedTextHeaderIds");
-    var formSubmitTitles = document.getElementsByClassName("editedTextTitles");
-    var formSubmitTexts = document.getElementsByClassName("editedTextBodies");
-    var formSequenceNumber = document.getElementsByClassName("editedSequenceNumber");
 
     var changedValues = document.getElementsByClassName("editedTextIsChanged");
-
-    for (let i = 0; i < savedTextHeaderIds.length; i++)
+    
+    for (let i = 0; i < changedValues.length; i++)
     {
-        if (changedValues[i].value == "false") {
-            savedTextHeaderIds[i].remove();
-            savedTitles[i].remove();
-            savedTexts[i].remove();
-            savedSequenceNumber[i].remove();
-            formTextHeaderIds[i].remove();
-            formSubmitTitles[i].remove();
-            formSubmitTexts[i].remove();
-            formSequenceNumber[i].remove();
-        }
+        if (document.getElementById("isChanged[" + i + "]").value == "false")
+            {
+            document.getElementById("modelContainer[" + i + "]").remove();
+        } 
     }
 }

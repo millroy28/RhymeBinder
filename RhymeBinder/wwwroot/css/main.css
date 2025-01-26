@@ -358,7 +358,7 @@
         display: grid;
         grid-gap: 0px;
         grid-template-columns: 26% 2% 2% 50% 20%;
-        grid-template-rows: 30px 50px auto;
+        grid-template-rows: auto;
         box-sizing: border-box;
         width: 100%;
         height: 90vh;
@@ -387,6 +387,7 @@
         flex-wrap: nowrap;
         justify-content: space-between;
         background-color: #d7e19d;
+        height: fit-content;
     }
 
     .menu-bar-main {
@@ -514,7 +515,7 @@
 */
         background-color: transparent;
         border-color: transparent;
-        padding: 4px !important;
+        /*padding: 4px !important;*/
         margin-left: 9px !important;
         border: 0px !important;
         /*    border-bottom-left-radius: 4px;
@@ -536,7 +537,7 @@
         font-weight: 600;
         color: gray;
         border-color: transparent;
-        padding: 4px !important;
+        /*padding: 4px !important;*/
         margin: 0px !important;
         border: 0px !important;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -627,6 +628,7 @@
     .editor-container {
         grid-column: 4 / 5;
         grid-row: 3 / 4;
+        height: 80vh;
     }
 
     .editor-box {
@@ -709,6 +711,7 @@
         background-color: #eff3d8;
         padding-left: 26px;
         padding-right: 10px;
+        height: 88vh;
     }
 
     .left-sidebar-item {
@@ -732,6 +735,7 @@
         background-color: #eff3d8;
         padding-left: 10px;
         padding-right: 16px;
+        height: 80vh;
     }
 
     .right-sidebar-item {
@@ -1450,7 +1454,7 @@ display:none;
         grid-template-columns: 100%;
         grid-template-rows: 20% 35% 40%;*/
         width: 100%;
-        height: 100%;
+        height: 90vh;
         justify-content: flex-start;
     }
 
@@ -1475,6 +1479,7 @@ display:none;
         display: flex;
         justify-content: space-between;
         background-color: #d7e19d;
+  
     }
 
 
@@ -1611,7 +1616,7 @@ display:none;
 */
         background-color: transparent;
         border-color: transparent;
-        padding: 4px !important;
+        /*padding: 4px !important;*/
         margin-left: 9px !important;
         border: 0px !important;
         /*    border-bottom-left-radius: 4px;
@@ -1633,7 +1638,7 @@ display:none;
         font-weight: 600;
         color: gray;
         border-color: transparent;
-        padding: 4px !important;
+        /*padding: 4px !important;*/
         margin: 0px !important;
         border: 0px !important;
         font-family: Verdana, Geneva, Tahoma, sans-serif;

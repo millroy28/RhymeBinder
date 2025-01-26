@@ -6,6 +6,7 @@ using RhymeBinder.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace RhymeBinder.Models
@@ -879,17 +880,21 @@ namespace RhymeBinder.Models
 
             foreach (TextHeader textHeader in textHeaders)
             {
-                simpleTexts.Add(new DisplaySimpleText
+                // check that text has a sequence number
+                if (_context.LnkTextHeadersTextGroups.Any(x => x.TextGroupId == groupId && x.TextHeaderId == textHeader.TextHeaderId && x.Sequence != null))
                 {
-                    TextHeaderId = textHeader.TextHeaderId,
-                    Title = textHeader.Title,
-                    TextBody = _context.Texts.Single(x => x.TextId == textHeader.TextId).TextBody,
-                    SequenceNumber = (int)_context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeader.TextHeaderId && x.TextGroupId == groupId).Sequence,
-                    MemberOfGroups = _context.TextGroups.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextHeaderId == textHeader.TextHeaderId)
-                                                                                                     .Select(y => y.TextGroupId)
-                                                                                                     .Contains(x.TextGroupId)
-                                                                                                     ).Select(x => x.GroupTitle).ToList()
-                });
+                    simpleTexts.Add(new DisplaySimpleText
+                    {
+                        TextHeaderId = textHeader.TextHeaderId,
+                        Title = textHeader.Title,
+                        TextBody = _context.Texts.Single(x => x.TextId == textHeader.TextId).TextBody,
+                        SequenceNumber = (int)_context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeader.TextHeaderId && x.TextGroupId == groupId).Sequence,
+                        MemberOfGroups = _context.TextGroups.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextHeaderId == textHeader.TextHeaderId)
+                                                                                                         .Select(y => y.TextGroupId)
+                                                                                                         .Contains(x.TextGroupId)
+                                                                                                         ).Select(x => x.GroupTitle).ToList()
+                    });
+                }
             };
 
             displaySequencedTexts.SimpleTexts = simpleTexts;
@@ -934,13 +939,21 @@ namespace RhymeBinder.Models
         public List<TextHeader> GetTextHeadersInGroupSequence(int textGroupId)
         {
             List<TextHeader> textHeaders = new();
+            List<LnkTextHeadersTextGroup> lnks = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == textGroupId).OrderBy(x => x.Sequence).ToList();
+            foreach(var lnk in lnks)
+            {
+                textHeaders.Add(_context.TextHeaders.Single(x => x.TextHeaderId == lnk.TextHeaderId));
+            }
 
+            // going to have to two step this as the this expression is not reliably setting the order correctly. Saving for reference:
+            /*
             textHeaders = _context.TextHeaders.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextGroupId == textGroupId
                                                                                                     && y.Sequence != null)
                                                                                            .OrderBy(y => y.Sequence)
                                                                                            .Select(y => y.TextHeaderId)
                                                                                            .Contains(x.TextHeaderId)
                                                                                             ).ToList();
+            */
 
             return textHeaders;
         }
@@ -1458,8 +1471,10 @@ namespace RhymeBinder.Models
             Status status = new();
             List<DisplaySimpleText> editedTexts = displaySequencedTexts.EditedSimpleTexts.Where(x => x.IsChanged == true).ToList();
 
-            if(editedTexts == null)
+            if(editedTexts == null || editedTexts.Count() == 0)
             {
+                status.success = false;
+                status.message = "Failed to receive edited texts in edit sequence texts form";
                 return status;
             }
 
