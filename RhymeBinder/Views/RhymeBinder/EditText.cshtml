@@ -29,8 +29,6 @@
 
    
     <div class="menu-bar">
-
-
         <div class="menu-bar-main mobile-menu-bar-main">
             <div class="menu-bar-title menu-bar-title-mobile" >
                 Editing: @Model.DisplayTitle
@@ -91,13 +89,13 @@
 
         <div class="menu-bar-escape mobile-menu-bar-escape">
             <div class="menu-bar-item">
-                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-return" value="Return" id="return" />
+                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-return" value="Return" id="return" onclick="set_form_submitting_true()" />
             </div>
             <div class="menu-bar-item">
-                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" value="Save" id="save" />
+                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" value="Save" id="save" onclick="set_form_submitting_true()" />
             </div>
             <div class="menu-bar-item-right-final">
-                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-revision" value="Revision" id="revision" />
+                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-revision" value="Revision" id="revision" onclick="set_form_submitting_true()" />
             </div>
         </div>
 

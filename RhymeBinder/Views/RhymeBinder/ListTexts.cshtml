@@ -46,7 +46,14 @@
                 @Model.MenuTitle
             </div>
             <div class="menu-bar-item">
-                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>
+                @if(Model.View.GroupSequence == true)
+                {
+                    <a class="menu-bar-button" onclick="show_sequence_inputs(@Model.View.SavedViewId)" id="updateSequenceButton">Edit Sequence</a>
+                }
+                else
+                {
+                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>                    
+                }
             </div>
             <div class="menu-bar-dropdown">
                 <div class="menu-bar-button-dropdown">
@@ -91,28 +98,7 @@
                         <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
                     }
 
-                    @*                    // previously used when setting groups individually from dropdowns
-
-                        @if(Model.Groups.Count > 3)
-                    {
-                        <a class="menu-bar-dropdown-item" >――――――――</a>
-                        <a class="menu-bar-dropdown-item">Add to Group... </a>
-                        @foreach (var group in Model.Groups)
-                        {
-                            if (!group.Locked && group.TextGroupId > 0)
-                            {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupAdd', @group.TextGroupId)">  + @group.GroupTitle</a>
-                            }
-                        }
-                        <a class="menu-bar-dropdown-item">Remove from Group... </a>
-                        @foreach (var group in Model.Groups)
-                        {
-                            if (!group.Locked && group.TextGroupId > 0)
-                            {
-                                <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupRemove', @group.TextGroupId)">  - @group.GroupTitle</a>
-                            }
-                        }                        
-                    }*@
+                  
 
                 </div>
             </div>
@@ -157,6 +143,9 @@
                     @if(Model.View.GroupSequence == true)
                     {
                         <th name="group_sequence_col" id="Sequence" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');" width="5px"><a>Sequence</a></th>
+                    } else
+                    {
+                        <th></th>
                     }
                     <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
                     <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
@@ -167,6 +156,25 @@
                     <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
                     <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
                 </tr>
+
+                @* Insert a row with a link to view all texts in sequence *@
+                @if(Model.View.GroupSequence == true && Model.TextHeaders.Any(x => x.GroupSequence.HasValue))
+                {
+                    <tr>
+
+                        <td style="text-align: right"></td>
+                        <td></td>
+                        <td><a class="link-item" href="/RhymeBinder/ViewTextsInSequence?groupId=@Model.View.SetValue">View All Texts in Sequence</a></td>
+                        <td style="text-align: center" name="last_modified_col"></td>
+                        <td style="text-align: center" name="last_modified_by_col"></td>
+                        <td style="text-align: center" name="created_col"></td>
+                        <td style="text-align: center" name="created_by_col"></td>
+                        <td style="text-align: center" name="vision_col"></td>
+                        <td style="text-align: center" name="revision_col"></td>
+                        <td name="groups_col">
+                        </td>
+                    </tr>
+                }
 
                 @foreach (var text in Model.TextHeaders)
                 {
@@ -180,9 +188,13 @@
                         @if(Model.View.GroupSequence == true)
                         {
                             <td style="text-align: center" name="group_sequence_col">
-                                <input type="number" min="0" max="9999" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" onfocusout="selected_action_form_submit('UpdateGroupSequence', '@Model.View.SavedViewId')"/>
-                     
+                                <input type="number" min="0" max="99999" class="sequence-number-input" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" hidden/>
+                                <div name="groupSequence">@text.GroupSequence</div>
                             </td>
+                        }
+                        else
+                        {
+                            <td></td>
                         }
                         <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
