@@ -148,13 +148,13 @@
                 </div>
 
                 <div class="dialog-modal-content-item-warn-confirm">
-                    Yes, I want to duplicate this binder: <input type="checkbox" name="verifyDuplicate" />
+                    Yes, I want to duplicate this binder: <input type="checkbox" id="confirmDuplicateCheckbox" name="verifyDuplicate" onclick="set_modal_submit_button_availability(this.id, 'duplicateSubmitButton')" />
                 </div>
             </div>
 
             <div class="dialog-modal-footer">
-                <a class="button menu-bar-button" onclick="close_modal_with_id('duplicate')">Cancel</a>
-                <input type="submit" name="action" class="button menu-bar-button" value="Duplicate" />
+                <a class="menu-bar-button" onclick="close_modal_with_id('duplicate')">Cancel</a>
+                <input type="submit" class="menu-bar-button" name="action" id="duplicateSubmitButton" value="Duplicate" disabled />
             </div>
         </div>
 
@@ -177,13 +177,13 @@
                 <div class="dialog-modal-content-item">
                 </div>
                 <div class="dialog-modal-content-item-warn-confirm">
-                    Yes, I want to clear this binder: <input type="checkbox" name="verifyClear" />
+                    Yes, I want to clear this binder: <input type="checkbox" id="confirmClearCheckbox" name="verifyClear" onclick="set_modal_submit_button_availability(this.id, 'clearSubmitButton')" />
                 </div>
             </div>
 
             <div class="dialog-modal-footer">
-                <a class="button menu-bar-button" onclick="close_modal_with_id('clear')">Cancel</a>
-                <input type="submit" name="action" class="button menu-bar-button" value="Clear" />
+                <a class="menu-bar-button" onclick="close_modal_with_id('clear')">Cancel</a>
+                <input type="submit" name="action" class="menu-bar-button" id="clearSubmitButton" value="Clear" disabled />
             </div>
         </div>
 
@@ -205,13 +205,13 @@
                 <div class="dialog-modal-content-item">
                 </div>
                 <div class="dialog-modal-content-item-warn-confirm">
-                    Yes, I want to delete this binder: <input type="checkbox" name="verifyDelete" />
+                    Yes, I want to delete this binder: <input type="checkbox" id="confirmDeleteCheckbox" name="verifyDelete" onclick="set_modal_submit_button_availability(this.id, 'deleteSubmitButton')" />
                 </div>
             </div>
 
             <div class="dialog-modal-footer">
-                <a class="button menu-bar-button" onclick="close_modal_with_id('delete')">Cancel</a>
-                <input type="submit" name="action" class="button menu-bar-button" value="Delete" />
+                <a class="menu-bar-button" onclick="close_modal_with_id('delete')">Cancel</a>
+                <input type="submit" name="action" class="menu-bar-button" id="deleteSubmitButton" value="Delete" disabled/>
             </div>
         </div>
 
@@ -234,13 +234,14 @@
                 <div class="dialog-modal-content-item">
                 </div>
                 <div class="dialog-modal-content-item-warn-confirm">
-                        Yes, I want to delete this binder and all contents within: <input type="checkbox" name="verifyDeleteAll" />
+                    Yes, I want to delete this binder and all contents within: <input type="checkbox" id="confirmDeleteAllCheckbox" name="verifyDeleteAll" onclick="set_modal_submit_button_availability(this.id, 'deleteAllSubmit')" />
                 </div>
             </div>
 
             <div class="dialog-modal-footer">
-                <a class="button menu-bar-button" onclick="close_modal_with_id('deleteAll')">Cancel</a>
-                <input type="submit" name="action" class="button menu-bar-button" value="Delete All" />
+                <a class="menu-bar-button" onclick="close_modal_with_id('deleteAll')">Cancel</a>
+                <input type="submit" name="action" class="menu-bar-button" id="deleteAllSubmit" value="Delete All" disabled/>
+
             </div>
         </div>
 

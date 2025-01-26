@@ -1,5 +1,6 @@
 ﻿var formSubmit = false;
 var hasUnsavedChanges = false;
+var submitButton = document.getElementById("submitButton");
 function SetEventListeners() {
     // We want the editable area texts to be copied to the input areas of the form
     let input = document.getElementById("edit_area");
@@ -18,7 +19,7 @@ function SetEventListeners() {
 
             if (e.key === "s" && isCtrl) {
                 e.preventDefault();
-                document.getElementById("save").click();
+                SubmitForm();
             }
         });
 
@@ -29,7 +30,6 @@ function SetEventListeners() {
         if (formSubmit || !hasUnsavedChanges) {
             return undefined;
         }
-
         var confirmationMessage = "You have unsaved changes. If you continue, your changes will be lost!";
 
         (e || window.event).returnValue = confirmationMessage; //Gecko + IE
@@ -125,4 +125,41 @@ function CopyContentToForm() {
 
 function SetFormSubmit(){
     formSubmit = true;
+}
+
+function SubmitForm() {
+    SetFormSubmit();
+    RemoveUnchangedElements();
+    submitButton.click();
+}
+
+function RemoveUnchangedElements() {
+    // Running  up against an error when submitting a long (novel length) text
+    // to address -- removing all entries that are unchanged and wouldn't need to be saved
+    // to minimuze post space
+    var savedTextHeaderIds = document.getElementsByClassName("textHeaderIds");
+    var savedTitles = document.getElementsByClassName("textTitles");
+    var savedTexts = document.getElementsByClassName("textBodies");
+    var savedSequenceNumber = document.getElementsByClassName("sequenceNumber");
+
+    var formTextHeaderIds = document.getElementsByClassName("editedTextHeaderIds");
+    var formSubmitTitles = document.getElementsByClassName("editedTextTitles");
+    var formSubmitTexts = document.getElementsByClassName("editedTextBodies");
+    var formSequenceNumber = document.getElementsByClassName("editedSequenceNumber");
+
+    var changedValues = document.getElementsByClassName("editedTextIsChanged");
+
+    for (let i = 0; i < savedTextHeaderIds.length; i++)
+    {
+        if (changedValues[i].value == "false") {
+            savedTextHeaderIds[i].remove();
+            savedTitles[i].remove();
+            savedTexts[i].remove();
+            savedSequenceNumber[i].remove();
+            formTextHeaderIds[i].remove();
+            formSubmitTitles[i].remove();
+            formSubmitTexts[i].remove();
+            formSequenceNumber[i].remove();
+        }
+    }
 }

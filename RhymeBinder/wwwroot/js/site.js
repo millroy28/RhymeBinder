@@ -140,6 +140,14 @@ function submit_modal(view) {
     return;
 }
 
+function set_modal_submit_button_availability(checkboxId, buttonId) {
+    if (document.getElementById(checkboxId).checked == true) {
+        document.getElementById(buttonId).disabled = false;
+    } else {
+        document.getElementById(buttonId).disabled = true;
+    }
+}
+
 function populate_list_modal_footer_with_record_count_message() {
     var checkedBoxes = 0;
     var inputs = document.getElementsByTagName("input");

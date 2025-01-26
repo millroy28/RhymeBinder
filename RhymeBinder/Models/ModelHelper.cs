@@ -1618,7 +1618,7 @@ namespace RhymeBinder.Models
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
-            viewToUpdate.GroupSequence = (bool)savedView.View.GroupSequence;
+            viewToUpdate.GroupSequence = savedView.View.GroupSequence ?? false;
             viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
             viewToUpdate.SearchValue = savedView.View.SearchValue;
 

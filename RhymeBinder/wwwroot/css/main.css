@@ -508,13 +508,14 @@
 
     .menu-bar-button {
         font-weight: 600;
+        font-size: inherit;
         color: black;
         /*    background-color: #afc33c;
 */
         background-color: transparent;
         border-color: transparent;
         padding: 4px !important;
-        margin: 0px !important;
+        margin-left: 9px !important;
         border: 0px !important;
         /*    border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -1611,13 +1612,14 @@ display:none;
         background-color: transparent;
         border-color: transparent;
         padding: 4px !important;
-        margin: 0px !important;
+        margin-left: 9px !important;
         border: 0px !important;
         /*    border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border-top-right-radius: 4px;*/
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         text-decoration: none;
+        font-size: inherit;
     }
 
         .menu-bar-button:disabled {
