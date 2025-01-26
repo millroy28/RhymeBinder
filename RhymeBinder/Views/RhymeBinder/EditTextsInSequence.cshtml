@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewData["Title"] = "Edit Texts In Group Sequence";
+}
+
+@model DisplaySequencedTexts
+@{ int i = 0; }
+
+
+<form acion="EditTextsInSequence" class="sequence-view-wrapper" method="post" id="edit">
+    <input type="submit" name="action" onclick="SetFormSubmit()" value="Save" id="submitButton" hidden />
+
+    <div class="menu-bar">
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile">
+                Viewing: @Model.BinderName - @Model.GroupName
+            </div>
+        </div>
+
+        <div class="menu-bar-escape mobile-menu-bar-escape">
+            <div class="menu-bar-item-right-final">
+                <a class= "menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
+            </div>
+            <div class="menu-bar-item-right-final">
+                <input type="button" class="menu-bar-button mobile-menu-bar-button-save" onclick="SubmitForm()" id="save" value="Save" disabled>
+            </div>
+        </div>
+
+    </div>
+
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <div class="sequence-block-body" id="edit_area">
+        @foreach (var text in Model.SimpleTexts)
+        {
+               
+                <div class="sequence-title"  contenteditable="true" >@text.Title</div>
+                <hr style="border-top: 1px dashed dimgray;" />
+@*                 // Add sequence info here - sequence number,created by, modified by, timestamps *@
+                <div class="sequence-text"  contenteditable="true" >@text.TextBody</div>
+                <hr style="border-top: 1px solid dimgray;" />
+
+            <div id="modelContainer[@i]"> @* js function will remove this node for any models where IsChanged = false to cut down on size of post *@
+                <input type="hidden" name="SimpleTexts[@i].Title" class="textTitles" value="@text.Title" id="title" />
+                <input type="hidden" name="SimpleTexts[@i].TextBody" class="textBodies" value="@text.TextBody" id="textBody" />
+                <input type="hidden" name="SimpleTexts[@i].SequenceNumber" class="sequenceNumber" value="@text.SequenceNumber" id="sequenceNumber" />
+                <input type="hidden" name="EditedSimpleTexts[@i].Title" class="editedTextTitles" value="@text.Title" id="editedTitle" />
+                <input type="hidden" name="EditedSimpleTexts[@i].TextBody" class="editedTextBodies" value="@text.TextBody" id="editedTextBody" />
+                <input type="hidden" name="EditedSimpleTexts[@i].SequenceNumber" class="editedSequenceNumber" value="@text.SequenceNumber" id="editedSequenceNumber" />
+            </div>
+            <input type="hidden" name="SimpleTexts[@i].TextHeaderId" class="textHeaderIds" value="@text.TextHeaderId" id="textHeaderId" />
+            <input type="hidden" name="EditedSimpleTexts[@i].TextHeaderId" class="editedTextHeaderIds" value="@text.TextHeaderId" id="editedTextHeaderId" />
+            <input type="hidden" name="EditedSimpleTexts[@i].IsChanged" id="isChanged[@i]" class="editedTextIsChanged" value="false" />
+
+            i++;
+        }
+
+    </div>
+
+</form>
+
+
+<script language="Javascript" src="~/js/sequenceView.js"></script>
+<script language="Javascript">
+    SetEventListeners();
+</script>
+
+

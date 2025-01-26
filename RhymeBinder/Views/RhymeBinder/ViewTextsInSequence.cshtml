@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "View Texts In Group Sequence";
+}
+
+@model DisplaySequencedTexts
+
+<div class="sequence-view-wrapper" >
+
+    <div class="menu-bar">
+        <div class="menu-bar-main mobile-menu-bar-main">
+            <div class="menu-bar-title menu-bar-title-mobile">
+                Viewing: @Model.BinderName - @Model.GroupName
+            </div>
+        </div>
+
+        <div class="menu-bar-escape mobile-menu-bar-escape">
+            <div class="menu-bar-item-right-final">
+                <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
+            </div>
+            <div class="menu-bar-item-right-final">
+                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sequence-block-body" id="edit_area">
+        @foreach (var text in Model.SimpleTexts)
+        {
+            <div class="sequence-title" style="border-left-style: none">@text.Title</div>
+            <hr style="border-top: 1px dashed dimgray;" />
+            <div class="sequence-text" style="border-left-style: none">@text.TextBody</div>
+            <hr style="border-top: 1px solid dimgray;" />
+        }
+
+    </div>
+
+</div>
+
+
+
+

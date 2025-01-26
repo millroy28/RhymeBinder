@@ -9,6 +9,26 @@ input.addEventListener("keydown", (e) => {
 });
 
 
+//-----------Listener to submit on ctrl+s
+var isCtrl = false;
+window.addEventListener('load', function () {
+    window.addEventListener('keydown', function (e) {
+        if (e.key === "Control") {
+            e.preventDefault();
+            isCtrl = true;
+        }
+
+        if (e.key === "s" && isCtrl) {
+            e.preventDefault();
+            document.getElementById("save").click();;
+        }
+    });
+
+});
+
+
+
+
 //-----------Code for drawers
 var drawer = function () {
 

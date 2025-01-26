@@ -1,4 +1,5 @@
 ﻿var button;
+var showSequence = 0;
 
 //--------HIDING/SHOWING ELEMENTS-------------------------------------------------------
 function toggle_hide_element(formElementID, clickElementID, hideableElementName, init) {
@@ -80,6 +81,17 @@ function hide_element(element){
     element.hidden = true;
     return;
 }
+function show_sequence_inputs(savedViewId) {
+    var inputs = document.getElementsByClassName("sequence-number-input");
+    var numbers = document.getElementsByName("groupSequence");
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].hidden = false;
+        numbers[i].hidden = true;
+    }
+    let sequenceButton = document.getElementById("updateSequenceButton");
+    sequenceButton.onclick = function () { selected_action_form_submit('UpdateGroupSequence', savedViewId); };
+    sequenceButton.innerText = "Update Sequence";
+}
 
 
 //--------MODALS------------------------------------------------------------------------
@@ -96,7 +108,10 @@ function open_group_list_modal_with_id(elementId, view) {
     return;
 }
 
-
+function open_modal_with_Id(elementId) {
+    document.getElementById(elementId).style.display = "inline";
+    document.body.style.pointerEvents = "none";
+}
 function close_modal_with_id(elementId, view) {
     if (view == 'ListTexts') {
         populate_group_selected_text_header_counts();
@@ -107,6 +122,10 @@ function close_modal_with_id(elementId, view) {
     document.getElementById(elementId).style.display = "none";
     document.body.style.pointerEvents = 'all';
     return;
+}
+function close_modal_with_id(elementId) {
+    document.getElementById(elementId).style.display = "none";
+    document.body.style.pointerEvents = 'all';
 }
 
 function submit_modal(view) {
@@ -119,6 +138,14 @@ function submit_modal(view) {
         selected_action_form_submit('Save', 1);
     }
     return;
+}
+
+function set_modal_submit_button_availability(checkboxId, buttonId) {
+    if (document.getElementById(checkboxId).checked == true) {
+        document.getElementById(buttonId).disabled = false;
+    } else {
+        document.getElementById(buttonId).disabled = true;
+    }
 }
 
 function populate_list_modal_footer_with_record_count_message() {
@@ -291,6 +318,7 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
 
 //--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
 function selected_action_form_submit(actionValue, recordId) {
+    console.log("I am being submitted!");
     // group Id value stored in form under id 'record_id'
     document.getElementById("record_id").value = recordId;
     sub_form(actionValue);
