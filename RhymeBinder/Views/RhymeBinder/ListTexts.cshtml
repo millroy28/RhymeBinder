@@ -32,6 +32,8 @@
     <input type="hidden" name="View.VisionNumber" value="@Model.View.VisionNumber.ToString()" id="view_vision_number" />
     <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
     <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
+    <input type="hidden" name="View.WordCount" value="@Model.View.WordCount.ToString()" id="view_word_count" />
+    <input type="hidden" name="View.CharacterCount" value="@Model.View.CharacterCount.ToString()" id="view_char_count" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
     <input type="hidden" name="View.BinderId" value="@Model.View.BinderId" />
     <input type="hidden" name="Page" value="@Model.Page" id="page" />
@@ -60,6 +62,9 @@
                     <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
                     <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
                     <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_groups', this.id, 'groups_col')" id="toggle_groups">? Groups</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_word_count', this.id, 'wordcount_col')" id="toggle_wordcount">? Word Count</a>
+                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_char_count', this.id, 'charcount_col')" id="toggle_charcount">? Character Count</a>
+
 
                 </div>
             </div>
@@ -166,6 +171,8 @@
                     <th name="vision_col" id="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
                     <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
                     <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
+                    <th name="wordcount_col" id="Word Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Word Count</a></th>
+                    <th name="charcount_col" id="Character Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Character Count</a></th>
                 </tr>
 
                 @foreach (var text in Model.TextHeaders)
@@ -197,6 +204,8 @@
                                     <a class="link-item"   onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
                                 }
                         </td>
+                        <td style="text-align: center" name="wordcount_col">@text.WordCount</td>
+                        <td style="text-align: center" name="charcount_col">@text.CharacterCount</td>
                     </tr>
                     { index++; }
                 }
@@ -304,6 +313,8 @@
     window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
     window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
     window.onload = toggle_hide_element('view_groups', 'toggle_groups', 'groups_col', 'init');
+    window.onload = toggle_hide_element('view_word_count', 'toggle_wordcount', 'wordcount_col', 'init');
+    window.onload = toggle_hide_element('view_char_count', 'toggle_charcount', 'charcount_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
 </script>
 </form>

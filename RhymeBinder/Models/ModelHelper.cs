@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Plugins;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -263,7 +265,11 @@ namespace RhymeBinder.Models
                         GroupCount = groupCount,
                         Selected = binder.Selected,
                         CreatedByName = GetUserName(binder.CreatedBy),
-                        ModifyByName = GetUserName(binder.LastModifiedBy)
+                        ModifyByName = GetUserName(binder.LastModifiedBy),
+                        LastAccessed = binder.LastAccessed,
+                        LastAccessedByName = GetUserName(binder.LastAccessedBy),
+                        LastWorkedIn = binder.LastWorkedIn,
+                        WorkedInName = GetUserName(binder.LastWorkedInBy)
                     });
 
                 }
@@ -434,7 +440,9 @@ namespace RhymeBinder.Models
                     ModifyByName = GetUserName(textHeader.LastModifiedBy),
                     ReadByName = GetUserName(textHeader.LastReadBy),
                     RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
-                    GroupSequence = groupSequence
+                    GroupSequence = groupSequence,
+                    CharacterCount = textHeader.CharacterCount,
+                    WordCount = textHeader.WordCount
                 }); 
             }
 
@@ -1045,6 +1053,18 @@ namespace RhymeBinder.Models
 
             return userLocalNow;                        
         }
+        public int GetWordCount(string text)
+        {
+            int count = 0;
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                char[] delimiters = new char[] { ' ', '\r', '\n' };
+                count = text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Length;
+            }
+
+            return count;
+        }
 
         #endregion
 
@@ -1399,6 +1419,9 @@ namespace RhymeBinder.Models
             origHeader.LastModifiedBy = textEdit.UserId;
             origHeader.TextRevisionStatusId = textEdit.TextRevisionStatusId;
 
+            origHeader.CharacterCount = textEdit.TextBody.Length;
+            origHeader.WordCount = GetWordCount(textEdit.TextBody);
+
             status = Update<TextHeader>(origHeader);
             if (!status.success) { return status; }
 
@@ -1421,6 +1444,11 @@ namespace RhymeBinder.Models
             thisEditWindowProperty.ShowParagraphCount = textEdit.ShowParagraphCount;
 
             status = Update<EditWindowProperty>(thisEditWindowProperty);
+
+            if (status.success)
+            {
+                status = UpdateBinderLastWorkedIn(origHeader.BinderId, textEdit.UserId);
+            }
             if (!status.success) { return status; }           
             else
             {
@@ -1555,6 +1583,8 @@ namespace RhymeBinder.Models
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
             viewToUpdate.GroupSequence = (bool)savedView.View.GroupSequence;
+            viewToUpdate.WordCount = (bool)savedView.View.WordCount;
+            viewToUpdate.CharacterCount = (bool)savedView.View.CharacterCount;
             viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
             viewToUpdate.SearchValue = savedView.View.SearchValue;
 
@@ -1594,6 +1624,8 @@ namespace RhymeBinder.Models
             defaultSavedView.RevisionStatus = newDefaults.RevisionStatus;
             defaultSavedView.Groups = newDefaults.Groups;
             defaultSavedView.GroupSequence = newDefaults.GroupSequence;
+            defaultSavedView.WordCount = newDefaults.WordCount;
+            defaultSavedView.CharacterCount = newDefaults.CharacterCount;
 
             try
             {
@@ -1656,6 +1688,8 @@ namespace RhymeBinder.Models
             activeView.RevisionStatus = defaultView.RevisionStatus;
             activeView.Groups = defaultView.Groups;
             activeView.GroupSequence = defaultView.GroupSequence;
+            activeView.WordCount = defaultView.WordCount;
+            activeView.CharacterCount = defaultView.CharacterCount;
 
             try
             {
@@ -1906,6 +1940,8 @@ namespace RhymeBinder.Models
                 RevisionStatus = false,
                 Groups = false,
                 GroupSequence = false,
+                WordCount = false,
+                CharacterCount = false,
                 BinderId = binderId,
 
             };
@@ -1928,6 +1964,8 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                WordCount = false,
+                CharacterCount = false,
                 GroupSequence = false,
                 BinderId = binderId,
 
@@ -1951,6 +1989,8 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                WordCount = false,
+                CharacterCount = false,
                 GroupSequence = false,
                 BinderId = binderId
             };
@@ -1974,6 +2014,8 @@ namespace RhymeBinder.Models
                 RevisionStatus = false,
                 Groups = false,
                 GroupSequence = false,
+                WordCount = false,
+                CharacterCount = false,
                 BinderId = binderId
             };
 
@@ -2079,6 +2121,27 @@ namespace RhymeBinder.Models
             return status;
 
         } 
+        public Status UpdateBinderLastWorkedIn(int binderId, int userId)
+        {
+            Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(userId);
+            Binder thisBinder = _context.Binders.Single(x => x.BinderId == binderId);
+            thisBinder.LastWorkedIn = userLocalNow;
+            thisBinder.LastWorkedInBy = userId;
+            try
+            {
+                _context.Entry(thisBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisBinder);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failure to update Binder";
+            }
+            return status;
+        }
         public Status MoveAllBinderContents(int binderSourceId, int binderDestinationId)
         {
             Status status = new Status();
@@ -2613,6 +2676,9 @@ namespace RhymeBinder.Models
                         status.recordId = -1;
                         status.message = "Failed to add selected texts to selected groups";
                     }
+                } else
+                {
+                    status.success = true;
                 }
             }
 
@@ -2726,6 +2792,8 @@ namespace RhymeBinder.Models
                     RevisionStatus = defaultSavedView.RevisionStatus,
                     Groups = defaultSavedView.Groups,
                     GroupSequence = defaultSavedView.GroupSequence,
+                    WordCount = defaultSavedView.WordCount,
+                    CharacterCount = defaultSavedView.CharacterCount,
                     BinderId = defaultSavedView.BinderId
                 };
 

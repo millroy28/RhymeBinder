@@ -35,6 +35,8 @@ namespace RhymeBinder.Models
         public bool? Top { get; set; }
         public int BinderId { get; set; }
         public int TextNoteId { get; set; }
+        public int? CharacterCount { get; set; }
+        public int? WordCount { get; set; }
 
         public virtual Binder Binder { get; set; }
         public virtual SimpleUser CreatedByNavigation { get; set; }

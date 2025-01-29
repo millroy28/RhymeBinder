@@ -31,6 +31,10 @@
                     <th name="name_col" id="Name" align="center"><a>Name</a></th>
                     <th name="text_count_col" id="Text Count" align="center"><a>Text Count</a></th>
                     <th name="group_count_col" id="Group Count" align="center"><a>Group Count</a></th>
+                    <th  align="center"><a>Last Read</a></th>
+                    <th  align="center"><a>Last Read By</a></th>
+                    <th align="center"><a>Last Worked In</a></th>
+                    <th align="center"><a>Last Worked In By</a></th>
                     <th name="last_modified_col" id="Last Modified" align="center"><a>Last Modified</a></th>
                     <th name="last_modified_by_col" id="Last Modified By" align="center" ><a>Last Modified By</a></th>
                     <th name="created_col" id="Created" align="center"><a>Created</a></th>
@@ -66,6 +70,10 @@
                         <td><a class="link-item" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binder.Name</a></td>
                         <td name="text_count_col" align="center">@binder.PageCount</td>
                         <td name="group_count_col" align="center">@binder.GroupCount</td>
+                        <td align="center">@binder.LastAccessed</td>
+                        <td align="center">@binder.LastAccessedByName</td>
+                        <td align="center">@binder.LastWorkedIn</td>
+                        <td align="center">@binder.WorkedInName</td>
                         <td name="last_modified_col "align="center">@binder.LastModified</td>
                         <td name="last_modified_by_col" align="center">@binder.ModifyByName</td>
                         <td name="created_col" align="center">@binder.Created</td>

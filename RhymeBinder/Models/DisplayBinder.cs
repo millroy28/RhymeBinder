@@ -8,6 +8,8 @@ namespace RhymeBinder.Models
         public int GroupCount { get; set; }
         public string CreatedByName { get; set; }
         public string ModifyByName { get; set; }
+        public string LastAccessedByName { get; set; }
+        public string WorkedInName { get; set; }
 
     }
 }
