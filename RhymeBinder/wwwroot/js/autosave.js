@@ -23,6 +23,23 @@ var current_title_cursor_position;
 var previous_title_cursor_position;
 var keyup_timer;
 var timeout_timer;
+var is_form_submitting = false;
+
+//-----------Warn user before navigating away from page if there is unsaved changes
+window.addEventListener("beforeunload", function (e) {
+    if (is_content_different == 0  || is_form_submitting) {
+        return undefined;
+    }
+    var confirmationMessage = "You have unsaved changes. If you continue, your changes will be lost!";
+
+    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+});
+
+function set_form_submitting_true() {
+    is_form_submitting = true;
+}
+
 
 function reset_autosave_timer() {
     autosave_timer = 10; //seconds before autosaving
@@ -112,6 +129,9 @@ function wait_for_typing_to_finish_before_saving() {
         document.getElementById('title_cursor_position').value = current_title_cursor_position;
         document.getElementById('form_focus').value = current_focus_element;
         //document.getElementById('edit').submit();
+
+        set_form_submitting_true();
+
         button = document.getElementById('save');
         button.click();
         return;
@@ -203,4 +223,5 @@ autosave_counter();  //this is the one that runs continuously
 }
 
 run_these_functions_on_page_load();
+
 

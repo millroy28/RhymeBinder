@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RhymeBinder.Models
 {
@@ -16,6 +18,8 @@ namespace RhymeBinder.Models
             TextRecords = new HashSet<TextRecord>();
         }
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TextHeaderId { get; set; }
         public int TextId { get; set; }
         public string Title { get; set; }
