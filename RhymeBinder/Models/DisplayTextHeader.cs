@@ -17,5 +17,7 @@ namespace RhymeBinder.Models
         public List<TextGroup> Groups { get; set; }
         public bool Selected { get; set; }
         public int? GroupSequence { get; set; }
+        public new int WordCount {  get; set; }
+        public new int CharacterCount {  get; set; }
     }
 }

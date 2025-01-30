@@ -243,11 +243,16 @@ namespace RhymeBinder.Models
                 List<TextGroup> textGroups = _context.TextGroups.Where(x => x.Owner.UserId == userId
                                                                          && x.Hidden == false).ToList();
 
-                int textCount; int groupCount;
+                int textCount; int groupCount; int wordCount; int characterCount;
 
                 foreach (var binder in binders)
                 {
-                    textCount = textHeaders.Where(x => x.BinderId == binder.BinderId).Count();
+                    List<TextHeader> headers = textHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
+                    textCount = headers.Count();
+
+                    characterCount = headers.Sum(x => x.CharacterCount ?? 0);
+
+                    wordCount = headers.Sum(x => x.WordCount ?? 0);
 
                     groupCount = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroups in groupLinks
                                   join TextHeader header in textHeaders
@@ -271,6 +276,8 @@ namespace RhymeBinder.Models
                         Description = binder.Description,
                         PageCount = textCount,
                         GroupCount = groupCount,
+                        CharacterCount = characterCount,
+                        WordCount = wordCount,
                         Selected = binder.Selected,
                         CreatedByName = GetUserName(binder.CreatedBy),
                         ModifyByName = GetUserName(binder.LastModifiedBy),
@@ -449,8 +456,8 @@ namespace RhymeBinder.Models
                     ReadByName = GetUserName(textHeader.LastReadBy),
                     RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
                     GroupSequence = groupSequence,
-                    CharacterCount = textHeader.CharacterCount,
-                    WordCount = textHeader.WordCount
+                    CharacterCount = textHeader.CharacterCount ?? 0,
+                    WordCount = textHeader.WordCount ?? 0
                 }); 
             }
 
@@ -1659,7 +1666,6 @@ namespace RhymeBinder.Models
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
-            viewToUpdate.GroupSequence = (bool)savedView.View.GroupSequence;
             viewToUpdate.WordCount = (bool)savedView.View.WordCount;
             viewToUpdate.CharacterCount = (bool)savedView.View.CharacterCount;
             viewToUpdate.GroupSequence = savedView.View.GroupSequence ?? false;
