@@ -22,9 +22,18 @@
                     <a class="menu-bar-dropdown-item" href="/RhymeBinder/CreateBinder">New Binder</a>
                  </div>
             </div>
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    View ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" id="show_list_view" onclick="ShowListView()">  List View</a>
+                    <a class="menu-bar-dropdown-item" id="show_shelf_view" onclick="ShowShelfView()">► Shelf View</a>
+                </div>
+            </div>
         </div>
 
-        <div class="table-view-table-container">
+        <div class="table-view-table-container" id="list_view" hidden>
             <table>
                 <tr>
                     <th name="selected_col" id="Selected" align="center">Current</th>
@@ -90,6 +99,12 @@
 
             </table>
         </div>
+
+
+
+        <div class="table-view-table-container" id="shelf_view">
+            <div>Test!</div>
+        </div>
     </div>
 
-
+<script language="Javascript" src="~/js/binderView.js"></script>
