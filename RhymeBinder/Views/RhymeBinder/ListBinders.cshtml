@@ -100,11 +100,58 @@
             </table>
         </div>
 
+        <div class="shelf-view-container" id="shelf_view">
+
+                <div class="shelf-view-shelf">
+
+                    <div class="shelf-view-shelf-shelfspace">
+                        space
+                    </div>
+
+                </div>
+                <div class="shelf-view-shelf">
+                    <div class="shelf-view-shelf-shelfspace">
+
+                        @foreach (var binder in Model)
+                        {
+                            <div class="shelf-view-binder" id="binder-plate" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">
+                                <div class="shelf-view-binder-top-block">
+                                </div>
+                                <div class="shelf-view-binder-med-block">
+
+                                    <div class="shelf-view-binder-card">
+                                        <div class="shelf-view-binder-card-title">
+                                            @binder.Name
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="shelf-view-binder-btm-block">
+
+                                    <div class="shelf-view-binder-edit">
+                                        <a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Edit</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                      }
+
+                    </div>
+
+                </div>
+                <div class="shelf-view-shelf">
+                    <div class="shelf-view-shelf-shelfspace">
+                        space
+                    </div>
+                </div>
 
 
-        <div class="table-view-table-container" id="shelf_view">
-            <div>Test!</div>
-        </div>
+
+
+
+            </div>
+
+        
     </div>
 
 <script language="Javascript" src="~/js/binderView.js"></script>
