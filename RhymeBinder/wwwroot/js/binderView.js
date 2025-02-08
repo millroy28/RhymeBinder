@@ -13,3 +13,8 @@ function ShowShelfView() {
     document.getElementById("shelf_view").style.display = "grid";
     document.getElementById("list_view").hidden = true;
 }
+
+//function SetBinderWidthByContentSize() {
+//    var binderContainers = document.getElementsByClassName("shelf-view-binder");
+
+//}

@@ -102,52 +102,32 @@
 
         <div class="shelf-view-container" id="shelf_view">
 
-                <div class="shelf-view-shelf">
 
                     <div class="shelf-view-shelf-shelfspace">
-                        space
+                        placeholder
                     </div>
 
-                </div>
-                <div class="shelf-view-shelf">
+
                     <div class="shelf-view-shelf-shelfspace">
 
-                        @foreach (var binder in Model)
+                        @foreach (var binder in Model.Where(x => x.BinderId < 60))
                         {
-                            <div class="shelf-view-binder" id="binder-plate" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">
-                                <div class="shelf-view-binder-top-block">
-                                </div>
-                                <div class="shelf-view-binder-med-block">
+                        
+                            int width = 40 + 20 * (binder.CharacterCount / 200000);
+                            string widthTag = $"width: {width.ToString()}px";
 
+                            <div class="shelf-view-binder" style="@widthTag" >
                                     <div class="shelf-view-binder-card">
-                                        <div class="shelf-view-binder-card-title">
-                                            @binder.Name
-                                        </div>
-
+                                        <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
+                                        <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
                                     </div>
-                                </div>
-                                <div class="shelf-view-binder-btm-block">
-
-                                    <div class="shelf-view-binder-edit">
-                                        <a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Edit</a>
-                                    </div>
-                                </div>
-
                             </div>
                       }
-
                     </div>
-
-                </div>
-                <div class="shelf-view-shelf">
+    
                     <div class="shelf-view-shelf-shelfspace">
-                        space
+                        placeholder
                     </div>
-                </div>
-
-
-
-
 
             </div>
 
