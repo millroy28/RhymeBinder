@@ -98,9 +98,13 @@ LastModifiedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID),
 [Name] NVARCHAR(1000),
 [Description] NVARCHAR(MAX),
 [Selected] BIT,
+Color VARCHAR (7),
 NewTextDefaultShowLineCount BIT NOT NULL DEFAULT 1,
 NewTextDefaultShowParagraphCount BIT NOT NULL DEFAULT 1,
 TextHeaderTitleDefaultFormat NVARCHAR(200),
+LastWorkedIn DATETIME,
+LastWorkedInBy INT,
+CONSTRAINT FK_Binders_LastWorkedInBy FOREIGN KEY (LastWorkedInBy) REFERENCES SimpleUsers(UserId),
 LastAccessed DATETIME,
 LastAccessedBy INT FOREIGN KEY REFERENCES SimpleUsers(UserID)
 )
@@ -148,6 +152,8 @@ VisionNumber BIT,
 RevisionStatus BIT,
 Groups BIT,
 GroupSequence BIT,
+WordCount BIT,
+CharacterCount BIT,
 BinderID INT FOREIGN KEY REFERENCES Binders(BinderID),
 SearchValue nvarchar (150),
 RecordsPerPage INT NOT NULL
@@ -273,3 +279,13 @@ INSERT INTO TextRevisionStatuses (TextRevisionStatus) VALUES
 ('Polished'),
 ('Finished')
 
+CREATE TABLE Shelves (
+	ShelfId INT IDENTITY (1,1) NOT NULL,
+	CONSTRAINT PK_Shelves PRIMARY KEY (ShelfId),
+	UserId INT NOT NULL,
+	CONSTRAINT FK_Shelves_UserId FOREIGN KEY (UserId) REFERENCES SimpleUsers(UserId),
+	BinderId INT NOT NULL,
+	CONSTRAINT FK_Shelves_BinderId FOREIGN KEY (BinderId) REFERENCES Binders(BinderId),
+	ShelfLevel INT NOT NULL,
+	SortOrder INT NOT NULL
+)

@@ -43,5 +43,6 @@ namespace RhymeBinder.Models
         public virtual ICollection<TextHeader> TextHeaderLastReadByNavigations { get; set; }
         public virtual ICollection<TextHeader> TextHeaderVisionCreatedByNavigations { get; set; }
         public virtual ICollection<TextRecord> TextRecords { get; set; }
+        public virtual ICollection<Shelf> Shelves { get; set; }
     }
 }

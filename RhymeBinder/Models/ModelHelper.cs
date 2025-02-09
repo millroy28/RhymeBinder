@@ -198,7 +198,6 @@ namespace RhymeBinder.Models
                 Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
 
 
-
                 int textCount = _context.TextHeaders.Where(x => x.Top == true
                                                              && x.Deleted == false
                                                              && x.BinderId == binderId).Count();
@@ -215,6 +214,7 @@ namespace RhymeBinder.Models
                 displayBinder.Hidden = binder.Hidden;
                 displayBinder.Name = binder.Name;//binder.Name.Length > 25 ? binder.Name.Substring(0,25) + "..." : binder.Name;
                 displayBinder.Description = binder.Description;
+                displayBinder.Color = binder.Color;
                 displayBinder.Selected = binder.Selected;
                 displayBinder.GroupCount = groupCount;
                 displayBinder.PageCount = textCount;
@@ -247,7 +247,11 @@ namespace RhymeBinder.Models
 
                 foreach (var binder in binders)
                 {
-                    List<TextHeader> headers = textHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
+                    if(_context.Shelves.Any(y => y.BinderId == binder.BinderId && y.UserId == userId))
+                    {
+                        binder.Shelf = _context.Shelves.DefaultIfEmpty().Single(y => y.BinderId == binder.BinderId && y.UserId == userId);
+                    } 
+                    List <TextHeader> headers = textHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
                     textCount = headers.Count();
 
                     characterCount = headers.Sum(x => x.CharacterCount ?? 0);
@@ -279,6 +283,7 @@ namespace RhymeBinder.Models
                         CharacterCount = characterCount,
                         WordCount = wordCount,
                         Selected = binder.Selected,
+                        Color = binder.Color,
                         CreatedByName = GetUserName(binder.CreatedBy),
                         ModifyByName = GetUserName(binder.LastModifiedBy),
                         LastAccessed = binder.LastAccessed,

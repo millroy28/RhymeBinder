@@ -29,10 +29,12 @@ namespace RhymeBinder.Models
         public bool NewTextDefaultShowLineCount { get; set; }
         public bool NewTextDefaultShowParagraphCount { get; set; }
         public string TextHeaderTitleDefaultFormat { get; set; }
+        public string Color { get; set; }
 
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser User { get; set; }
+        public virtual Shelf Shelf { get; set; } 
         public virtual ICollection<SavedView> SavedViews { get; set; }
         public virtual ICollection<TextGroup> TextGroups { get; set; }
         public virtual ICollection<TextHeader> TextHeaders { get; set; }

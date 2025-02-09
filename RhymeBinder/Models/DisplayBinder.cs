@@ -12,6 +12,5 @@ namespace RhymeBinder.Models
         public string ModifyByName { get; set; }
         public string LastAccessedByName { get; set; }
         public string WorkedInName { get; set; }
-
     }
 }

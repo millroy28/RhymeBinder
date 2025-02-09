@@ -112,11 +112,14 @@
 
                         @foreach (var binder in Model.Where(x => x.BinderId < 60))
                         {
-                        
+                            string binderColor = binder.Color ?? "darkred";
+                            binderColor = $"background-color: {binderColor};";
                             int width = 40 + 20 * (binder.CharacterCount / 200000);
                             string widthTag = $"width: {width.ToString()}px";
+                            string stylesTags = binderColor + " " + widthTag;
 
-                            <div class="shelf-view-binder" style="@widthTag" >
+
+                            <div class="shelf-view-binder" style="@stylesTags" >
                                     <div class="shelf-view-binder-card">
                                         <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
                                         <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>

@@ -36,6 +36,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<PublicationRating> PublicationRatings { get; set; }
         public virtual DbSet<PublicationType> PublicationTypes { get; set; }
         public virtual DbSet<SavedView> SavedViews { get; set; }
+        public virtual DbSet<Shelf> Shelves { get; set; }
         public virtual DbSet<SimpleUser> SimpleUsers { get; set; }
         public virtual DbSet<Submission> Submissions { get; set; }
         public virtual DbSet<SubmissionStatus> SubmissionStatuses { get; set; }
@@ -180,6 +181,8 @@ namespace RhymeBinder.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.Property(e => e.Color).HasMaxLength(7);
 
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.BinderCreatedByNavigations)
@@ -429,6 +432,23 @@ namespace RhymeBinder.Models
                     .HasForeignKey(d => d.AspNetUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__SimpleUse__AspNe__39AD8A7F");
+
+            });
+
+            modelBuilder.Entity<Shelf>(entity =>
+            {
+                entity.HasKey(e => e.ShelfId)
+                    .HasName("PK_Shelves");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Shelves)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_Shelves_UserId");
+
+                entity.HasOne(d => d.Binder)
+                    .WithOne(p => p.Shelf)
+                    .HasConstraintName("FK_Shelves_BinderId");
+
 
             });
 
