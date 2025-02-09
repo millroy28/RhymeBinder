@@ -38,6 +38,8 @@ namespace RhymeBinder.Models
 
 
         //  Display fields
+        public string BinderColor { get; set; }
+        public string DisplayTitleColor {  get; set; }
         public string DisplayTitle { get; set; }
         public string CreatedByUserName { get; set; }
         public string LastModifiedByUserName { get; set; }

@@ -635,6 +635,7 @@ namespace RhymeBinder.Models
             //                                           ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
             //                                           : binder.Name + ": " + savedView.ViewName;
             displayTextHeadersAndSavedView.MenuTitle = binder.Name + ": " + savedView.ViewName;
+            displayTextHeadersAndSavedView.MenuTitleColor = GetMenuTextColor(binder.Color);
             displayTextHeadersAndSavedView.View = savedView;
             displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
@@ -827,6 +828,7 @@ namespace RhymeBinder.Models
             //get text groups
             List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
 
+            string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).Color;
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
             {
@@ -855,7 +857,9 @@ namespace RhymeBinder.Models
                 Top = thisTextHeader.Top,
                 BinderId = thisTextHeader.BinderId,
 
-                DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0,20) + "..." : thisTextHeader.Title,
+                BinderColor = binderColor,
+                DisplayTitleColor = GetMenuTextColor(binderColor),
+                DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0, 20) + "..." : thisTextHeader.Title,
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
                 CurrentRevisionStatus = currentRevisionStatus,
@@ -875,8 +879,8 @@ namespace RhymeBinder.Models
 
                 AllRevisionStatuses = revisionStatuses,
                 PreviousTexts = previousTextsAndHeaders,
-              
-            };
+
+            }; 
 
             return (textEdit);
         }
@@ -884,13 +888,16 @@ namespace RhymeBinder.Models
         {
             // To serve view where user can read all texts in a sequence
             TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
+            string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == group.BinderId).Color;
             DisplaySequencedTexts displaySequencedTexts = new()
             {
                 UserId = userId,
                 GroupName = group.GroupTitle,
                 GroupId = group.TextGroupId,
                 BinderId = group.BinderId,
-                BinderName = GetBinderName(group.BinderId)
+                BinderName = GetBinderName(group.BinderId),
+                BinderColor = binderColor,
+                BinderNameColor = GetMenuTextColor(binderColor)
             };
 
             List<TextHeader> textHeaders = GetTextHeadersInGroupSequence(groupId);
@@ -1111,6 +1118,24 @@ namespace RhymeBinder.Models
 
             return count;
         }
+        public string GetMenuTextColor(string hexColor)
+        {
+            if (string.IsNullOrEmpty(hexColor)) return "black";
+            // Remove the # at the start if it's there
+            hexColor = hexColor.TrimStart('#');
+
+            // Parse the hex color to RGB values
+            int r = int.Parse(hexColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+            int g = int.Parse(hexColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+            int b = int.Parse(hexColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+            // Calculate the relative luminance
+            double luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+            // Return "black" or "white" based on luminance
+            return luminance > 0.5 ? "black" : "white";
+        }
+
 
         #endregion
 

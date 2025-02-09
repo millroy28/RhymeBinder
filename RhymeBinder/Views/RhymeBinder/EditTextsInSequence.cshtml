@@ -4,7 +4,17 @@
 }
 
 @model DisplaySequencedTexts
-@{ int i = 0; }
+@{ 
+    int i = 0;
+
+    string binderColorTag = "";
+    if (!string.IsNullOrWhiteSpace(Model.BinderColor))
+    {
+        binderColorTag = $"background-color: {Model.BinderColor};";
+    }
+    string menuTextColorTag = $"color: {Model.BinderNameColor};";
+    string styleTags = binderColorTag + menuTextColorTag;
+}
 
 
 <form acion="EditTextsInSequence" class="sequence-view-wrapper" method="post" id="edit">
@@ -12,7 +22,7 @@
 
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile">
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags">
                 Viewing: @Model.BinderName - @Model.GroupName
             </div>
         </div>

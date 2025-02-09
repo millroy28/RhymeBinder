@@ -15,6 +15,8 @@ namespace RhymeBinder.Models
         public int GroupId { get; set; }
         public int BinderId { get; set; }
         public string BinderName { get; set; }
+        public string BinderColor {  get; set; }
+        public string BinderNameColor {  get; set; }
         public int UserId { get; set; }
     }
     public class DisplaySimpleText

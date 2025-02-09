@@ -5,7 +5,18 @@
 @{
 }
 @model TextEdit
-@{ int groupIndex = 0; } 
+@{
+    int groupIndex = 0; 
+
+    string binderColorTag = "";
+    if (!string.IsNullOrWhiteSpace(Model.BinderColor))
+    {
+        binderColorTag = $"background-color: {Model.BinderColor};";
+    }
+    string menuTextcolorTag = $"color: {Model.DisplayTitleColor};";
+    string styleTags = binderColorTag + menuTextcolorTag;
+}
+ 
 
 
 <form class="editor-view-wrapper" action="EditText" method="post" id="edit">
@@ -30,7 +41,7 @@
    
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" >
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags" >
                 Editing: @Model.DisplayTitle
             </div>
             <div class="menu-bar-item menu-bar-item-mobileHide">

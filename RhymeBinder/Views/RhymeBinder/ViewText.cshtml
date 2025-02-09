@@ -2,9 +2,16 @@
 @{
     ViewData["Title"] = "View Text";
 }
-@{
-}
 @model TextEdit
+@{
+    string binderColorTag = "";
+    if (!string.IsNullOrWhiteSpace(Model.BinderColor))
+    {
+        binderColorTag = $"background-color: {Model.BinderColor};";
+    }
+    string menuTextColorTag = $"color: {Model.DisplayTitleColor};";
+    string styleTags = binderColorTag + menuTextColorTag;
+}
 
 
 <div class="editor-view-wrapper">
@@ -13,7 +20,7 @@
 
 
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile">
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags">
                 Viewing: @Model.DisplayTitle
             </div>
           </div>
