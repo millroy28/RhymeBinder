@@ -927,11 +927,60 @@
     }
 
 
+    .sortable-placeholder {
+        border: 1px dashed #ccc;
+        background: #f9f9f9;
+        height: 30px; /* Adjust height as needed */
+        margin-bottom: 5px;
+    }
 
+    .binder-item {
+        border: 1px solid #ccc;
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 5px;
+        cursor: move;
+    }
 
+    /*    .sortable-list {
+        list-style: none;
+        padding: 0;
+        width: 350px;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
 
+    .sortable-item {
+        padding: 15px 20px;
+        margin: 8px 0;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 5px;
+        font-size: 1.1em;
+        color: #333;
+        font-weight: bold;
+        cursor: grab;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background 0.2s, transform 0.2s;
+    }
 
+        .sortable-item:hover {
+            background: #e8f0ff;
+            transform: scale(1.03);
+        }
 
+    .dragging {
+        opacity: 0.7;
+        transform: rotate(-2deg);
+    }
+
+    .over {
+        border: 2px dashed #ff8c42;
+        background: #fff3e0;
+    }
+
+*/
     /*.shelf-view-container {
         grid-column: 2 / 3;
         grid-row: 2 / 3;
@@ -944,9 +993,9 @@
     }
     
     .shelf-view-shelf{*/
- /*       width: 95%;
+    /*       width: 95%;
         height: 88vh;*/
-        /*grid-column: auto;
+    /*grid-column: auto;
         grid-row: auto;
         display:block;
         
@@ -957,16 +1006,14 @@
 
         display: flex;
         flex-direction: row;*/
-        /*        height: 30%;
+    /*        height: 30%;
         width: 95%;*/
-        /*        display: grid;
+    /*        display: grid;
         grid-template-columns: auto;
         grid-auto-flow: column;
         overflow-x:auto;
         overflow-y:hidden;*/
-
-
-        /*background: linear-gradient(180deg, rgba(45,22,6,1) 0%, rgba(67,33,9,1) 35%, rgba(90,45,12,1) 100%);
+    /*background: linear-gradient(180deg, rgba(45,22,6,1) 0%, rgba(67,33,9,1) 35%, rgba(90,45,12,1) 100%);
         border-left: solid 10px;
         border-right: solid 10px;
         border-color: saddlebrown;
@@ -974,9 +1021,9 @@
     }
 
     .shelf-view-binder {*/
-/*        grid-row: 1 / 2;
+    /*        grid-row: 1 / 2;
         grid-column: auto;*/
-        /*display: flex;
+    /*display: flex;
         flex-grow: 0;
         flex-shrink: 0;
 
@@ -995,7 +1042,7 @@
         background-color: darkred;
         cursor: pointer;
     }*/
-/*    .shelf-view-binder-plate{
+    /*    .shelf-view-binder-plate{
         height: 500px;
         width: 100px;
         background-color: darkred;
@@ -1043,7 +1090,6 @@
     .shelf-view-binder-open{
 
     }*/
-
     /*``[Misc and utils]*/
     .button {
         appearance: auto;

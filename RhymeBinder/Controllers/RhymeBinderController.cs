@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using RhymeBinder.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -540,6 +541,19 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ErrorPage", status);
             }
             return RedirectToAction("ListTextsOnSessionStart");
+        }
+        [HttpPost]
+        public IActionResult SaveShelfChanges([FromBody] List<ShelfUpdateModel> shelfUpdates)
+        {
+            int userId = GetUserId();
+            Status status = _modelHelper.UpdateShelf(userId, shelfUpdates);
+
+            if (!status.success)
+            {
+                return RedirectToAction("ErrorPage", status);
+            }
+            return RedirectToAction("ListBinders");
+
         }
 
         #endregion

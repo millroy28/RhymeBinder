@@ -29,6 +29,7 @@
                 <div class="menu-bar-dropdown-content">
                     <a class="menu-bar-dropdown-item" id="show_list_view" onclick="ShowListView()">  List View</a>
                     <a class="menu-bar-dropdown-item" id="show_shelf_view" onclick="ShowShelfView()">► Shelf View</a>
+                <a class="menu-bar-dropdown-item" id="show_shelf_order_modal" onclick="OpenModal('shelves')">Arrange Shelf</a>
                 </div>
             </div>
         </div>
@@ -104,14 +105,29 @@
 
 
                     <div class="shelf-view-shelf-shelfspace">
-                        placeholder
+                        @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == 1))
+                        {
+                            string binderColor = binder.Color ?? "darkred";
+                            binderColor = $"background-color: {binderColor};";
+                            int width = 40 + 20 * (binder.CharacterCount / 200000);
+                            string widthTag = $"width: {width.ToString()}px";
+                            string stylesTags = binderColor + " " + widthTag;
+
+
+                            <div class="shelf-view-binder" style="@stylesTags">
+                                <div class="shelf-view-binder-card">
+                                    <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
+                                    <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
+                                </div>
+                            </div>
+                        }
                     </div>
 
 
                     <div class="shelf-view-shelf-shelfspace">
 
-                        @foreach (var binder in Model.Where(x => x.BinderId < 60))
-                        {
+                    @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == 2))
+                    {
                             string binderColor = binder.Color ?? "darkred";
                             binderColor = $"background-color: {binderColor};";
                             int width = 40 + 20 * (binder.CharacterCount / 200000);
@@ -129,7 +145,22 @@
                     </div>
     
                     <div class="shelf-view-shelf-shelfspace">
-                        placeholder
+                        @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == 3))
+                        {
+                            string binderColor = binder.Color ?? "darkred";
+                            binderColor = $"background-color: {binderColor};";
+                            int width = 40 + 20 * (binder.CharacterCount / 200000);
+                            string widthTag = $"width: {width.ToString()}px";
+                            string stylesTags = binderColor + " " + widthTag;
+
+
+                            <div class="shelf-view-binder" style="@stylesTags">
+                                <div class="shelf-view-binder-card">
+                                    <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
+                                    <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
+                                </div>
+                            </div>
+                        }
                     </div>
 
             </div>
@@ -137,4 +168,84 @@
         
     </div>
 
+<div class="list-modal" id="shelves">
+    <div class="list-modal-header">
+        Arrange Shelves:
+    </div>
+
+    <div class="list-modal-content">
+        <div class="binders-container" style="display: flex;">
+            <div class="binders-column">
+                <h3>Unassigned Binders</h3>
+                <ul id="unassignedBinders" class="binders-list">
+                    @foreach (var binder in Model.Where(x => x.Shelf.ShelfId == 0))
+                    {
+                        <li class="binder-item" data-binder-id="@binder.BinderId">@binder.Name</li>
+                    }
+                </ul>
+            </div>
+            <div class="shelves-columns" style="display: flex;">
+                @for (int i = 1; i <= 3; i++)
+                {
+                    <div class="shelf-column" style="margin-left: 10px;">
+                        <h3>Shelf @i</h3>
+                        <ul id="shelf-@i" class="shelf-list" data-shelf-level="@i">
+                            @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == i).OrderBy(x => x.Shelf.SortOrder))
+                            {
+                                <li class="binder-item" data-binder-id="@binder.BinderId">@binder.Name</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="list-modal-footer">
+        <a class="button menu-bar-button" onclick="CloseModal('shelves')">Cancel</a>
+        <button id="saveShelfChanges">Save Changes</button>
+    </div>
+</div>
+
 <script language="Javascript" src="~/js/binderView.js"></script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script>
+        $(function () {
+            $(".binders-list, .shelf-list").sortable({
+                connectWith: ".binders-list, .shelf-list",
+                placeholder: "sortable-placeholder"
+            }).disableSelection();
+
+            $("#saveShelfChanges").on("click", function () {
+                var shelfData = [];
+                $(".shelf-list").each(function () {
+                    var shelfLevel = $(this).data("shelf-level");
+                    $(this).find(".binder-item").each(function (index) {
+                        var binderId = $(this).data("binder-id");
+                        shelfData.push({
+                            BinderId: binderId,
+                            ShelfLevel: shelfLevel,
+                            SortOrder: index
+                        });
+                    });
+                });
+
+                $.ajax({
+                    url: '@Url.Action("SaveShelfChanges", "RhymeBinder")',
+                    type: 'POST',
+                    data: JSON.stringify(shelfData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        alert("Changes saved successfully!");
+                        // Close the modal and refresh the page or update the view
+                    },
+                    error: function (error) {
+                        alert("An error occurred while saving changes.");
+                    }
+                });
+            });
+        });
+    </script>
+}

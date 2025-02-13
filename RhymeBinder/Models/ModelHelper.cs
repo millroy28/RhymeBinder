@@ -250,7 +250,18 @@ namespace RhymeBinder.Models
                     if(_context.Shelves.Any(y => y.BinderId == binder.BinderId && y.UserId == userId))
                     {
                         binder.Shelf = _context.Shelves.DefaultIfEmpty().Single(y => y.BinderId == binder.BinderId && y.UserId == userId);
-                    } 
+                    } else
+                    {
+                        binder.Shelf = new Shelf()
+                        {
+                            ShelfId = 0,
+                            ShelfLevel = 0,
+                            SortOrder = 0,
+                            BinderId = binder.BinderId,
+                            UserId = userId,
+
+                        };
+                    }
                     List <TextHeader> headers = textHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
                     textCount = headers.Count();
 
@@ -284,6 +295,7 @@ namespace RhymeBinder.Models
                         WordCount = wordCount,
                         Selected = binder.Selected,
                         Color = binder.Color,
+                        Shelf = binder.Shelf,
                         CreatedByName = GetUserName(binder.CreatedBy),
                         ModifyByName = GetUserName(binder.LastModifiedBy),
                         LastAccessed = binder.LastAccessed,
@@ -2677,6 +2689,72 @@ namespace RhymeBinder.Models
                 status.success = false;
                 status.message = "Failed to save Edit Window Properties for new Binder while duplicating";
                 return status;
+            }
+
+            return status;
+        }
+        public Status UpdateShelf(int userId, List<ShelfUpdateModel> shelfUpdateModels)
+        {
+            Status status = new();
+
+            // get existing
+            List<Shelf> existingShelves = _context.Shelves.Where(x => x.UserId == userId).DefaultIfEmpty().ToList();
+
+
+            if (shelfUpdateModels.Count > 0)
+            {
+                foreach (ShelfUpdateModel shelfUpdateModel in shelfUpdateModels)
+                {
+                    if(!existingShelves.Any(x => x.BinderId == shelfUpdateModel.BinderId))
+                    {
+                        _context.Shelves.Add(new Shelf
+                        {
+                            UserId = userId,
+                            BinderId = shelfUpdateModel.BinderId,
+                            ShelfLevel = shelfUpdateModel.ShelfLevel,
+                            SortOrder = shelfUpdateModel.SortOrder
+                        });
+                    } 
+                    else if(existingShelves.Count() > 0)
+                    {
+                        foreach(Shelf shelf in existingShelves.Where(x => x.BinderId == shelfUpdateModel.BinderId))
+                        {
+                            shelf.ShelfLevel = shelfUpdateModel.ShelfLevel;
+                            shelf.SortOrder = shelfUpdateModel.SortOrder;
+                        }
+                    }
+                }
+
+                _context.Shelves.UpdateRange(existingShelves);
+
+                if(existingShelves.Count() > 0)
+                {
+                    foreach(Shelf shelf in existingShelves)
+                    {
+                        if(!shelfUpdateModels.Any(x => x.BinderId == shelf.BinderId))
+                        {
+                            _context.Shelves.Remove(shelf);
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                if(existingShelves.Count() > 0)
+                {
+                    _context.Shelves.RemoveRange(existingShelves);
+                }
+            }
+            try
+            {
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to update Binder Shelf settings";
             }
 
             return status;
