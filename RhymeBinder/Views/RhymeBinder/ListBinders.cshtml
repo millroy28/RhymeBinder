@@ -6,8 +6,7 @@
 }
 @model List<DisplayBinder>
 
-
-
+    @* Menu  *@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
@@ -34,6 +33,7 @@
             </div>
         </div>
 
+    @* Table View *@
         <div class="table-view-table-container" id="list_view" hidden>
             <table>
                 <tr>
@@ -100,6 +100,8 @@
             </table>
         </div>
 
+
+    @* Shelf View *@
         <div class="shelf-view-container" id="shelf_view">
         @for (int i = 1; i <= 3; i++)
         {
@@ -122,18 +124,11 @@
                         </div>
                     </div>
                 }
-            </div>
-            
-        }
-
-
-
-
-
-
-        
+            </div>   
+        }       
     </div>
 
+    @* Arrange Shelf Modal *@
 <div class="list-modal" id="shelves">
     <div class="list-modal-header">
         Arrange Shelves:
@@ -179,6 +174,7 @@
 </div>
 
 
+    @* Scripts *@
 
 <script language="Javascript" src="~/js/binderView.js"></script>
 @section Scripts {
