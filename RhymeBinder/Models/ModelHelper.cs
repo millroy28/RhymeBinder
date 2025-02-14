@@ -295,6 +295,7 @@ namespace RhymeBinder.Models
                         WordCount = wordCount,
                         Selected = binder.Selected,
                         Color = binder.Color,
+                        TitleColor = GetMenuTextColor(binder.Color),
                         Shelf = binder.Shelf,
                         CreatedByName = GetUserName(binder.CreatedBy),
                         ModifyByName = GetUserName(binder.LastModifiedBy),
@@ -2696,16 +2697,21 @@ namespace RhymeBinder.Models
         public Status UpdateShelf(int userId, List<ShelfUpdateModel> shelfUpdateModels)
         {
             Status status = new();
+            List<Shelf> existingShelves = new();
 
             // get existing
-            List<Shelf> existingShelves = _context.Shelves.Where(x => x.UserId == userId).DefaultIfEmpty().ToList();
+            if(_context.Shelves.Any(x => x.UserId == userId))
+            {
+                existingShelves =_context.Shelves.Where(x => x.UserId == userId).ToList();
+            }
 
 
             if (shelfUpdateModels.Count > 0)
             {
                 foreach (ShelfUpdateModel shelfUpdateModel in shelfUpdateModels)
                 {
-                    if(!existingShelves.Any(x => x.BinderId == shelfUpdateModel.BinderId))
+
+                    if(existingShelves.Count() == 0 || !existingShelves.Any(x => x.BinderId == shelfUpdateModel.BinderId))
                     {
                         _context.Shelves.Add(new Shelf
                         {
@@ -2715,7 +2721,7 @@ namespace RhymeBinder.Models
                             SortOrder = shelfUpdateModel.SortOrder
                         });
                     } 
-                    else if(existingShelves.Count() > 0)
+                    else
                     {
                         foreach(Shelf shelf in existingShelves.Where(x => x.BinderId == shelfUpdateModel.BinderId))
                         {
@@ -2723,6 +2729,7 @@ namespace RhymeBinder.Models
                             shelf.SortOrder = shelfUpdateModel.SortOrder;
                         }
                     }
+
                 }
 
                 _context.Shelves.UpdateRange(existingShelves);
@@ -2746,6 +2753,7 @@ namespace RhymeBinder.Models
                     _context.Shelves.RemoveRange(existingShelves);
                 }
             }
+
             try
             {
                 _context.SaveChanges();

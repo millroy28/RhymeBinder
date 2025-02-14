@@ -102,68 +102,33 @@
         </div>
 
         <div class="shelf-view-container" id="shelf_view">
+        @for (int i = 1; i <= 3; i++)
+        {
+            <div class="shelf-view-shelf-shelfspace">
+                @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == i).OrderBy(x => x.Shelf.SortOrder))
+                {
+                    string binderColor = binder.Color ?? "darkred";
+                    binderColor = $"background-color: {binderColor};";
+                    int width = 60 + 30 * (binder.CharacterCount / 200000);
+                    string widthTag = $"width: {width.ToString()}px";
+                    string stylesTags = binderColor + " " + widthTag;
 
 
-                    <div class="shelf-view-shelf-shelfspace">
-                        @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == 1))
-                        {
-                            string binderColor = binder.Color ?? "darkred";
-                            binderColor = $"background-color: {binderColor};";
-                            int width = 40 + 20 * (binder.CharacterCount / 200000);
-                            string widthTag = $"width: {width.ToString()}px";
-                            string stylesTags = binderColor + " " + widthTag;
-
-
-                            <div class="shelf-view-binder" style="@stylesTags">
-                                <div class="shelf-view-binder-card">
-                                    <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
-                                    <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
-                                </div>
-                            </div>
-                        }
+                    <div class="shelf-view-binder" style="@stylesTags">
+                        <div class="shelf-view-binder-card">
+                            <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
+                            <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
+                        </div>
                     </div>
-
-
-                    <div class="shelf-view-shelf-shelfspace">
-
-                    @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == 2))
-                    {
-                            string binderColor = binder.Color ?? "darkred";
-                            binderColor = $"background-color: {binderColor};";
-                            int width = 40 + 20 * (binder.CharacterCount / 200000);
-                            string widthTag = $"width: {width.ToString()}px";
-                            string stylesTags = binderColor + " " + widthTag;
-
-
-                            <div class="shelf-view-binder" style="@stylesTags" >
-                                    <div class="shelf-view-binder-card">
-                                        <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
-                                        <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
-                                    </div>
-                            </div>
-                      }
-                    </div>
-    
-                    <div class="shelf-view-shelf-shelfspace">
-                        @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == 3))
-                        {
-                            string binderColor = binder.Color ?? "darkred";
-                            binderColor = $"background-color: {binderColor};";
-                            int width = 40 + 20 * (binder.CharacterCount / 200000);
-                            string widthTag = $"width: {width.ToString()}px";
-                            string stylesTags = binderColor + " " + widthTag;
-
-
-                            <div class="shelf-view-binder" style="@stylesTags">
-                                <div class="shelf-view-binder-card">
-                                    <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
-                                    <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
+                }
             </div>
+            
+        }
+
+
+
+
+
 
         
     </div>
@@ -174,37 +139,45 @@
     </div>
 
     <div class="list-modal-content">
-        <div class="binders-container" style="display: flex;">
+        <div class="binders-container">
             <div class="binders-column">
-                <h3>Unassigned Binders</h3>
-                <ul id="unassignedBinders" class="binders-list">
+                <div class="binders-column-title">Unassigned Binders</div>
+                <div id="unassignedBinders" class="binders-list" style="min-width: 200px; min-height: 100px;">
                     @foreach (var binder in Model.Where(x => x.Shelf.ShelfId == 0))
                     {
-                        <li class="binder-item" data-binder-id="@binder.BinderId">@binder.Name</li>
+                        string binderColor = binder.Color ?? "darkred";
+                        binderColor = $"background-color: {binderColor}; color: {binder.TitleColor};";
+                        string stylesTags = binderColor;
+                        <div class="binder-item" data-binder-id="@binder.BinderId" style="@stylesTags">@binder.Name</div>
                     }
-                </ul>
+                </div>
             </div>
-            <div class="shelves-columns" style="display: flex;">
-                @for (int i = 1; i <= 3; i++)
-                {
+            @for (int i = 1; i <= 3; i++)
+            {
+                    <div class="binders-column" >
                     <div class="shelf-column" style="margin-left: 10px;">
-                        <h3>Shelf @i</h3>
-                        <ul id="shelf-@i" class="shelf-list" data-shelf-level="@i">
+                        <div class="binders-column-title">Shelf @i</div>
+                        <div id="shelf-@i" class="shelf-list" data-shelf-level="@i" style="min-width: 200px; min-height: 100px;">
                             @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == i).OrderBy(x => x.Shelf.SortOrder))
                             {
-                                <li class="binder-item" data-binder-id="@binder.BinderId">@binder.Name</li>
+                                string binderColor = binder.Color ?? "darkred";
+                                binderColor = $"background-color: {binderColor};";
+                                string stylesTags = binderColor;
+                                <div class="binder-item" data-binder-id="@binder.BinderId" style="@stylesTags">@binder.Name</div>
                             }
-                        </ul>
+                        </div>
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
     </div>
     <div class="list-modal-footer">
         <a class="button menu-bar-button" onclick="CloseModal('shelves')">Cancel</a>
-        <button id="saveShelfChanges">Save Changes</button>
+        <a class="button menu-bar-button" id="saveShelfChanges">Save</a>
     </div>
 </div>
+
+
 
 <script language="Javascript" src="~/js/binderView.js"></script>
 @section Scripts {
@@ -238,8 +211,11 @@
                     data: JSON.stringify(shelfData),
                     contentType: 'application/json',
                     success: function (response) {
-                        alert("Changes saved successfully!");
+                        // alert("Changes saved successfully!");
                         // Close the modal and refresh the page or update the view
+                            setTimeout(function () {// wait for 5 secs(2)
+                                location.reload(); // then reload the page.(3)
+                            }, 1000);
                     },
                     error: function (error) {
                         alert("An error occurred while saving changes.");
