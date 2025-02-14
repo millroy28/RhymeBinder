@@ -22,6 +22,7 @@ namespace RhymeBinder.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Selected { get; set; }
+        public bool ReadOnly { get; set; }
         public DateTime? LastAccessed { get; set; }
         public int? LastAccessedBy { get; set; }
         public DateTime? LastWorkedIn { get; set; }

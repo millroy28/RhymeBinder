@@ -17,6 +17,7 @@ namespace RhymeBinder.Models
         public string BinderName { get; set; }
         public string BinderColor {  get; set; }
         public string BinderNameColor {  get; set; }
+        public bool BinderReadOnly { get; set; }
         public int UserId { get; set; }
     }
     public class DisplaySimpleText

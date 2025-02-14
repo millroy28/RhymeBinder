@@ -106,6 +106,12 @@
             <input type="color" id="Color" name="Color" value="@Model.Color">
         </div>
         <div class="form-item-title">
+            Lock Binder to Read Only
+        </div>
+        <div class="form-item-large-entry">
+            @Html.EditorFor(m => m.ReadOnly)
+        </div>
+        <div class="form-item-title">
             New Texts Show Line Count:
         </div>
         <div class="form-item-large-entry">

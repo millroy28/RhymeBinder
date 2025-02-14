@@ -27,7 +27,14 @@
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
             </div>
             <div class="menu-bar-item-right-final">
-                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>
+                @if (Model.BinderReadOnly)
+                {
+                    <a class="menu-bar-button-disabled mobile-menu-bar-button-edit-disabled" disabled="true">Read Only</a>
+                }
+                else
+                {
+                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>                   
+                }
             </div>
         </div>
 

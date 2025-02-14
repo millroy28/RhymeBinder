@@ -109,7 +109,7 @@ namespace RhymeBinder.Controllers
 
             TextEdit textEdit = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
-            if((bool)textEdit.Locked == true)
+            if((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
             {
                 return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
             } 
@@ -333,6 +333,11 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
 
             DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+
+            if (sequencedTexts.BinderReadOnly)
+            {
+                return Redirect($"/RhymeBinder/ViewTextsInSequence?groupId={groupId}");
+            }
 
             return View(sequencedTexts);
         }

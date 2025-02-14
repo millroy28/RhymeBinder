@@ -9,6 +9,10 @@ namespace RhymeBinder.Models
     {
         public int UserId { get;set; }
 
+        // Text Status
+
+        public bool BinderReadOnly {  get; set; }
+
         // Text fields
         public int TextId { get; set; }
         public string TextBody { get; set; }

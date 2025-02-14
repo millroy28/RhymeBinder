@@ -216,6 +216,7 @@ namespace RhymeBinder.Models
                 displayBinder.Description = binder.Description;
                 displayBinder.Color = binder.Color;
                 displayBinder.Selected = binder.Selected;
+                displayBinder.ReadOnly = binder.ReadOnly;
                 displayBinder.GroupCount = groupCount;
                 displayBinder.PageCount = textCount;
                 displayBinder.TextHeaderTitleDefaultFormat = binder.TextHeaderTitleDefaultFormat;
@@ -294,6 +295,7 @@ namespace RhymeBinder.Models
                         CharacterCount = characterCount,
                         WordCount = wordCount,
                         Selected = binder.Selected,
+                        ReadOnly = binder.ReadOnly,
                         Color = binder.Color,
                         TitleColor = GetMenuTextColor(binder.Color),
                         Shelf = binder.Shelf,
@@ -842,10 +844,14 @@ namespace RhymeBinder.Models
             List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
 
             string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).Color;
+            bool readOnly = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).ReadOnly;
+
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
             {
                 UserId = userId,
+
+                BinderReadOnly = readOnly,
 
                 TextId = thisText.TextId,
                 TextBody = thisText.TextBody,
@@ -902,6 +908,7 @@ namespace RhymeBinder.Models
             // To serve view where user can read all texts in a sequence
             TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
             string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == group.BinderId).Color;
+            bool binderReadOnly = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == group.BinderId).ReadOnly;
             DisplaySequencedTexts displaySequencedTexts = new()
             {
                 UserId = userId,
@@ -910,6 +917,7 @@ namespace RhymeBinder.Models
                 BinderId = group.BinderId,
                 BinderName = GetBinderName(group.BinderId),
                 BinderColor = binderColor,
+                BinderReadOnly = binderReadOnly,
                 BinderNameColor = GetMenuTextColor(binderColor)
             };
 
@@ -1875,7 +1883,8 @@ namespace RhymeBinder.Models
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
-                Selected = true
+                Selected = true,
+                ReadOnly = false
             };
 
             // ... and a trash binder
@@ -1889,7 +1898,8 @@ namespace RhymeBinder.Models
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
-                Selected = false
+                Selected = false,
+                ReadOnly = false
             };
 
             // ... and loose pages binder
@@ -1903,7 +1913,8 @@ namespace RhymeBinder.Models
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
-                Selected = false
+                Selected = false,
+                ReadOnly = false
             };
 
             try
@@ -1948,7 +1959,8 @@ namespace RhymeBinder.Models
                 NewTextDefaultShowLineCount = simpleUser.DefaultShowLineCount,
                 NewTextDefaultShowParagraphCount = simpleUser.DefaultShowParagraphCount,
                 TextHeaderTitleDefaultFormat = "Title",
-                Selected = false //taken care of by OpenBinder                
+                Selected = false, //taken care of by OpenBinder
+                ReadOnly = false
             };
 
             try
@@ -1989,6 +2001,8 @@ namespace RhymeBinder.Models
             newBinder.CreatedBy = userId;
             newBinder.Hidden = false;
             newBinder.Selected = false;
+            newBinder.ReadOnly = false;
+
 
             try
             {

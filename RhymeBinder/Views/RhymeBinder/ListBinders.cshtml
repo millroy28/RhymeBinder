@@ -57,7 +57,7 @@
 
                 @foreach (var binder in Model)
                 {
-
+                string binderName = binder.ReadOnly == null || binder.ReadOnly == false ? binder.Name : binder.Name + " - Read Only";
                 <tr>
 
                     @if (binder.Name != "Trash" && binder.Name != "Loose Pages")
@@ -80,8 +80,7 @@
                         <td></td>
                     }
                     <td></td>
-
-                        <td><a class="link-item" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binder.Name</a></td>
+                        <td><a class="link-item" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binderName</a></td>
                         <td name="text_count_col" align="center">@binder.PageCount.ToString("N0")</td>
                         <td name="group_count_col" align="center">@binder.GroupCount.ToString("N0")</td>
                         <td align="center">@binder.WordCount.ToString("N0")</td>
@@ -107,6 +106,8 @@
             <div class="shelf-view-shelf-shelfspace">
                 @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == i).OrderBy(x => x.Shelf.SortOrder))
                 {
+
+                    string binderName = binder.ReadOnly == null || binder.ReadOnly == false ? binder.Name : binder.Name + " - Read Only";
                     string binderColor = binder.Color ?? "darkred";
                     binderColor = $"background-color: {binderColor};";
                     int width = 60 + 30 * (binder.CharacterCount / 200000);
@@ -116,7 +117,7 @@
 
                     <div class="shelf-view-binder" style="@stylesTags">
                         <div class="shelf-view-binder-card">
-                            <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binder.Name</div>
+                            <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binderName</div>
                             <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
                         </div>
                     </div>

@@ -1916,6 +1916,19 @@ display:none;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
     }
 
+    .mobile-menu-bar-button-edit-disabled {
+        background: url("../img/pencil-square.svg") no-repeat;
+        opacity: .3;
+        font-size: 1px;
+        color: transparent;
+        border-color: transparent;
+        padding: 8px !important;
+        margin: 0px !important;
+        border: 0px !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+
     /*``[Editor:Title/TextBox*/
     .title-bar {
 /*        grid-row: 2/3;
