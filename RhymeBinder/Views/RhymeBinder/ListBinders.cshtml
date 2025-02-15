@@ -123,10 +123,23 @@
                             <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
                         </div>
                     </div>
+                    <div class="shelf-view-binder-hover">
+                        <div class="shelf-view-binder-hover-description">@binder.Description</div>
+                        <hr />
+                        <div class="shelf-view-binder-hover-heading">Last Accessed: </div>
+                        <div class="shelf-view-binder-hover-field">@binder.LastAccessed</div>
+                        <div class="shelf-view-binder-hover-heading">Texts: </div>
+                        <div class="shelf-view-binder-hover-field">@binder.PageCount.ToString("N0")</div>
+                        <div class="shelf-view-binder-hover-heading">Words: </div>
+                        <div class="shelf-view-binder-hover-field">@binder.WordCount.ToString("N0")</div>
+
+                    </div>
                 }
             </div>   
         }       
     </div>
+
+
 
     @* Arrange Shelf Modal *@
 <div class="list-modal" id="shelves">
@@ -177,6 +190,9 @@
     @* Scripts *@
 
 <script language="Javascript" src="~/js/binderView.js"></script>
+    <script language="Javascript">
+        window.onload = SetEventListeners();
+    </script>
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>

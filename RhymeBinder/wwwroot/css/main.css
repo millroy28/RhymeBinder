@@ -859,7 +859,7 @@
         box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.5) inset;
         cursor: pointer;
         flex-shrink:0;
-
+        position: relative;
     }
 
         .shelf-view-binder:hover {
@@ -917,6 +917,33 @@
         .shelf-view-binder-edit:hover {
             background-color: #0056b3;
         }
+
+
+    .shelf-view-binder-hover {
+        position: absolute;
+        padding: 10px;
+        background-color: #f4f5ef;
+        border: 1px solid #ccc;
+        display: none; /* Hide by default */
+        z-index: 100
+    }
+
+    .shelf-view-binder-hover-heading {
+        font-size: small;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+
+    .shelf-view-binder-hover-description{
+        font-size: small;
+    }
+
+    .shelf-view-binder-hover-field {
+        font-size: small;
+        font-style: italic;
+    }
+
 
     /* Style for the scrollbar */
     .shelf-view-shelf-shelfspace::-webkit-scrollbar {
