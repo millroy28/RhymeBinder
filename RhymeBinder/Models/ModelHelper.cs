@@ -1214,21 +1214,33 @@ namespace RhymeBinder.Models
 
         //  Text Methods:
         #region TextMethods
-        public Status StartNewText(int userId)
+        public Status StartNewText(int userId, int? groupId)
         {
             Status status = new Status();
+            int verifiedGroupId = 0;
+            if(groupId != null  && groupId > 0)
+            {
+                verifiedGroupId = groupId.Value;
+            }
 
             // Create a new blank Text
             Text newText = new Text();
             newText.TextBody = "";
             newText.Created = GetUserLocalTime(userId);
-            
             try
             {
                 _context.Texts.Add(newText);
                 _context.SaveChanges();
                 status = CreateNewTextHeader(userId, newText.TextId);
+                int newHeaderId = status.recordId;
                 status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
+
+                if (status.success && verifiedGroupId != 0)
+                {
+                    status = AddRemoveHeaderFromGroup(newHeaderId, verifiedGroupId, true);
+                    // calling function relies on textheaderid to redirect
+                    status.recordId = newHeaderId;
+                }
             }
             catch
             {
@@ -1511,7 +1523,7 @@ namespace RhymeBinder.Models
             origHeader.LastModifiedBy = textEdit.UserId;
             origHeader.TextRevisionStatusId = textEdit.TextRevisionStatusId;
 
-            origHeader.CharacterCount = textEdit.TextBody.Length;
+            origHeader.CharacterCount = textEdit.TextBody?.Length ?? 0;
             origHeader.WordCount = GetWordCount(textEdit.TextBody);
 
             status = Update<TextHeader>(origHeader);

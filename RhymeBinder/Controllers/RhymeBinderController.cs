@@ -80,10 +80,10 @@ namespace RhymeBinder.Controllers
 
         //-------TEXT:
         #region TextMethods
-        public IActionResult StartNewText()
+        public IActionResult StartNewText(int? groupId)
         { 
             int userId = GetUserId();
-            Status status = _modelHelper.StartNewText(userId);
+            Status status = _modelHelper.StartNewText(userId, groupId);
 
             if (status.success)
             {
@@ -242,7 +242,7 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "NewText":
-                    return RedirectToAction("StartNewText");
+                    return Redirect($"/RhymeBinder/StartNewText?groupId={value}");
 
                 case "LastView":
                     // Update current saved view with changed form values
