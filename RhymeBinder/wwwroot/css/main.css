@@ -811,20 +811,83 @@
         border-top-left-radius: 8px;
     }
 
+
+    .sequence-text-accordian-panel {
+        transition: 0.4s;
+        display: none;
+
+        grid-gap: 0px;
+        grid-template-columns: 90% 10%;
+    }
+    .sequence-notes {
+        grid-row: 2/3;
+        grid-column: 1/2;
+        text-align: left;
+        font-family: Courier New, Courier, monospace;
+        width: 95%;
+        white-space: pre-wrap;
+        margin: 5px;
+        padding: 8px;
+        border: 4px;
+        border-left-color: darkseagreen;
+        border-left-style: solid;
+        border-bottom-left-radius: 8px;
+        border-top-left-radius: 8px;
+        background: #fcffeb;
+    }
+    .sequence-notes-label {
+        grid-row: 1/2;
+        grid-column: 1/2;
+        width: 95%;
+        margin: 5px;
+        padding: 8px;
+        border: 4px;
+        border-left-color: darkseagreen;
+        border-left-style: solid;
+        border-bottom-left-radius: 8px;
+        border-top-left-radius: 8px;
+        font-style: italic;
+        font-size: small;
+    }
+    .sequence-info {
+        grid-row: 2/3;
+        grid-column: 2/3;
+    }
+    .sequence-info-label {
+        grid-row: 1/2;
+        grid-column: 2/3;
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-info {
+        grid-row: 2/3;
+        grid-column: 2/3;
+    }
+
+    .sequence-info-label {
+        grid-row: 1/2;
+        grid-column: 2/3;
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-text-accordian-button {
+        padding: 0 18px;
+        background-color: white;
+        cursor: default;
+        overflow: hidden;
+        font-style: italic;
+        font-size: small;
+    }
     /*``[Binder Shelf View]*/
-
-
-
     .shelf-view-container {
         grid-column: 1/4;
-        
-     
         display: flex;
         flex-direction: column;
         align-items: center;
         padding: 20px;
-        align-self: center;       
- 
+        align-self: center;
         background: linear-gradient(155deg, rgba(241,236,225,1) 0%, rgba(212,207,197,1) 61%, rgba(182,179,172,1) 100%);
     }
 

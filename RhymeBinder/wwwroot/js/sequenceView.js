@@ -147,3 +147,24 @@ function RemoveUnchangedElements() {
         } 
     }
 }
+
+function ToggleNotes(index) {
+    var notesPanel = document.getElementById("notePanel[" + index + "]");
+    var notesPanelButton = document.getElementById("notePanelButton[" + index + "]");
+    var notesContent = document.getElementById("sequenceNote[" + index + "]").textContent;
+    var expandButton = "▼"
+    if (notesContent.length > 0) {
+        expandButton += " (Notes...)";
+    }
+
+    if (notesPanel.style.display === "grid") {
+        notesPanel.style.display = "none";
+        notesPanelButton.textContent = "▼ (Notes...)";
+    } else {
+        notesPanel.style.display = "grid";
+        notesPanelButton.textContent = "▲";
+
+    } 
+
+
+}

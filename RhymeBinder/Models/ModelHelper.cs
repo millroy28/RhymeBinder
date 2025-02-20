@@ -938,7 +938,8 @@ namespace RhymeBinder.Models
                         MemberOfGroups = _context.TextGroups.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextHeaderId == textHeader.TextHeaderId)
                                                                                                          .Select(y => y.TextGroupId)
                                                                                                          .Contains(x.TextGroupId)
-                                                                                                         ).Select(x => x.GroupTitle).ToList()
+                                                                                                         ).Select(x => x.GroupTitle).ToList(),
+                        Note = _context.TextNotes.Single(x => x.TextNoteId == textHeader.TextNoteId).Note
                     });
                 }
             };

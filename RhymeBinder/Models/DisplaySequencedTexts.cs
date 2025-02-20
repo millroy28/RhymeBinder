@@ -25,6 +25,7 @@ namespace RhymeBinder.Models
         public int TextHeaderId { get; set; }
         public string Title { get; set; }
         public string TextBody { get; set; }
+        public string Note { get; set; }
         public int SequenceNumber { get; set; }
         public List<string> MemberOfGroups { get; set; }
         public bool IsChanged { get; set; } = false;

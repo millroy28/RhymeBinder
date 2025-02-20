@@ -11,6 +11,7 @@
     }
     string menuTextColorTag = $"color: {Model.BinderNameColor};";
     string styleTags = binderColorTag + menuTextColorTag;
+    int index = 0;
 }
 
 <div class="sequence-view-wrapper" >
@@ -45,14 +46,32 @@
         {
             <div class="sequence-title" style="border-left-style: none">@text.Title</div>
             <hr style="border-top: 1px dashed dimgray;" />
+
+            string expandText = "▼";
+            if(text.Note != null)
+            {
+                expandText += " (Notes...)";
+            }
+            <div class="sequence-text-accordian-button" id="notePanelButton[@index]" onclick="ToggleNotes(@index)">@expandText</div>
+            <div class="sequence-text-accordian-panel" id="notePanel[@index]">
+                <div class="sequence-notes-label" style="border-left-style: none" >Notes:</div>
+                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote[@index]" >@text.Note</div>
+                <div class="sequence-info-label" style="border-left-style: none" >Sequence:</div>
+                <div class="sequence-info" style="border-left-style: none" >@text.SequenceNumber</div>
+
+            </div>
+            <hr style="border-top: 1px dashed dimgray;" />
+
             <div class="sequence-text" style="border-left-style: none">@text.TextBody</div>
             <hr style="border-top: 1px solid dimgray;" />
+            index++;
         }
 
     </div>
 
 </div>
 
+<script language="Javascript" src="~/js/sequenceView.js"></script>
 
 
 
