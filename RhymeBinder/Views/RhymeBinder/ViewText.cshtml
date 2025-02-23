@@ -66,7 +66,7 @@
     <div class="left-sidebar">
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
         <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
-        <div class="left-sidebar-item">Last Modified @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
+        <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
             
@@ -77,7 +77,7 @@
                 <div class="left-sidebar-item-heading">No. @prev.VisionNumber: @prev.Title</div>
                 <div class="left-sidebar-item">Status: @prev.Status</div>
                 <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
-                <div class="left-sidebar-item">Last Modified @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
+                <div class="left-sidebar-item">Last Edited @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
             }
         }
     </div>

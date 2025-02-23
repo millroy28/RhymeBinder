@@ -392,6 +392,7 @@ function on_start_mark_sorted_column(sortValueID, sortOrderValueID) {
         newSortValue = newSortValue + ' ▲';
     }
 
+    
     columnHeader.innerHTML = '<a>' + newSortValue + '</a>';
     console.log('Marking sort column :' + newSortValue);
     return;
