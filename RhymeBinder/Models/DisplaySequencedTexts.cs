@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RhymeBinder.Models
 {
@@ -28,6 +29,8 @@ namespace RhymeBinder.Models
         public string Note { get; set; }
         public int SequenceNumber { get; set; }
         public List<string> MemberOfGroups { get; set; }
+        public DateTime? LastModified { get; set; }
+        public string? LastModifiedBy { get; set; }
         public bool IsChanged { get; set; } = false;
         // Do I want edit/create information here, or will that clutter things up. Here is where you would add it in the future
     }

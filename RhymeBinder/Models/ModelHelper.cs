@@ -936,10 +936,13 @@ namespace RhymeBinder.Models
                         TextBody = _context.Texts.Single(x => x.TextId == textHeader.TextId).TextBody,
                         SequenceNumber = (int)_context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeader.TextHeaderId && x.TextGroupId == groupId).Sequence,
                         MemberOfGroups = _context.TextGroups.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextHeaderId == textHeader.TextHeaderId)
-                                                                                                         .Select(y => y.TextGroupId)
+                                                                                                     .Select(y => y.TextGroupId)
                                                                                                          .Contains(x.TextGroupId)
                                                                                                          ).Select(x => x.GroupTitle).ToList(),
-                        Note = _context.TextNotes.Single(x => x.TextNoteId == textHeader.TextNoteId).Note
+                        Note = _context.TextNotes.Single(x => x.TextNoteId == textHeader.TextNoteId).Note,
+                        LastModified = textHeader.LastModified,
+                        LastModifiedBy = GetUserName(textHeader.LastModifiedBy)
+
                     });
                 }
             };
@@ -1582,7 +1585,13 @@ namespace RhymeBinder.Models
 
                 TextHeader origHeader = _context.TextHeaders.Find(text.TextHeaderId);
                 Text origText = _context.Texts.Find(origHeader.TextId);
-                if(!TextsAreSame(origText.TextBody, text.TextBody))
+                TextNote origNote = new();
+                if(_context.TextNotes.Any(x => x.TextNoteId == origHeader.TextNoteId))
+                {
+                    origNote = _context.TextNotes.Find(origHeader.TextNoteId);
+                }
+
+                if (!TextsAreSame(origText.TextBody, text.TextBody))
                 {
                     status = CreateNewText(displaySequencedTexts.UserId, text.TextBody);
                     if (!status.success) { return status; }
@@ -1597,6 +1606,12 @@ namespace RhymeBinder.Models
                 origHeader.LastModifiedBy = displaySequencedTexts.UserId;
                 status = Update<TextHeader>(origHeader);
                 if (!status.success) { return status; }
+                if(origNote.Note != text.Note)
+                {
+                    origNote.Note = text.Note;
+                    status = Update<TextNote>(origNote);
+                    if (!status.success) { return status; }
+                }
             }
 
             return status;

@@ -11,7 +11,7 @@
     }
     string menuTextColorTag = $"color: {Model.BinderNameColor};";
     string styleTags = binderColorTag + menuTextColorTag;
-    int index = 0;
+    int i = 0;
 }
 
 <div class="sequence-view-wrapper" >
@@ -52,19 +52,31 @@
             {
                 expandText += " (Notes...)";
             }
-            <div class="sequence-text-accordian-button" id="notePanelButton[@index]" onclick="ToggleNotes(@index)">@expandText</div>
-            <div class="sequence-text-accordian-panel" id="notePanel[@index]">
+            <div class="sequence-text-accordian-button" id="notePanelButton[@i]" onclick="ToggleNotes(@i)">@expandText</div>
+            <div class="sequence-text-accordian-panel" id="notePanel[@i]">
                 <div class="sequence-notes-label" style="border-left-style: none" >Notes:</div>
-                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote[@index]" >@text.Note</div>
-                <div class="sequence-info-label" style="border-left-style: none" >Sequence:</div>
-                <div class="sequence-info" style="border-left-style: none" >@text.SequenceNumber</div>
+                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote[@i]" >@text.Note</div>
+                <div class="sequence-info-pane">
+                    <div class="sequence-info-label">Sequence:</div>
+                    <div class="sequence-info">@text.SequenceNumber</div>
+                    <hr />
+                    <div class="sequence-info-label">Last Modified:</div>
+                    <div class="sequence-info">@text.LastModified</div>
+                    <div class="sequence-info">@text.LastModifiedBy</div>
+                    <hr />
+                    <div class="sequence-info-label">In Groups:</div>
+                    @foreach(var group in text.MemberOfGroups)
+                    {
+                        <div class="sequence-info">@group</div>
+                    }
 
+                </div>
             </div>
             <hr style="border-top: 1px dashed dimgray;" />
 
             <div class="sequence-text" style="border-left-style: none">@text.TextBody</div>
             <hr style="border-top: 1px solid dimgray;" />
-            index++;
+            i++;
         }
 
     </div>

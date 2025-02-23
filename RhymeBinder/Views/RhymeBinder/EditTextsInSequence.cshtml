@@ -45,17 +45,45 @@
                
                 <div class="sequence-title"  contenteditable="true" >@text.Title</div>
                 <hr style="border-top: 1px dashed dimgray;" />
-@*                 // Add sequence info here - sequence number,created by, modified by, timestamps *@
+                string expandText = "▼";
+                if (text.Note != null)
+                {
+                    expandText += " (Notes...)";
+                }
+                <div class="sequence-text-accordian-button" id="notePanelButton[@i]" onclick="ToggleNotes(@i)">@expandText</div>
+                <div class="sequence-text-accordian-panel" id="notePanel[@i]">
+                    <div class="sequence-notes-label" >Notes:</div>
+                    <div class="sequence-notes" contenteditable="true" id="sequenceNote[@i]">@text.Note</div>
+                    <div class="sequence-info-pane">
+                        <div class="sequence-info-label">Sequence:</div>
+                        <div class="sequence-info">@text.SequenceNumber</div>
+                        <hr />
+                        <div class="sequence-info-label">Last Modified:</div>
+                        <div class="sequence-info">@text.LastModified</div>
+                        <div class="sequence-info">@text.LastModifiedBy</div>
+                        <hr />
+                        <div class="sequence-info-label">In Groups:</div>
+                        @foreach (var group in text.MemberOfGroups)
+                        {
+                            <div class="sequence-info">@group</div>
+                        }
+
+                    </div>
+
+                </div>
+                <hr style="border-top: 1px dashed dimgray;" />
                 <div class="sequence-text"  contenteditable="true" >@text.TextBody</div>
                 <hr style="border-top: 1px solid dimgray;" />
 
             <div id="modelContainer[@i]"> @* js function will remove this node for any models where IsChanged = false to cut down on size of post *@
                 <input type="hidden" name="SimpleTexts[@i].Title" class="textTitles" value="@text.Title" id="title" />
                 <input type="hidden" name="SimpleTexts[@i].TextBody" class="textBodies" value="@text.TextBody" id="textBody" />
-                <input type="hidden" name="SimpleTexts[@i].SequenceNumber" class="sequenceNumber" value="@text.SequenceNumber" id="sequenceNumber" />
+                <input type="hidden" name="SimpleTexts[@i].Note" class="textNotes" value="@text.Note" id="textNote" />
+@*                 <input type="hidden" name="SimpleTexts[@i].SequenceNumber" class="sequenceNumber" value="@text.SequenceNumber" id="sequenceNumber" /> *@
                 <input type="hidden" name="EditedSimpleTexts[@i].Title" class="editedTextTitles" value="@text.Title" id="editedTitle" />
                 <input type="hidden" name="EditedSimpleTexts[@i].TextBody" class="editedTextBodies" value="@text.TextBody" id="editedTextBody" />
-                <input type="hidden" name="EditedSimpleTexts[@i].SequenceNumber" class="editedSequenceNumber" value="@text.SequenceNumber" id="editedSequenceNumber" />
+                <input type="hidden" name="EditedSimpleTexts[@i].Note" class="editedTextNotes" value="@text.Note" id="editedTextNote" />
+                @* <input type="hidden" name="EditedSimpleTexts[@i].SequenceNumber" class="editedSequenceNumber" value="@text.SequenceNumber" id="editedSequenceNumber" /> *@
             </div>
             <input type="hidden" name="SimpleTexts[@i].TextHeaderId" class="textHeaderIds" value="@text.TextHeaderId" id="textHeaderId" />
             <input type="hidden" name="EditedSimpleTexts[@i].TextHeaderId" class="editedTextHeaderIds" value="@text.TextHeaderId" id="editedTextHeaderId" />
