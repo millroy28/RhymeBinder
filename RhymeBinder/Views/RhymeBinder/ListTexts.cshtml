@@ -143,11 +143,11 @@
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
                         }
                         <a class="menu-bar-dropdown-item" >――――――――</a>
-                        <a class="menu-bar-dropdown-item" >Transfer To Binder...</a>
-                        @foreach(var binder in Model.UserBinders)
+                        <a class="menu-bar-dropdown-item" onclick="populate_list_modal_footer_with_record_count_message(); open_modal_with_Id('binders')">Transfer To Binder</a>
+@*                         @foreach(var binder in Model.UserBinders)
                         {
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
-                        }
+                        } *@
 
                     </div>
                 </div>
@@ -295,6 +295,8 @@
         </div>
     </div>
 
+
+            @* Group Modal *@
     <div class="list-modal" id="groups"  >
         <div class="list-modal-header">
             Add / Remove Groups:
@@ -340,12 +342,41 @@
 
         </div>
         <div class="list-modal-footer">
-            <div id="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
+            <div name="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
             
             <a class="button menu-bar-button" onclick="close_modal_with_id('groups','ListTexts')">Cancel</a>
             <a class="button menu-bar-button" onclick="submit_modal('ListTexts')">Submit</a>
         </div>
     </div>
+
+    @* Transfer Binder Modal *@
+    <div class="list-modal" id="binders">
+        <div class="list-modal-header">
+            Transfer to Binder:
+        </div>
+        <div class="list-modal-content">
+            @*                         @foreach(var binder in Model.UserBinders)
+            {
+            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
+            } *@
+          
+            @foreach(var binder in Model.UserBinders)
+            {
+                <div class="list-modal-content-item">
+                    <input type="radio" name="DestinationBinder" id=@binder.Name value=@binder.BinderId />
+                    <label for=@binder.Name>@binder.Name</label>
+                </div>
+            }
+
+        </div>
+        <div class="list-modal-footer">
+            <div name="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
+
+            <a class="button menu-bar-button" onclick="close_modal_with_id('binders')">Cancel</a>
+            <a class="button menu-bar-button" onclick="submit_modal('TransferBinder')">Submit</a>
+        </div>
+    </div>
+
 
 
     <script language="Javascript">

@@ -290,7 +290,7 @@ namespace RhymeBinder.Controllers
 
                 case "Transfer":
                     status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, int.Parse(value));
+                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, (int)savedView.DestinationBinder);
                     break;
 
                 case "ManageGroups":

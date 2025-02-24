@@ -19,5 +19,6 @@ namespace RhymeBinder.Models
         public int LowIndex { get; set; }
         public int HighIndex { get; set; }
         public int TotalHeaders { get; set; }
+        public int? DestinationBinder { get; set; }
     }
 }

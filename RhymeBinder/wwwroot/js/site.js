@@ -112,6 +112,7 @@ function open_modal_with_Id(elementId) {
     document.getElementById(elementId).style.display = "inline";
     document.body.style.pointerEvents = "none";
 }
+
 function close_modal_with_id(elementId, view) {
     if (view == 'ListTexts') {
         populate_group_selected_text_header_counts();
@@ -133,6 +134,9 @@ function submit_modal(view) {
 
     if (view == 'ListTexts') {
         selected_action_form_submit('GroupAddRemove', 1);
+    }
+    if (view == 'TransferBinder') {
+        selected_action_form_submit('Transfer', 1);
     }
     if (view == 'EditText') {
         selected_action_form_submit('Save', 1);
@@ -158,11 +162,18 @@ function populate_list_modal_footer_with_record_count_message() {
         }
     }
 
+    var footerRecordCounts = document.getElementsByName("recordCountMessage");
     if (checkedBoxes == 0) {
-        document.getElementById("recordCountMessage").innerText = "No records selected!"
+        for (let i = 0; i < footerRecordCounts.length; i++) {
+            footerRecordCounts[i].innerText = "No records selected!";
+        }
+        
     } else {
-        document.getElementById("recordCountMessage").innerText = "Apply changes to " + checkedBoxes + " selected records:";
+        for (let i = 0; i < footerRecordCounts.length; i++) {
+            footerRecordCounts[i].innerText = "Apply changes to " + checkedBoxes + " selected records: ";
+        }
     }
+
 
     document.GetElements
     return;
