@@ -3,12 +3,22 @@
 }
 
 @model DisplaySequencedTexts
+@{
+    string binderColorTag = "";
+    if (!string.IsNullOrWhiteSpace(Model.BinderColor))
+    {
+        binderColorTag = $"background-color: {Model.BinderColor};";
+    }
+    string menuTextColorTag = $"color: {Model.BinderNameColor};";
+    string styleTags = binderColorTag + menuTextColorTag;
+    int i = 0;
+}
 
 <div class="sequence-view-wrapper" >
 
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile">
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags">
                 Viewing: @Model.BinderName - @Model.GroupName
             </div>
         </div>
@@ -18,7 +28,14 @@
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
             </div>
             <div class="menu-bar-item-right-final">
-                <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>
+                @if (Model.BinderReadOnly)
+                {
+                    <a class="menu-bar-button-disabled mobile-menu-bar-button-edit-disabled" disabled="true">Read Only</a>
+                }
+                else
+                {
+                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>                   
+                }
             </div>
         </div>
 
@@ -29,14 +46,44 @@
         {
             <div class="sequence-title" style="border-left-style: none">@text.Title</div>
             <hr style="border-top: 1px dashed dimgray;" />
+
+            string expandText = "▼";
+            if(text.Note != null)
+            {
+                expandText += " (Notes...)";
+            }
+            <div class="sequence-text-accordian-button" id="notePanelButton[@i]" onclick="ToggleNotes(@i)">@expandText</div>
+            <div class="sequence-text-accordian-panel" id="notePanel[@i]">
+                <div class="sequence-notes-label" style="border-left-style: none" >Notes:</div>
+                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote[@i]" >@text.Note</div>
+                <div class="sequence-info-pane">
+                    <div class="sequence-info-label">Sequence:</div>
+                    <div class="sequence-info">@text.SequenceNumber</div>
+                    <hr />
+                    <div class="sequence-info-label">Last Edited:</div>
+                    <div class="sequence-info">@text.LastModified</div>
+                    <div class="sequence-info">@text.LastModifiedBy</div>
+                    <hr />
+                    <div class="sequence-info-label">In Groups:</div>
+                    @foreach(var group in text.MemberOfGroups)
+                    {
+                        <div class="sequence-info">@group</div>
+                    }
+
+                </div>
+            </div>
+            <hr style="border-top: 1px dashed dimgray;" />
+
             <div class="sequence-text" style="border-left-style: none">@text.TextBody</div>
             <hr style="border-top: 1px solid dimgray;" />
+            i++;
         }
 
     </div>
 
 </div>
 
+<script language="Javascript" src="~/js/sequenceView.js"></script>
 
 
 

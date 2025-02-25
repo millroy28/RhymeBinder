@@ -22,15 +22,20 @@ namespace RhymeBinder.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Selected { get; set; }
+        public bool ReadOnly { get; set; }
         public DateTime? LastAccessed { get; set; }
         public int? LastAccessedBy { get; set; }
+        public DateTime? LastWorkedIn { get; set; }
+        public int? LastWorkedInBy { get; set; }
         public bool NewTextDefaultShowLineCount { get; set; }
         public bool NewTextDefaultShowParagraphCount { get; set; }
         public string TextHeaderTitleDefaultFormat { get; set; }
+        public string Color { get; set; }
 
         public virtual SimpleUser CreatedByNavigation { get; set; }
         public virtual SimpleUser LastModifiedByNavigation { get; set; }
         public virtual SimpleUser User { get; set; }
+        public virtual Shelf Shelf { get; set; } 
         public virtual ICollection<SavedView> SavedViews { get; set; }
         public virtual ICollection<TextGroup> TextGroups { get; set; }
         public virtual ICollection<TextHeader> TextHeaders { get; set; }

@@ -174,6 +174,7 @@
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         width: auto;
+        
         padding: 2px;
         margin: 10px;
         background-color: #f4f5ef;
@@ -318,6 +319,7 @@
         box-sizing: border-box;
         /*  height: 90vh; */
         background: #eff3d8;
+
     }
 
     .table-view-table-container {
@@ -515,7 +517,7 @@
 */
         background-color: transparent;
         border-color: transparent;
-        /*padding: 4px !important;*/
+        padding: 4px !important;
         margin-left: 9px !important;
         border: 0px !important;
         /*    border-bottom-left-radius: 4px;
@@ -808,6 +810,251 @@
         border-bottom-left-radius: 8px;
         border-top-left-radius: 8px;
     }
+
+
+    .sequence-text-accordian-panel {
+        transition: 0.4s;
+        display: none;
+
+        grid-gap: 0px;
+        grid-template-columns: 80% 20%;
+    }
+    .sequence-notes {
+        grid-row: 2/3;
+        grid-column: 1/2;
+        text-align: left;
+        font-family: Courier New, Courier, monospace;
+        width: 95%;
+        white-space: pre-wrap;
+        margin: 5px;
+        padding: 8px;
+        border: 4px;
+        border-left-color: darkseagreen;
+        border-left-style: solid;
+        border-bottom-left-radius: 8px;
+        border-top-left-radius: 8px;
+        background: #fcffeb;
+    }
+    .sequence-notes-label {
+        grid-row: 1/2;
+        grid-column: 1/2;
+        width: 95%;
+        margin: 5px;
+        padding: 8px;
+        
+        font-style: italic;
+        font-size: small;
+    }
+    .sequence-info-pane {
+        grid-row: 1/3;
+        grid-column: 2/3;
+        display: flex;
+        flex-flow: column;
+    }
+    .sequence-info {
+        font-size: small;
+        padding: 0px 0px 0px 8px;
+    }
+    .sequence-info-label {
+
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-info {
+        grid-row: 2/3;
+        grid-column: 2/3;
+    }
+
+    .sequence-info-label {
+        grid-row: 1/2;
+        grid-column: 2/3;
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-text-accordian-button {
+        padding: 0 18px;
+        background-color: white;
+        cursor: default;
+        overflow: hidden;
+        font-style: italic;
+        font-size: small;
+    }
+    /*``[Binder Shelf View]*/
+    .shelf-view-container {
+        grid-column: 1/4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        align-self: center;
+        background: linear-gradient(155deg, rgba(241,236,225,1) 0%, rgba(212,207,197,1) 61%, rgba(182,179,172,1) 100%);
+    }
+
+    .shelf-view-shelf-shelfspace {
+        display: flex;
+        flex-flow: row;
+        align-items: end;
+        margin-bottom: 20px;
+        width: 100%; /* Constant shelf width */
+        height: 250px;
+        flex-shrink: 0;
+        border-radius: 5px;
+        background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(11,11,11,1) 35%, rgba(74,74,74,1) 100%);
+        
+        overflow-x: scroll;
+        scrollbar-width:thin;
+
+
+        box-shadow: 12px 12px 15px rgba(0, 0, 0, 9.5) inset;
+    }
+
+    .shelf-view-binder {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        margin: 0px 1px 0px 0px;
+        padding: 15px;
+        border: 1px solid;
+        border-radius: 5px;
+        box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.5) inset;
+        cursor: pointer;
+        flex-shrink:0;
+        position: relative;
+    }
+
+        .shelf-view-binder:hover {
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+
+    .shelf-view-binder-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        margin: 5px;
+
+        border: solid 2px;
+        border-color: darkgray;
+        border-radius: 5px;
+        
+    }
+
+
+    .shelf-view-binder-card-title {
+
+        padding: 1px 0px 2px 0px;
+        background-color: floralwhite;
+
+        height: 100%;
+        width: 100%;
+        
+        writing-mode: sideways-lr;
+        text-orientation: mixed;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: .06em;
+        font-size: 16px;
+   
+      
+    }
+
+
+    .shelf-view-binder-edit {
+        font-size: 10px;
+        color: #fff;
+        background-color: #666;
+        padding: 5px 10px;
+        align-items: center;
+        justify-items: center;
+        cursor: pointer;
+
+    }
+
+        .shelf-view-binder-edit:hover {
+            background-color: #0056b3;
+        }
+
+
+    .shelf-view-binder-hover {
+        position: absolute;
+        padding: 10px;
+        background-color: #f4f5ef;
+        border: 1px solid #ccc;
+        display: none; /* Hide by default */
+        z-index: 100
+    }
+
+    .shelf-view-binder-hover-heading {
+        font-size: small;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+
+    .shelf-view-binder-hover-description{
+        font-size: small;
+    }
+
+    .shelf-view-binder-hover-field {
+        font-size: small;
+        font-style: italic;
+    }
+
+
+    /* Style for the scrollbar */
+    .shelf-view-shelf-shelfspace::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .shelf-view-shelf-shelfspace::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+    }
+
+
+    .sortable-placeholder {
+        border: 1px dashed #ccc;
+        background: #f9f9f9;
+        height: 30px; /* Adjust height as needed */
+        margin-bottom: 5px;
+    }
+    .binders-container{
+        display:flex;
+        flex-flow: row;
+    }
+    .binders-column{
+        display: flex;
+        flex-flow: column;
+
+        width: 25%;
+        border:dotted;
+        padding: 5px;
+        border-width:1px;
+        border-color: lightgray;
+    }
+    .binders-column-title{
+        border-bottom-width: 1px;
+        border-bottom: solid;
+        text-align: center;
+        font-size: larger;
+        
+    }
+    .binder-item {
+        border: 1px solid #ccc;
+        background: #fff;
+        padding: 3px 10px 3px 10px;
+        margin-bottom: 5px;
+        cursor: move;
+    }
+
 
     /*``[Misc and utils]*/
     .button {
@@ -1141,7 +1388,7 @@ text-decoration-line: underline;
         }
 
     .site-container {
-        height: auto;
+        height: 100%;
     }
 
     .site-footer {
@@ -1386,6 +1633,7 @@ text-decoration-line: underline;
         display: grid;
         grid-template-columns: repeat(3, auto);
         pointer-events: all;
+        overflow: scroll;
     }
 
 
@@ -1761,6 +2009,19 @@ display:none;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
     }
 
+    .mobile-menu-bar-button-edit-disabled {
+        background: url("../img/pencil-square.svg") no-repeat;
+        opacity: .3;
+        font-size: 1px;
+        color: transparent;
+        border-color: transparent;
+        padding: 8px !important;
+        margin: 0px !important;
+        border: 0px !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+
     /*``[Editor:Title/TextBox*/
     .title-bar {
 /*        grid-row: 2/3;
@@ -1920,6 +2181,222 @@ height: 70vh;
         border-left-style: solid;
         border-bottom-left-radius: 8px;
         border-top-left-radius: 8px;
+    }
+
+
+
+    .sequence-text-accordian-panel {
+        transition: 0.4s;
+        display: none;
+        grid-gap: 0px;
+        grid-template-columns: auto;
+    }
+
+    .sequence-notes {
+        grid-row: 2/3;
+        grid-column: 1/2;
+        text-align: left;
+        font-family: Courier New, Courier, monospace;
+        width: 95%;
+        white-space: pre-wrap;
+        margin: 5px;
+        padding: 8px;
+        border: 4px;
+        border-left-color: darkseagreen;
+        border-left-style: solid;
+        border-bottom-left-radius: 8px;
+        border-top-left-radius: 8px;
+        background: #fcffeb;
+    }
+
+    .sequence-notes-label {
+        grid-row: 1/2;
+        grid-column: 1/2;
+        width: 95%;
+        margin: 5px;
+        padding: 8px;
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-info-pane {
+        grid-row: 3/4;
+        grid-column: 1/2;
+        display: flex;
+        flex-flow: column;
+        padding: 10px;
+    }
+
+    .sequence-info {
+        font-size: small;
+        padding: 0px 0px 0px 8px;
+    }
+
+    .sequence-info-label {
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-info {
+        grid-row: 2/3;
+        grid-column: 2/3;
+    }
+
+    .sequence-info-label {
+        grid-row: 1/2;
+        grid-column: 2/3;
+        font-style: italic;
+        font-size: small;
+    }
+
+    .sequence-text-accordian-button {
+        padding: 0 18px;
+        background-color: white;
+        cursor: default;
+        overflow: hidden;
+        font-style: italic;
+        font-size: small;
+    }
+
+
+    /*``[Binder Shelf View]*/
+
+
+
+    .shelf-view-container {
+        grid-column: 1/4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        padding: 20px;
+        align-self: center;
+        background: linear-gradient(155deg, rgba(241,236,225,1) 0%, rgba(212,207,197,1) 61%, rgba(182,179,172,1) 100%);
+    }
+
+    .shelf-view-shelf-shelfspace {
+        display: flex;
+        flex-flow: row;
+        align-items: end;
+        margin-bottom: 20px;
+        width: 100%; /* Constant shelf width */
+        height: 250px;
+        flex-shrink: 0;
+        border-radius: 5px;
+        background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(11,11,11,1) 35%, rgba(74,74,74,1) 100%);
+        overflow-x: scroll;
+        scrollbar-width: thin;
+        box-shadow: 12px 12px 15px rgba(0, 0, 0, 9.5) inset;
+    }
+
+    .shelf-view-binder {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        margin: 0px 1px 0px 0px;
+        padding: 15px;
+        border: 1px solid;
+        border-radius: 5px;
+        box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.5) inset;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+        .shelf-view-binder:hover {
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+
+
+
+    .shelf-view-binder-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        margin: 5px;
+        border: solid 2px;
+        border-color: darkgray;
+        border-radius: 5px;
+    }
+
+
+    .shelf-view-binder-card-title {
+        padding: 1px 0px 2px 0px;
+        background-color: floralwhite;
+        height: 100%;
+        width: 100%;
+        writing-mode: sideways-lr;
+        text-orientation: mixed;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: .06em;
+        font-size: 16px;
+    }
+
+
+    .shelf-view-binder-edit {
+        font-size: 10px;
+        color: #fff;
+        background-color: #666;
+        padding: 5px 10px;
+        align-items: center;
+        justify-items: center;
+        cursor: pointer;
+    }
+
+        .shelf-view-binder-edit:hover {
+            background-color: #0056b3;
+        }
+
+    /* Style for the scrollbar */
+    .shelf-view-shelf-shelfspace::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .shelf-view-shelf-shelfspace::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+    }
+
+
+    .sortable-placeholder {
+        border: 1px dashed #ccc;
+        background: #f9f9f9;
+        height: 30px; /* Adjust height as needed */
+        margin-bottom: 5px;
+    }
+
+    .binders-container {
+        display: flex;
+        flex-flow: row;
+    }
+
+    .binders-column {
+        display: flex;
+        flex-flow: column;
+        width: 25%;
+        border: dotted;
+        padding: 5px;
+        border-width: 1px;
+        border-color: lightgray;
+    }
+
+    .binders-column-title {
+        border-bottom-width: 1px;
+        border-bottom: solid;
+        text-align: center;
+        font-size: larger;
+    }
+
+    .binder-item {
+        border: 1px solid #ccc;
+        background: #fff;
+        padding: 3px 10px 3px 10px;
+        margin-bottom: 5px;
+        cursor: move;
     }
 
 

@@ -74,9 +74,15 @@ function CopyContentToForm() {
     var formSubmitTitles = document.getElementsByClassName("editedTextTitles");
     var editedTitles = document.getElementsByClassName("sequence-title");
     var savedTitles = document.getElementsByClassName("textTitles");
+
     var formSubmitTexts = document.getElementsByClassName("editedTextBodies");
     var editedTexts = document.getElementsByClassName("sequence-text");
     var savedTexts = document.getElementsByClassName("textBodies");
+
+    var formSubmitNotes = document.getElementsByClassName("editedTextNotes");
+    var editedTextNotes = document.getElementsByClassName("sequence-notes");
+    var savedTextNotes = document.getElementsByClassName("textNotes");
+
     var changedValues = document.getElementsByClassName("editedTextIsChanged");
     var unsavedCount = 0;
 
@@ -84,6 +90,7 @@ function CopyContentToForm() {
 
         var editedTitlesBreakReplace = ReplaceBreakTags(editedTitles[i].innerHTML);
         var editedTextBreakReplace = ReplaceBreakTags(editedTexts[i].innerHTML);
+        var editedNoteBreakReplace = ReplaceBreakTags(editedTextNotes[i].innerHTML);
 
         if (savedTitles[i].value != editedTitlesBreakReplace) {
             formSubmitTitles[i].value = editedTitlesBreakReplace;
@@ -99,8 +106,16 @@ function CopyContentToForm() {
             editedTexts[i].style.cssText += "border-left-color: darkseagreen; ";
         }
 
+        if (savedTextNotes[i].value != editedNoteBreakReplace) {
+            formSubmitNotes[i].value = editedNoteBreakReplace;
+            editedTextNotes[i].style.cssText += "border-left-color: goldenrod; ";
+        } else {
+            editedTextNotes[i].style.cssText += "border-left-color: darkseagreen; ";
+        }
+
         if (savedTitles[i].value == editedTitlesBreakReplace
-            && savedTexts[i].value == editedTextBreakReplace) {
+            && savedTexts[i].value == editedTextBreakReplace
+            && savedTextNotes[i].value == editedNoteBreakReplace) {
             changedValues[i].value = false;
         } else {
             changedValues[i].value = true;
@@ -146,4 +161,25 @@ function RemoveUnchangedElements() {
             document.getElementById("modelContainer[" + i + "]").remove();
         } 
     }
+}
+
+function ToggleNotes(index) {
+    var notesPanel = document.getElementById("notePanel[" + index + "]");
+    var notesPanelButton = document.getElementById("notePanelButton[" + index + "]");
+    var notesContent = document.getElementById("sequenceNote[" + index + "]").textContent;
+    var expandButton = "▼"
+    if (notesContent.length > 0) {
+        expandButton += " (Notes...)";
+    }
+
+    if (notesPanel.style.display === "grid") {
+        notesPanel.style.display = "none";
+        notesPanelButton.textContent = "▼ (Notes...)";
+    } else {
+        notesPanel.style.display = "grid";
+        notesPanelButton.textContent = "▲";
+
+    } 
+
+
 }

@@ -9,6 +9,10 @@ namespace RhymeBinder.Models
     {
         public int UserId { get;set; }
 
+        // Text Status
+
+        public bool BinderReadOnly {  get; set; }
+
         // Text fields
         public int TextId { get; set; }
         public string TextBody { get; set; }
@@ -38,6 +42,8 @@ namespace RhymeBinder.Models
 
 
         //  Display fields
+        public string BinderColor { get; set; }
+        public string DisplayTitleColor {  get; set; }
         public string DisplayTitle { get; set; }
         public string CreatedByUserName { get; set; }
         public string LastModifiedByUserName { get; set; }

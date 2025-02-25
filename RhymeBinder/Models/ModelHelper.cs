@@ -198,7 +198,6 @@ namespace RhymeBinder.Models
                 Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
 
 
-
                 int textCount = _context.TextHeaders.Where(x => x.Top == true
                                                              && x.Deleted == false
                                                              && x.BinderId == binderId).Count();
@@ -215,7 +214,9 @@ namespace RhymeBinder.Models
                 displayBinder.Hidden = binder.Hidden;
                 displayBinder.Name = binder.Name;//binder.Name.Length > 25 ? binder.Name.Substring(0,25) + "..." : binder.Name;
                 displayBinder.Description = binder.Description;
+                displayBinder.Color = binder.Color;
                 displayBinder.Selected = binder.Selected;
+                displayBinder.ReadOnly = binder.ReadOnly;
                 displayBinder.GroupCount = groupCount;
                 displayBinder.PageCount = textCount;
                 displayBinder.TextHeaderTitleDefaultFormat = binder.TextHeaderTitleDefaultFormat;
@@ -243,11 +244,31 @@ namespace RhymeBinder.Models
                 List<TextGroup> textGroups = _context.TextGroups.Where(x => x.Owner.UserId == userId
                                                                          && x.Hidden == false).ToList();
 
-                int textCount; int groupCount;
+                int textCount; int groupCount; int wordCount; int characterCount;
 
                 foreach (var binder in binders)
                 {
-                    textCount = textHeaders.Where(x => x.BinderId == binder.BinderId).Count();
+                    if(_context.Shelves.Any(y => y.BinderId == binder.BinderId && y.UserId == userId))
+                    {
+                        binder.Shelf = _context.Shelves.DefaultIfEmpty().Single(y => y.BinderId == binder.BinderId && y.UserId == userId);
+                    } else
+                    {
+                        binder.Shelf = new Shelf()
+                        {
+                            ShelfId = 0,
+                            ShelfLevel = 0,
+                            SortOrder = 0,
+                            BinderId = binder.BinderId,
+                            UserId = userId,
+
+                        };
+                    }
+                    List <TextHeader> headers = textHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
+                    textCount = headers.Count();
+
+                    characterCount = headers.Sum(x => x.CharacterCount ?? 0);
+
+                    wordCount = headers.Sum(x => x.WordCount ?? 0);
 
                     groupCount = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroups in groupLinks
                                   join TextHeader header in textHeaders
@@ -271,9 +292,19 @@ namespace RhymeBinder.Models
                         Description = binder.Description,
                         PageCount = textCount,
                         GroupCount = groupCount,
+                        CharacterCount = characterCount,
+                        WordCount = wordCount,
                         Selected = binder.Selected,
+                        ReadOnly = binder.ReadOnly,
+                        Color = binder.Color,
+                        TitleColor = GetMenuTextColor(binder.Color),
+                        Shelf = binder.Shelf,
                         CreatedByName = GetUserName(binder.CreatedBy),
-                        ModifyByName = GetUserName(binder.LastModifiedBy)
+                        ModifyByName = GetUserName(binder.LastModifiedBy),
+                        LastAccessed = binder.LastAccessed,
+                        LastAccessedByName = GetUserName(binder.LastAccessedBy),
+                        LastWorkedIn = binder.LastWorkedIn,
+                        WorkedInName = GetUserName(binder.LastWorkedInBy)
                     });
 
                 }
@@ -444,7 +475,9 @@ namespace RhymeBinder.Models
                     ModifyByName = GetUserName(textHeader.LastModifiedBy),
                     ReadByName = GetUserName(textHeader.LastReadBy),
                     RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
-                    GroupSequence = groupSequence
+                    GroupSequence = groupSequence,
+                    CharacterCount = textHeader.CharacterCount ?? 0,
+                    WordCount = textHeader.WordCount ?? 0
                 }); 
             }
 
@@ -617,6 +650,7 @@ namespace RhymeBinder.Models
             //                                           ? (binder.Name + ": " + savedView.ViewName).Substring(0, 25) + "..."
             //                                           : binder.Name + ": " + savedView.ViewName;
             displayTextHeadersAndSavedView.MenuTitle = binder.Name + ": " + savedView.ViewName;
+            displayTextHeadersAndSavedView.MenuTitleColor = GetMenuTextColor(binder.Color);
             displayTextHeadersAndSavedView.View = savedView;
             displayTextHeadersAndSavedView.TextHeaders = displayTextHeadersOnPage;
             displayTextHeadersAndSavedView.Groups = groups;
@@ -809,10 +843,15 @@ namespace RhymeBinder.Models
             //get text groups
             List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
 
+            string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).Color;
+            bool readOnly = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).ReadOnly;
+
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
             {
                 UserId = userId,
+
+                BinderReadOnly = readOnly,
 
                 TextId = thisText.TextId,
                 TextBody = thisText.TextBody,
@@ -837,7 +876,9 @@ namespace RhymeBinder.Models
                 Top = thisTextHeader.Top,
                 BinderId = thisTextHeader.BinderId,
 
-                DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0,20) + "..." : thisTextHeader.Title,
+                BinderColor = binderColor,
+                DisplayTitleColor = GetMenuTextColor(binderColor),
+                DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0, 20) + "..." : thisTextHeader.Title,
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
                 CurrentRevisionStatus = currentRevisionStatus,
@@ -857,8 +898,8 @@ namespace RhymeBinder.Models
 
                 AllRevisionStatuses = revisionStatuses,
                 PreviousTexts = previousTextsAndHeaders,
-              
-            };
+
+            }; 
 
             return (textEdit);
         }
@@ -866,13 +907,18 @@ namespace RhymeBinder.Models
         {
             // To serve view where user can read all texts in a sequence
             TextGroup group = _context.TextGroups.Single(x => x.TextGroupId == groupId);
+            string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == group.BinderId).Color;
+            bool binderReadOnly = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == group.BinderId).ReadOnly;
             DisplaySequencedTexts displaySequencedTexts = new()
             {
                 UserId = userId,
                 GroupName = group.GroupTitle,
                 GroupId = group.TextGroupId,
                 BinderId = group.BinderId,
-                BinderName = GetBinderName(group.BinderId)
+                BinderName = GetBinderName(group.BinderId),
+                BinderColor = binderColor,
+                BinderReadOnly = binderReadOnly,
+                BinderNameColor = GetMenuTextColor(binderColor)
             };
 
             List<TextHeader> textHeaders = GetTextHeadersInGroupSequence(groupId);
@@ -890,9 +936,13 @@ namespace RhymeBinder.Models
                         TextBody = _context.Texts.Single(x => x.TextId == textHeader.TextId).TextBody,
                         SequenceNumber = (int)_context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textHeader.TextHeaderId && x.TextGroupId == groupId).Sequence,
                         MemberOfGroups = _context.TextGroups.Where(x => _context.LnkTextHeadersTextGroups.Where(y => y.TextHeaderId == textHeader.TextHeaderId)
-                                                                                                         .Select(y => y.TextGroupId)
+                                                                                                     .Select(y => y.TextGroupId)
                                                                                                          .Contains(x.TextGroupId)
-                                                                                                         ).Select(x => x.GroupTitle).ToList()
+                                                                                                         ).Select(x => x.GroupTitle).ToList(),
+                        Note = _context.TextNotes.Single(x => x.TextNoteId == textHeader.TextNoteId).Note,
+                        LastModified = textHeader.LastModified,
+                        LastModifiedBy = GetUserName(textHeader.LastModifiedBy)
+
                     });
                 }
             };
@@ -1081,6 +1131,36 @@ namespace RhymeBinder.Models
 
             return userLocalNow;                        
         }
+        public int GetWordCount(string text)
+        {
+            int count = 0;
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                char[] delimiters = new char[] { ' ', '\r', '\n' };
+                count = text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Length;
+            }
+
+            return count;
+        }
+        public string GetMenuTextColor(string hexColor)
+        {
+            if (string.IsNullOrEmpty(hexColor)) return "black";
+            // Remove the # at the start if it's there
+            hexColor = hexColor.TrimStart('#');
+
+            // Parse the hex color to RGB values
+            int r = int.Parse(hexColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+            int g = int.Parse(hexColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+            int b = int.Parse(hexColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+            // Calculate the relative luminance
+            double luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+            // Return "black" or "white" based on luminance
+            return luminance > 0.5 ? "black" : "white";
+        }
+
 
         #endregion
 
@@ -1138,21 +1218,33 @@ namespace RhymeBinder.Models
 
         //  Text Methods:
         #region TextMethods
-        public Status StartNewText(int userId)
+        public Status StartNewText(int userId, int? groupId)
         {
             Status status = new Status();
+            int verifiedGroupId = 0;
+            if(groupId != null  && groupId > 0)
+            {
+                verifiedGroupId = groupId.Value;
+            }
 
             // Create a new blank Text
             Text newText = new Text();
             newText.TextBody = "";
             newText.Created = GetUserLocalTime(userId);
-            
             try
             {
                 _context.Texts.Add(newText);
                 _context.SaveChanges();
                 status = CreateNewTextHeader(userId, newText.TextId);
+                int newHeaderId = status.recordId;
                 status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
+
+                if (status.success && verifiedGroupId != 0)
+                {
+                    status = AddRemoveHeaderFromGroup(newHeaderId, verifiedGroupId, true);
+                    // calling function relies on textheaderid to redirect
+                    status.recordId = newHeaderId;
+                }
             }
             catch
             {
@@ -1435,6 +1527,9 @@ namespace RhymeBinder.Models
             origHeader.LastModifiedBy = textEdit.UserId;
             origHeader.TextRevisionStatusId = textEdit.TextRevisionStatusId;
 
+            origHeader.CharacterCount = textEdit.TextBody?.Length ?? 0;
+            origHeader.WordCount = GetWordCount(textEdit.TextBody);
+
             status = Update<TextHeader>(origHeader);
             if (!status.success) { return status; }
 
@@ -1457,6 +1552,11 @@ namespace RhymeBinder.Models
             thisEditWindowProperty.ShowParagraphCount = textEdit.ShowParagraphCount;
 
             status = Update<EditWindowProperty>(thisEditWindowProperty);
+
+            if (status.success)
+            {
+                status = UpdateBinderLastWorkedIn(origHeader.BinderId, textEdit.UserId);
+            }
             if (!status.success) { return status; }           
             else
             {
@@ -1485,7 +1585,13 @@ namespace RhymeBinder.Models
 
                 TextHeader origHeader = _context.TextHeaders.Find(text.TextHeaderId);
                 Text origText = _context.Texts.Find(origHeader.TextId);
-                if(!TextsAreSame(origText.TextBody, text.TextBody))
+                TextNote origNote = new();
+                if(_context.TextNotes.Any(x => x.TextNoteId == origHeader.TextNoteId))
+                {
+                    origNote = _context.TextNotes.Find(origHeader.TextNoteId);
+                }
+
+                if (!TextsAreSame(origText.TextBody, text.TextBody))
                 {
                     status = CreateNewText(displaySequencedTexts.UserId, text.TextBody);
                     if (!status.success) { return status; }
@@ -1500,6 +1606,12 @@ namespace RhymeBinder.Models
                 origHeader.LastModifiedBy = displaySequencedTexts.UserId;
                 status = Update<TextHeader>(origHeader);
                 if (!status.success) { return status; }
+                if(origNote.Note != text.Note)
+                {
+                    origNote.Note = text.Note;
+                    status = Update<TextNote>(origNote);
+                    if (!status.success) { return status; }
+                }
             }
 
             return status;
@@ -1633,6 +1745,8 @@ namespace RhymeBinder.Models
             viewToUpdate.VisionNumber = (bool)savedView.View.VisionNumber;
             viewToUpdate.RevisionStatus = (bool)savedView.View.RevisionStatus;
             viewToUpdate.Groups = (bool)savedView.View.Groups;
+            viewToUpdate.WordCount = (bool)savedView.View.WordCount;
+            viewToUpdate.CharacterCount = (bool)savedView.View.CharacterCount;
             viewToUpdate.GroupSequence = savedView.View.GroupSequence ?? false;
             viewToUpdate.RecordsPerPage = savedView.View.RecordsPerPage;
             viewToUpdate.SearchValue = savedView.View.SearchValue;
@@ -1673,6 +1787,8 @@ namespace RhymeBinder.Models
             defaultSavedView.RevisionStatus = newDefaults.RevisionStatus;
             defaultSavedView.Groups = newDefaults.Groups;
             defaultSavedView.GroupSequence = newDefaults.GroupSequence;
+            defaultSavedView.WordCount = newDefaults.WordCount;
+            defaultSavedView.CharacterCount = newDefaults.CharacterCount;
 
             try
             {
@@ -1735,6 +1851,8 @@ namespace RhymeBinder.Models
             activeView.RevisionStatus = defaultView.RevisionStatus;
             activeView.Groups = defaultView.Groups;
             activeView.GroupSequence = defaultView.GroupSequence;
+            activeView.WordCount = defaultView.WordCount;
+            activeView.CharacterCount = defaultView.CharacterCount;
 
             try
             {
@@ -1793,7 +1911,8 @@ namespace RhymeBinder.Models
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
-                Selected = true
+                Selected = true,
+                ReadOnly = false
             };
 
             // ... and a trash binder
@@ -1807,7 +1926,8 @@ namespace RhymeBinder.Models
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
-                Selected = false
+                Selected = false,
+                ReadOnly = false
             };
 
             // ... and loose pages binder
@@ -1821,7 +1941,8 @@ namespace RhymeBinder.Models
                 CreatedBy = newUserId,
                 LastModifiedBy = newUserId,
                 Hidden = false,
-                Selected = false
+                Selected = false,
+                ReadOnly = false
             };
 
             try
@@ -1866,7 +1987,8 @@ namespace RhymeBinder.Models
                 NewTextDefaultShowLineCount = simpleUser.DefaultShowLineCount,
                 NewTextDefaultShowParagraphCount = simpleUser.DefaultShowParagraphCount,
                 TextHeaderTitleDefaultFormat = "Title",
-                Selected = false //taken care of by OpenBinder                
+                Selected = false, //taken care of by OpenBinder
+                ReadOnly = false
             };
 
             try
@@ -1907,6 +2029,8 @@ namespace RhymeBinder.Models
             newBinder.CreatedBy = userId;
             newBinder.Hidden = false;
             newBinder.Selected = false;
+            newBinder.ReadOnly = false;
+
 
             try
             {
@@ -1985,6 +2109,8 @@ namespace RhymeBinder.Models
                 RevisionStatus = false,
                 Groups = false,
                 GroupSequence = false,
+                WordCount = false,
+                CharacterCount = false,
                 BinderId = binderId,
 
             };
@@ -2007,6 +2133,8 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                WordCount = false,
+                CharacterCount = false,
                 GroupSequence = false,
                 BinderId = binderId,
 
@@ -2030,6 +2158,8 @@ namespace RhymeBinder.Models
                 VisionNumber = false,
                 RevisionStatus = false,
                 Groups = false,
+                WordCount = false,
+                CharacterCount = false,
                 GroupSequence = false,
                 BinderId = binderId
             };
@@ -2053,6 +2183,8 @@ namespace RhymeBinder.Models
                 RevisionStatus = false,
                 Groups = false,
                 GroupSequence = false,
+                WordCount = false,
+                CharacterCount = false,
                 BinderId = binderId
             };
 
@@ -2158,6 +2290,27 @@ namespace RhymeBinder.Models
             return status;
 
         } 
+        public Status UpdateBinderLastWorkedIn(int binderId, int userId)
+        {
+            Status status = new Status();
+            DateTime userLocalNow = GetUserLocalTime(userId);
+            Binder thisBinder = _context.Binders.Single(x => x.BinderId == binderId);
+            thisBinder.LastWorkedIn = userLocalNow;
+            thisBinder.LastWorkedInBy = userId;
+            try
+            {
+                _context.Entry(thisBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
+                _context.Update(thisBinder);
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failure to update Binder";
+            }
+            return status;
+        }
         public Status MoveAllBinderContents(int binderSourceId, int binderDestinationId)
         {
             Status status = new Status();
@@ -2579,6 +2732,79 @@ namespace RhymeBinder.Models
                 status.success = false;
                 status.message = "Failed to save Edit Window Properties for new Binder while duplicating";
                 return status;
+            }
+
+            return status;
+        }
+        public Status UpdateShelf(int userId, List<ShelfUpdateModel> shelfUpdateModels)
+        {
+            Status status = new();
+            List<Shelf> existingShelves = new();
+
+            // get existing
+            if(_context.Shelves.Any(x => x.UserId == userId))
+            {
+                existingShelves =_context.Shelves.Where(x => x.UserId == userId).ToList();
+            }
+
+
+            if (shelfUpdateModels.Count > 0)
+            {
+                foreach (ShelfUpdateModel shelfUpdateModel in shelfUpdateModels)
+                {
+
+                    if(existingShelves.Count() == 0 || !existingShelves.Any(x => x.BinderId == shelfUpdateModel.BinderId))
+                    {
+                        _context.Shelves.Add(new Shelf
+                        {
+                            UserId = userId,
+                            BinderId = shelfUpdateModel.BinderId,
+                            ShelfLevel = shelfUpdateModel.ShelfLevel,
+                            SortOrder = shelfUpdateModel.SortOrder
+                        });
+                    } 
+                    else
+                    {
+                        foreach(Shelf shelf in existingShelves.Where(x => x.BinderId == shelfUpdateModel.BinderId))
+                        {
+                            shelf.ShelfLevel = shelfUpdateModel.ShelfLevel;
+                            shelf.SortOrder = shelfUpdateModel.SortOrder;
+                        }
+                    }
+
+                }
+
+                _context.Shelves.UpdateRange(existingShelves);
+
+                if(existingShelves.Count() > 0)
+                {
+                    foreach(Shelf shelf in existingShelves)
+                    {
+                        if(!shelfUpdateModels.Any(x => x.BinderId == shelf.BinderId))
+                        {
+                            _context.Shelves.Remove(shelf);
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                if(existingShelves.Count() > 0)
+                {
+                    _context.Shelves.RemoveRange(existingShelves);
+                }
+            }
+
+            try
+            {
+                _context.SaveChanges();
+                status.success = true;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to update Binder Shelf settings";
             }
 
             return status;
@@ -3090,6 +3316,8 @@ namespace RhymeBinder.Models
                     RevisionStatus = defaultSavedView.RevisionStatus,
                     Groups = defaultSavedView.Groups,
                     GroupSequence = defaultSavedView.GroupSequence,
+                    WordCount = defaultSavedView.WordCount,
+                    CharacterCount = defaultSavedView.CharacterCount,
                     BinderId = defaultSavedView.BinderId
                 };
 
