@@ -5,7 +5,18 @@
 @{
 }
 @model DisplayTextHeadersAndSavedView
-@{ int index = 0; int groupIndex = 0; } 
+@{
+    int index = 0; int groupIndex = 0;
+    string binderColorTag = null;
+    if (!string.IsNullOrWhiteSpace(Model.Binder.Color))
+    {
+        binderColorTag = $"background-color: {Model.Binder.Color};";
+    }
+    string menuTextColorTag = $"color: {Model.MenuTitleColor};";
+    string styleTags = binderColorTag + menuTextColorTag;
+
+}
+
 
 
 <script language="Javascript" src="~/js/site.js"></script>
@@ -32,6 +43,8 @@
     <input type="hidden" name="View.VisionNumber" value="@Model.View.VisionNumber.ToString()" id="view_vision_number" />
     <input type="hidden" name="View.RevisionStatus" value="@Model.View.RevisionStatus.ToString()" id="revision_status" />
     <input type="hidden" name="View.Groups" value="@Model.View.Groups.ToString()" id="view_groups" />
+    <input type="hidden" name="View.WordCount" value="@Model.View.WordCount.ToString()" id="view_word_count" />
+    <input type="hidden" name="View.CharacterCount" value="@Model.View.CharacterCount.ToString()" id="view_char_count" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
     <input type="hidden" name="View.BinderId" value="@Model.View.BinderId" />
     <input type="hidden" name="Page" value="@Model.Page" id="page" />
@@ -41,99 +54,123 @@
     <input type="hidden" name="value" value="-1" id="record_id" />
 
     <div class="table-view-wrapper">
-        <div class="list-texts-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" id="menu_bar_title">
-                @Model.MenuTitle
-            </div>
-            <div class="menu-bar-item">
-                @if(Model.View.GroupSequence == true)
-                {
-                    <a class="menu-bar-button" onclick="show_sequence_inputs(@Model.View.SavedViewId)" id="updateSequenceButton">Edit Sequence</a>
-                }
-                else
-                {
-                    <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>                    
-                }
-            </div>
-            <div class="menu-bar-dropdown">
-                <div class="menu-bar-button-dropdown">
-                    Columns ▼
-                </div>
-                <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Modified</a>
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Modified By</a>
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
-                    <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_groups', this.id, 'groups_col')" id="toggle_groups">? Groups</a>
+        <div class="menu-bar">
 
+            <div class="list-texts-menu-bar-main">
+                <div class="menu-bar-title menu-bar-title-mobile" id="menu_bar_title" style="@styleTags">
+                    @Model.MenuTitle
                 </div>
-            </div>
-            <div class="menu-bar-dropdown">
-                <div class="menu-bar-button-dropdown">
-                    Views ▼
-                </div>
-                <div class="menu-bar-dropdown-content">
-                    @foreach(var group in Model.Groups)
+                <div class="menu-bar-item">
+                    @if(Model.View.GroupSequence == true)
                     {
-                        if(group.TextGroupId < 0)
+                        <a class="menu-bar-button" onclick="show_sequence_inputs(@Model.View.SavedViewId)" id="updateSequenceButton">Edit Sequence</a>
+                    }
+                </div>
+                <div class="menu-bar-item">
+                        @if(Model.View.GroupSequence == true)
                         {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
+                            <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', @Model.View.SetValue)">New Text</a>
                         }
-                    }
-                    <a class="menu-bar-dropdown-item" >――――――――</a>
-                    <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
+                        else
+                        {
+                            <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>
+                        }
                 </div>
-            </div>
-            <div class="menu-bar-dropdown">
-                <div class="menu-bar-button-dropdown">
-                    Groups ▼
+
+
+                
+                <div class="menu-bar-dropdown">
+                    <div class="menu-bar-button-dropdown">
+                        Columns ▼
+                    </div>
+                    <div class="menu-bar-dropdown-content">
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Edited</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Edited By</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_groups', this.id, 'groups_col')" id="toggle_groups">? Groups</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_word_count', this.id, 'wordcount_col')" id="toggle_wordcount">? Word Count</a>
+                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_char_count', this.id, 'charcount_col')" id="toggle_charcount">? Character Count</a>
+
+
+                    </div>
                 </div>
-                <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">New Group</a>
-                    @if(Model.Groups.Count > 3)  // 3 views created by default for each binder
-                    {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
-                        <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
-                    }
+                <div class="menu-bar-dropdown">
+                    <div class="menu-bar-button-dropdown">
+                        Views ▼
+                    </div>
+                    <div class="menu-bar-dropdown-content">
+                        @foreach(var group in Model.Groups)
+                        {
+                            if(group.TextGroupId < 0)
+                            {
+                                <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
+                            }
+                        }
+                        <a class="menu-bar-dropdown-item" >――――――――</a>
+                        <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
+                    </div>
+                </div>
+                <div class="menu-bar-dropdown">
+                    <div class="menu-bar-button-dropdown">
+                        Groups ▼
+                    </div>
+                    <div class="menu-bar-dropdown-content">
+                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">New Group</a>
+                        @if(Model.Groups.Count > 3)  // 3 views created by default for each binder
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
+                            <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
+                        }
 
                   
 
+                    </div>
                 </div>
-            </div>
-            <div class="menu-bar-dropdown">
-                <div class="menu-bar-button-dropdown">
-                    Actions ▼
-                </div>
-                <div class="menu-bar-dropdown-content">
-                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Hidden")
-                    {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
-                    } 
-                    @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Hidden" && Model.View.SetValue != "All")
-                    {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
-                    }
-                    <a class="menu-bar-dropdown-item" >――――――――</a>
-                    <a class="menu-bar-dropdown-item" >Transfer To Binder...</a>
-                    @foreach(var binder in Model.UserBinders)
-                    {
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
-                    }
+                <div class="menu-bar-dropdown">
+                    <div class="menu-bar-button-dropdown">
+                        Actions ▼
+                    </div>
+                    <div class="menu-bar-dropdown-content">
+                        @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Hidden")
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
+                        } 
+                        @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Hidden" && Model.View.SetValue != "All")
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
+                        }
+                        <a class="menu-bar-dropdown-item" >――――――――</a>
+                        <a class="menu-bar-dropdown-item" onclick="populate_list_modal_footer_with_record_count_message(); open_modal_with_Id('binders')">Transfer To Binder</a>
+@*                         @foreach(var binder in Model.UserBinders)
+                        {
+                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
+                        } *@
 
+                    </div>
                 </div>
-            </div>
-            <div class="menu-bar-item">
-                    @Html.EditorFor(x => x.View.SearchValue)
+                <div class="menu-bar-item">
+                        @Html.EditorFor(x => x.View.SearchValue)
            
-                    <a class="menu-bar-button" onclick="selected_action_form_submit('LastView', 0)">Search</a>
+                        <a class="menu-bar-button" onclick="selected_action_form_submit('LastView', 0)">Search</a>
            
-                    <a class="menu-bar-button" onclick="clear_search()">Clear</a>
+                        <a class="menu-bar-button" onclick="clear_search()">Clear</a>
+                </div>
             </div>
-
-
+            @if (Model.View.GroupSequence == true)
+            {
+                <div class="menu-bar-escape">
+                    <div class="menu-bar-item-right-final">
+                        <a class="menu-bar-button" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.Binder.BinderId">Return to Binder</a>
+                    </div>                
+                </div>
+            }
         </div>
+
+
+
         <div class="table-view-table-container-left"> 
         </div>
         <div class="table-view-table-container">
@@ -148,13 +185,15 @@
                         <th></th>
                     }
                     <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
-                    <th name="last_modified_col" id="Last Modified" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified</a></th>
-                    <th name="last_modified_by_col" id="Last Modified By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Modified By</a></th>
+                    <th name="last_modified_col" id="Last Edited" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Edited</a></th>
+                    <th name="last_modified_by_col" id="Last Edited By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Edited By</a></th>
                     <th name="created_col" id="Created" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created</a></th>
                     <th name="created_by_col" id="Created By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created By</a></th>
                     <th name="vision_col" id="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
                     <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
                     <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
+                    <th name="wordcount_col" id="Word Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Word Count</a></th>
+                    <th name="charcount_col" id="Character Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Character Count</a></th>
                 </tr>
 
                 @* Insert a row with a link to view all texts in sequence *@
@@ -209,6 +248,8 @@
                                     <a class="link-item"   onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
                                 }
                         </td>
+                        <td style="text-align: center" name="wordcount_col">@text.WordCount.ToString("N0")</td>
+                        <td style="text-align: center" name="charcount_col">@text.CharacterCount.ToString("N0");</td>
                     </tr>
                     { index++; }
                 }
@@ -254,6 +295,8 @@
         </div>
     </div>
 
+
+            @* Group Modal *@
     <div class="list-modal" id="groups"  >
         <div class="list-modal-header">
             Add / Remove Groups:
@@ -299,12 +342,41 @@
 
         </div>
         <div class="list-modal-footer">
-            <div id="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
+            <div name="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
             
             <a class="button menu-bar-button" onclick="close_modal_with_id('groups','ListTexts')">Cancel</a>
             <a class="button menu-bar-button" onclick="submit_modal('ListTexts')">Submit</a>
         </div>
     </div>
+
+    @* Transfer Binder Modal *@
+    <div class="list-modal" id="binders">
+        <div class="list-modal-header">
+            Transfer to Binder:
+        </div>
+        <div class="list-modal-content">
+            @*                         @foreach(var binder in Model.UserBinders)
+            {
+            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
+            } *@
+          
+            @foreach(var binder in Model.UserBinders)
+            {
+                <div class="list-modal-content-item">
+                    <input type="radio" name="DestinationBinder" id=@binder.Name value=@binder.BinderId />
+                    <label for=@binder.Name>@binder.Name</label>
+                </div>
+            }
+
+        </div>
+        <div class="list-modal-footer">
+            <div name="recordCountMessage" style="padding-right: 10px; font-weight:600;"></div>
+
+            <a class="button menu-bar-button" onclick="close_modal_with_id('binders')">Cancel</a>
+            <a class="button menu-bar-button" onclick="submit_modal('TransferBinder')">Submit</a>
+        </div>
+    </div>
+
 
 
     <script language="Javascript">
@@ -316,6 +388,8 @@
     window.onload = toggle_hide_element('view_vision_number', 'toggle_vision_no', 'vision_col', 'init');
     window.onload = toggle_hide_element('revision_status', 'toggle_revision', 'revision_col', 'init');
     window.onload = toggle_hide_element('view_groups', 'toggle_groups', 'groups_col', 'init');
+    window.onload = toggle_hide_element('view_word_count', 'toggle_wordcount', 'wordcount_col', 'init');
+    window.onload = toggle_hide_element('view_char_count', 'toggle_charcount', 'charcount_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
 </script>
 </form>

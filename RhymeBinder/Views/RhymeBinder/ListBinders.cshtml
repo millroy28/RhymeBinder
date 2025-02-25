@@ -6,8 +6,7 @@
 }
 @model List<DisplayBinder>
 
-
-
+    @* Menu  *@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
             <div class="menu-bar-title" id="menu_bar_title">
@@ -22,9 +21,20 @@
                     <a class="menu-bar-dropdown-item" href="/RhymeBinder/CreateBinder">New Binder</a>
                  </div>
             </div>
+            <div class="menu-bar-dropdown">
+                <div class="menu-bar-button-dropdown">
+                    View ▼
+                </div>
+                <div class="menu-bar-dropdown-content">
+                    <a class="menu-bar-dropdown-item" id="show_list_view" onclick="ShowListView()">  List View</a>
+                    <a class="menu-bar-dropdown-item" id="show_shelf_view" onclick="ShowShelfView()">► Shelf View</a>
+                <a class="menu-bar-dropdown-item" id="show_shelf_order_modal" onclick="OpenModal('shelves')">Arrange Shelf</a>
+                </div>
+            </div>
         </div>
 
-        <div class="table-view-table-container">
+    @* Table View *@
+        <div class="table-view-table-container" id="list_view" hidden>
             <table>
                 <tr>
                     <th name="selected_col" id="Selected" align="center">Current</th>
@@ -32,8 +42,14 @@
                     <th name="name_col" id="Name" align="center"><a>Name</a></th>
                     <th name="text_count_col" id="Text Count" align="center"><a>Text Count</a></th>
                     <th name="group_count_col" id="Group Count" align="center"><a>Group Count</a></th>
-                    <th name="last_modified_col" id="Last Modified" align="center"><a>Last Modified</a></th>
-                    <th name="last_modified_by_col" id="Last Modified By" align="center" ><a>Last Modified By</a></th>
+                    <th align="center"><a>Word Count</a></th>
+                    <th align="center"><a>Character Count</a></th>
+                    <th align="center"><a>Last Read</a></th>
+                    <th align="center"><a>Last Read By</a></th>
+                    <th align="center"><a>Last Worked In</a></th>
+                    <th align="center"><a>Last Worked In By</a></th>
+                    <th name="last_modified_col" id="Last Modified" align="center"><a>Last Edited</a></th>
+                    <th name="last_modified_by_col" id="Last Modified By" align="center" ><a>Last Edited By</a></th>
                     <th name="created_col" id="Created" align="center"><a>Created</a></th>
                     <th name="created_by_col" id="Created By" align="center"><a>Created By</a></th>
                     <th name="description_col" id="Description" align="center"><a>Description</a></th>
@@ -41,7 +57,7 @@
 
                 @foreach (var binder in Model)
                 {
-
+                string binderName = binder.ReadOnly == null || binder.ReadOnly == false ? binder.Name : binder.Name + " - Read Only";
                 <tr>
 
                     @if (binder.Name != "Trash" && binder.Name != "Loose Pages")
@@ -64,10 +80,15 @@
                         <td></td>
                     }
                     <td></td>
-
-                        <td><a class="link-item" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binder.Name</a></td>
-                        <td name="text_count_col" align="center">@binder.PageCount</td>
-                        <td name="group_count_col" align="center">@binder.GroupCount</td>
+                        <td><a class="link-item" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binderName</a></td>
+                        <td name="text_count_col" align="center">@binder.PageCount.ToString("N0")</td>
+                        <td name="group_count_col" align="center">@binder.GroupCount.ToString("N0")</td>
+                        <td align="center">@binder.WordCount.ToString("N0")</td>
+                        <td align="center">@binder.CharacterCount.ToString("N0")</td>
+                        <td align="center">@binder.LastAccessed</td>
+                        <td align="center">@binder.LastAccessedByName</td>
+                        <td align="center">@binder.LastWorkedIn</td>
+                        <td align="center">@binder.WorkedInName</td>
                         <td name="last_modified_col "align="center">@binder.LastModified</td>
                         <td name="last_modified_by_col" align="center">@binder.ModifyByName</td>
                         <td name="created_col" align="center">@binder.Created</td>
@@ -78,6 +99,142 @@
 
             </table>
         </div>
+
+
+    @* Shelf View *@
+        <div class="shelf-view-container" id="shelf_view">
+        @for (int i = 1; i <= 3; i++)
+        {
+            <div class="shelf-view-shelf-shelfspace">
+                @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == i).OrderBy(x => x.Shelf.SortOrder))
+                {
+
+                    string binderName = binder.ReadOnly == null || binder.ReadOnly == false ? binder.Name : binder.Name + " - Read Only";
+                    string binderColor = binder.Color ?? "darkred";
+                    binderColor = $"background-color: {binderColor};";
+                    int width = 60 + 30 * (binder.CharacterCount / 200000);
+                    string widthTag = $"width: {width.ToString()}px";
+                    string stylesTags = binderColor + " " + widthTag;
+
+
+                    <div class="shelf-view-binder" style="@stylesTags">
+                        <div class="shelf-view-binder-card">
+                            <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binderName</div>
+                            <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
+                        </div>
+                    </div>
+                    <div class="shelf-view-binder-hover">
+                        <div class="shelf-view-binder-hover-description">@binder.Description</div>
+                        <hr />
+                        <div class="shelf-view-binder-hover-heading">Last Accessed: </div>
+                        <div class="shelf-view-binder-hover-field">@binder.LastAccessed</div>
+                        <div class="shelf-view-binder-hover-heading">Texts: </div>
+                        <div class="shelf-view-binder-hover-field">@binder.PageCount.ToString("N0")</div>
+                        <div class="shelf-view-binder-hover-heading">Words: </div>
+                        <div class="shelf-view-binder-hover-field">@binder.WordCount.ToString("N0")</div>
+
+                    </div>
+                }
+            </div>   
+        }       
     </div>
 
 
+
+    @* Arrange Shelf Modal *@
+<div class="list-modal" id="shelves">
+    <div class="list-modal-header">
+        Arrange Shelves:
+    </div>
+
+    <div class="list-modal-content">
+        <div class="binders-container">
+            <div class="binders-column">
+                <div class="binders-column-title">Unassigned Binders</div>
+                <div id="unassignedBinders" class="binders-list" style="min-width: 200px; min-height: 100px;">
+                    @foreach (var binder in Model.Where(x => x.Shelf.ShelfId == 0))
+                    {
+                        string binderColor = binder.Color ?? "darkred";
+                        binderColor = $"background-color: {binderColor}; color: {binder.TitleColor};";
+                        string stylesTags = binderColor;
+                        <div class="binder-item" data-binder-id="@binder.BinderId" style="@stylesTags">@binder.Name</div>
+                    }
+                </div>
+            </div>
+            @for (int i = 1; i <= 3; i++)
+            {
+                    <div class="binders-column" >
+                    <div class="shelf-column" style="margin-left: 10px;">
+                        <div class="binders-column-title">Shelf @i</div>
+                        <div id="shelf-@i" class="shelf-list" data-shelf-level="@i" style="min-width: 200px; min-height: 100px;">
+                            @foreach (var binder in Model.Where(x => x.Shelf.ShelfLevel == i).OrderBy(x => x.Shelf.SortOrder))
+                            {
+                                string binderColor = binder.Color ?? "darkred";
+                                binderColor = $"background-color: {binderColor};";
+                                string stylesTags = binderColor;
+                                <div class="binder-item" data-binder-id="@binder.BinderId" style="@stylesTags">@binder.Name</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="list-modal-footer">
+        <a class="button menu-bar-button" onclick="CloseModal('shelves')">Cancel</a>
+        <a class="button menu-bar-button" id="saveShelfChanges">Save</a>
+    </div>
+</div>
+
+
+    @* Scripts *@
+
+<script language="Javascript" src="~/js/binderView.js"></script>
+    <script language="Javascript">
+        window.onload = SetEventListeners();
+    </script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script>
+        $(function () {
+            $(".binders-list, .shelf-list").sortable({
+                connectWith: ".binders-list, .shelf-list",
+                placeholder: "sortable-placeholder"
+            }).disableSelection();
+
+            $("#saveShelfChanges").on("click", function () {
+                var shelfData = [];
+                $(".shelf-list").each(function () {
+                    var shelfLevel = $(this).data("shelf-level");
+                    $(this).find(".binder-item").each(function (index) {
+                        var binderId = $(this).data("binder-id");
+                        shelfData.push({
+                            BinderId: binderId,
+                            ShelfLevel: shelfLevel,
+                            SortOrder: index
+                        });
+                    });
+                });
+
+                $.ajax({
+                    url: '@Url.Action("SaveShelfChanges", "RhymeBinder")',
+                    type: 'POST',
+                    data: JSON.stringify(shelfData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        // alert("Changes saved successfully!");
+                        // Close the modal and refresh the page or update the view
+                            setTimeout(function () {// wait for 5 secs(2)
+                                location.reload(); // then reload the page.(3)
+                            }, 1000);
+                    },
+                    error: function (error) {
+                        alert("An error occurred while saving changes.");
+                    }
+                });
+            });
+        });
+    </script>
+}

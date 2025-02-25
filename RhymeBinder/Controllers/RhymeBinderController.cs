@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using RhymeBinder.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -79,10 +80,10 @@ namespace RhymeBinder.Controllers
 
         //-------TEXT:
         #region TextMethods
-        public IActionResult StartNewText()
+        public IActionResult StartNewText(int? groupId)
         { 
             int userId = GetUserId();
-            Status status = _modelHelper.StartNewText(userId);
+            Status status = _modelHelper.StartNewText(userId, groupId);
 
             if (status.success)
             {
@@ -108,7 +109,7 @@ namespace RhymeBinder.Controllers
 
             TextEdit textEdit = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
-            if((bool)textEdit.Locked == true)
+            if((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
             {
                 return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
             } 
@@ -241,7 +242,7 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "NewText":
-                    return RedirectToAction("StartNewText");
+                    return Redirect($"/RhymeBinder/StartNewText?groupId={value}");
 
                 case "LastView":
                     // Update current saved view with changed form values
@@ -289,7 +290,7 @@ namespace RhymeBinder.Controllers
 
                 case "Transfer":
                     status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, int.Parse(value));
+                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, (int)savedView.DestinationBinder);
                     break;
 
                 case "ManageGroups":
@@ -332,6 +333,11 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
 
             DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+
+            if (sequencedTexts.BinderReadOnly)
+            {
+                return Redirect($"/RhymeBinder/ViewTextsInSequence?groupId={groupId}");
+            }
 
             return View(sequencedTexts);
         }
@@ -540,6 +546,19 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ErrorPage", status);
             }
             return RedirectToAction("ListTextsOnSessionStart");
+        }
+        [HttpPost]
+        public IActionResult SaveShelfChanges([FromBody] List<ShelfUpdateModel> shelfUpdates)
+        {
+            int userId = GetUserId();
+            Status status = _modelHelper.UpdateShelf(userId, shelfUpdates);
+
+            if (!status.success)
+            {
+                return RedirectToAction("ErrorPage", status);
+            }
+            return RedirectToAction("ListBinders");
+
         }
 
         #endregion

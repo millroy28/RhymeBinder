@@ -2,9 +2,16 @@
 @{
     ViewData["Title"] = "View Text";
 }
-@{
-}
 @model TextEdit
+@{
+    string binderColorTag = "";
+    if (!string.IsNullOrWhiteSpace(Model.BinderColor))
+    {
+        binderColorTag = $"background-color: {Model.BinderColor};";
+    }
+    string menuTextColorTag = $"color: {Model.DisplayTitleColor};";
+    string styleTags = binderColorTag + menuTextColorTag;
+}
 
 
 <div class="editor-view-wrapper">
@@ -13,7 +20,7 @@
 
 
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile">
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags">
                 Viewing: @Model.DisplayTitle
             </div>
           </div>
@@ -25,7 +32,14 @@
             @if(@Model.Locked == false)
             {
                 <div class="menu-bar-item-right-final">
-                    <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeaderId">Edit</a>
+                    @if (Model.BinderReadOnly)
+                    {
+                        <a class="button menu-bar-button-disabled mobile-menu-bar-button-edit-disabled">Read Only</a>
+                    }
+                    else
+                    {
+                        <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeaderId">Edit</a>
+                    }
                 </div>               
             }
         </div>
@@ -52,7 +66,7 @@
     <div class="left-sidebar">
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
         <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
-        <div class="left-sidebar-item">Last Modified @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
+        <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
             
@@ -63,7 +77,7 @@
                 <div class="left-sidebar-item-heading">No. @prev.VisionNumber: @prev.Title</div>
                 <div class="left-sidebar-item">Status: @prev.Status</div>
                 <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
-                <div class="left-sidebar-item">Last Modified @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
+                <div class="left-sidebar-item">Last Edited @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
             }
         }
     </div>
