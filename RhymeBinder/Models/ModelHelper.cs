@@ -3,6 +3,9 @@ using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
 using NuGet.Protocol;
 using RhymeBinder.Controllers;
+using RhymeBinder.Models.DBModels;
+using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +115,7 @@ namespace RhymeBinder.Models
         public DisplaySimpleUser GetCurrentDisplaySimpleUser(int userId)
         {
             SimpleUser thisUser = GetCurrentSimpleUser(userId);
-            List<TimeZone> timeZones = _context.TimeZones.OrderBy(x => x.TimeZoneId).ToList();
+            List<DBModels.TimeZone> timeZones = _context.TimeZones.OrderBy(x => x.TimeZoneId).ToList();
             DisplaySimpleUser thisDisplaySimpleUser = new DisplaySimpleUser()
             {
                 UserId = thisUser.UserId,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using RhymeBinder.Models.DBModels;
 
 namespace RhymeBinder.Models
 {
@@ -46,7 +47,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<TextNote> TextNotes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
-        public virtual DbSet<TimeZone> TimeZones { get; set; }
+        public virtual DbSet<DBModels.TimeZone> TimeZones { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

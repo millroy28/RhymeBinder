@@ -9,6 +9,10 @@ using RhymeBinder.Models;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using System;
+using RhymeBinder.Models.DBModels;
+using RhymeBinder.Models.ViewModels;
+using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.ImportModels;
 
 namespace RhymeBinder.Controllers
 {

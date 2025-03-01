@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using RhymeBinder.Models;
+using RhymeBinder.Models.DBModels;
+using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.ViewModels;
 using System.Collections.Generic;
 using System.Security.Claims;
 
