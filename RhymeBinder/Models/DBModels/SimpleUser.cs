@@ -19,6 +19,8 @@ namespace RhymeBinder.Models.DBModels
             TextHeaderLastReadByNavigations = new HashSet<TextHeader>();
             TextHeaderVisionCreatedByNavigations = new HashSet<TextHeader>();
             TextRecords = new HashSet<TextRecord>();
+            GranteeSharedObjects = new HashSet<SharedObjects>();
+            GrantorSharedObjects = new HashSet<SharedObjects>();
 
         }
 
@@ -44,5 +46,7 @@ namespace RhymeBinder.Models.DBModels
         public virtual ICollection<TextHeader> TextHeaderVisionCreatedByNavigations { get; set; }
         public virtual ICollection<TextRecord> TextRecords { get; set; }
         public virtual ICollection<Shelf> Shelves { get; set; }
+        public virtual ICollection<SharedObjects> GrantorSharedObjects { get; set; }
+        public virtual ICollection<SharedObjects> GranteeSharedObjects { get; set; }
     }
 }

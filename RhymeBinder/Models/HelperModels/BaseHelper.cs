@@ -570,5 +570,11 @@ namespace RhymeBinder.Models.HelperModels
             }
             return status;
         }
+        public bool UserAuthorized(int userId, int objectId, int objectTypeId)
+        {
+            bool userAuthorized = false;
+
+            return userAuthorized;
+        }
     }
 }
