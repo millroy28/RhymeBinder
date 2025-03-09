@@ -4,6 +4,7 @@ using System;
 using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.ViewModels;
 using System.Collections.Generic;
+using RhymeBinder.Models.Enums;
 
 namespace RhymeBinder.Models.HelperModels
 {
@@ -570,9 +571,31 @@ namespace RhymeBinder.Models.HelperModels
             }
             return status;
         }
-        public bool UserAuthorized(int userId, int objectId, int objectTypeId)
+        public bool UserAuthorized(int userId, int objectId, int objectTypeId, int desiredAction)
         {
             bool userAuthorized = false;
+            SharedObjectTypeEnum objectType = (SharedObjectTypeEnum)objectTypeId;
+            // First, check ownership
+            switch (objectType)
+            {
+                case SharedObjectTypeEnum.Binder:
+                    userAuthorized = _context.Binders.Any(x => x.BinderId == objectId && x.CreatedBy == userId);
+                    break;
+                case SharedObjectTypeEnum.TextHeader:
+                    userAuthorized = _context.TextHeaders.Any(x => x.TextHeaderId == objectId && x.CreatedBy == userId);
+                    break;
+                case SharedObjectTypeEnum.TextGroup:
+                    userAuthorized = _context.TextGroups.Any(x => x.TextGroupId == objectId && x.OwnerId == userId);
+                    break;
+            }
+            // Then, check shared status
+            if (!userAuthorized)
+            {
+                userAuthorized = _context.SharedObjects.Any(x => x.Grantee == userId
+                                                            && x.SharedObjectTypeId == objectTypeId
+                                                            && x.ObjectId == objectId
+                                                            && x.SharedObjectActionId == desiredAction);
+            }
 
             return userAuthorized;
         }

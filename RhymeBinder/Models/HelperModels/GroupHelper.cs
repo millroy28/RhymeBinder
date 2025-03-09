@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using RhymeBinder.Models.DBModels;
-using RhymeBinder.Models.DTOModels;
 using RhymeBinder.Models.ViewModels;
 using System.Collections.Generic;
 using System.Linq;

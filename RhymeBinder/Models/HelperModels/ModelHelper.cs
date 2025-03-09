@@ -1,17 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.Logging;
-using NuGet.Protocol;
-using RhymeBinder.Controllers;
-using RhymeBinder.Models.DBModels;
-using RhymeBinder.Models.DTOModels;
-using RhymeBinder.Models.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text.RegularExpressions;
+﻿using Microsoft.Extensions.Logging;
 
 namespace RhymeBinder.Models.HelperModels
 {
