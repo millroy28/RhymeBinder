@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RhymeBinder.Data;
 using RhymeBinder.Models;
+using RhymeBinder.Models.HelperModels;
 using System;
 
 

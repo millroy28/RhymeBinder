@@ -13,13 +13,14 @@ using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.ViewModels;
 using RhymeBinder.Models.DTOModels;
 using RhymeBinder.Models.ImportModels;
+using RhymeBinder.Models.HelperModels;
 
 namespace RhymeBinder.Controllers
 {
     public class FileImportController : Controller
     {
         private readonly RhymeBinderContext _context;
-        public RhymeBinder.Models.ModelHelper _modelHelper;
+        public ModelHelper _modelHelper;
 
         public FileImportController(RhymeBinderContext context, ModelHelper modelHelper)
         {
@@ -53,7 +54,7 @@ namespace RhymeBinder.Controllers
                 {
                     Name = import.ImportEntry.NewBinderName
                 };
-                Status status = _modelHelper.CreateNewBinder(import.ImportEntry.UserId, newBinder);
+                Status status = _modelHelper.BinderHelper.CreateNewBinder(import.ImportEntry.UserId, newBinder);
                 binderId = status.recordId;               
             };
 

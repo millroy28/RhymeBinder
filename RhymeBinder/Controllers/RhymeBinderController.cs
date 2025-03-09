@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using RhymeBinder.Models;
 using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.HelperModels;
 using RhymeBinder.Models.ViewModels;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -15,7 +15,7 @@ namespace RhymeBinder.Controllers
     [Authorize]
     public class RhymeBinderController : Controller
     {
-        public RhymeBinder.Models.ModelHelper _modelHelper;
+        public ModelHelper _modelHelper;
         public RhymeBinderController(ModelHelper modelHelper)
         {
             _modelHelper = modelHelper;
@@ -35,7 +35,7 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult SetupNewUser(SimpleUser newUser)
         {
-            Status status = _modelHelper.SetupNewUser(newUser);
+            Status status = _modelHelper.UserHelper.SetupNewUser(newUser);
             if (status.success)
             {
                 return RedirectToAction("Index");
@@ -49,7 +49,7 @@ namespace RhymeBinder.Controllers
         public IActionResult EditUser()
         {
             int userId = GetUserId();
-            DisplaySimpleUser user = _modelHelper.GetCurrentDisplaySimpleUser(userId);
+            DisplaySimpleUser user = _modelHelper.UserHelper.GetCurrentDisplaySimpleUser(userId);
 
 
             if (user.UserId == -1)
@@ -68,7 +68,7 @@ namespace RhymeBinder.Controllers
         public IActionResult EditUser(SimpleUser editedUser)
         {
 
-            Status status = _modelHelper.UpdateSimpleUser(editedUser);
+            Status status = _modelHelper.UserHelper.UpdateSimpleUser(editedUser);
 
             if (!status.success)
             {
@@ -86,7 +86,7 @@ namespace RhymeBinder.Controllers
         public IActionResult StartNewText(int? groupId)
         { 
             int userId = GetUserId();
-            Status status = _modelHelper.StartNewText(userId, groupId);
+            Status status = _modelHelper.TextHelper.StartNewText(userId, groupId);
 
             if (status.success)
             {
@@ -101,7 +101,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
 
-            TextEdit textEdit = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
+            TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
             return View(textEdit);
         }
@@ -110,7 +110,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
 
-            TextEdit textEdit = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
+            TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
             if((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
             {
@@ -129,24 +129,24 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "Return":
-                    status = _modelHelper.SaveEditedText(textEdit);
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     if (!status.success)
                     {
                         return RedirectToAction("ErrorPage", status);
                     }
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 case "Save":
-                    status = _modelHelper.SaveEditedText(textEdit);
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     if (!status.success)
                     {
                         return RedirectToAction("ErrorPage", status);
                     }
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
                 case "Revision":
-                    status = _modelHelper.SaveEditedText(textEdit);
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     if (status.success)
                     {
-                        status = _modelHelper.AddRevisionToText(userId, textEdit.TextHeaderId);
+                        status = _modelHelper.TextHelper.AddRevisionToText(userId, textEdit.TextHeaderId);
                     }
                     if (status.success)
                     {
@@ -200,7 +200,7 @@ namespace RhymeBinder.Controllers
                 binderId = 0;
             };
 
-            int savedViewId = _modelHelper.GetSavedViewIdOnStart(userId, (int)binderId);
+            int savedViewId = _modelHelper.ViewHelper.GetSavedViewIdOnStart(userId, (int)binderId);
 
             if (savedViewId == -1)
             {
@@ -220,7 +220,7 @@ namespace RhymeBinder.Controllers
             int currentPage;
             if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
 
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.TextHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
 
             if (displayTextHeadersAndSavedView.View.SavedViewId != -1)
             {
@@ -249,31 +249,31 @@ namespace RhymeBinder.Controllers
 
                 case "LastView":
                     // Update current saved view with changed form values
-                    status = _modelHelper.UpdateView(savedView);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
                     break;
 
                 case "SaveDefault":
                     // Applies current view grid settings to default view settings
-                    status = _modelHelper.SetDefaultView(userId, savedView.View);
+                    status = _modelHelper.ViewHelper.SetDefaultView(userId, savedView.View);
                     break;
 
                 case "Hide":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.ToggleHideSelectedHeaders(savedView, true);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.ToggleHideSelectedHeaders(savedView, true);
                     break;
 
                 case "Restore":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.ToggleHideSelectedHeaders(savedView, false);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.ToggleHideSelectedHeaders(savedView, false);
                     break;
 
                 case "GroupAddRemove":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.AddRemoveHeadersFromGroups(savedView);
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
 
                 case "UpdateGroupSequence":
-                    status = _modelHelper.UpdateGroupSequence(savedView);
+                    status = _modelHelper.GroupHelper.UpdateGroupSequence(savedView);
                     break;
 
                 // previously used when setting groups individually from dropdowns
@@ -288,12 +288,12 @@ namespace RhymeBinder.Controllers
                 //    break;
 
                 case "GroupFilter":
-                    status = _modelHelper.SwitchToViewBySet(userId, value);
+                    status = _modelHelper.ViewHelper.SwitchToViewBySet(userId, value);
                     break;
 
                 case "Transfer":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, (int)savedView.DestinationBinder);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.TransferHeadersAcrossBinders(savedView, (int)savedView.DestinationBinder);
                     break;
 
                 case "ManageGroups":
@@ -326,7 +326,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
 
-            DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+            DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
 
             return View(sequencedTexts);
         }
@@ -335,7 +335,7 @@ namespace RhymeBinder.Controllers
         {
             int userId = GetUserId();
 
-            DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+            DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
 
             if (sequencedTexts.BinderReadOnly)
             {
@@ -347,7 +347,7 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult EditTextsInSequence(DisplaySequencedTexts editedTexts)
         {
-            Status status = _modelHelper.SaveEditedTextsInSequence(editedTexts);
+            Status status = _modelHelper.TextHelper.SaveEditedTextsInSequence(editedTexts);
             if (!status.success)
             {
                 return RedirectToAction("ErrorPage", status);
@@ -362,7 +362,7 @@ namespace RhymeBinder.Controllers
         public IActionResult ListGroups(int binderId)
         {
             int userId = GetUserId();
-            List<DisplayTextGroup> displayTextGroups = _modelHelper.GetDisplayTextGroups(userId, binderId);
+            List<DisplayTextGroup> displayTextGroups = _modelHelper.TextHelper.GetDisplayTextGroups(userId, binderId);
             if (displayTextGroups.Count == 0) { displayTextGroups.Add(new DisplayTextGroup()); };
 
             if (displayTextGroups[0].TextGroupId == -1)
@@ -378,7 +378,7 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult EditGroup(int groupID)
         {
-            TextGroup groupToEdit = _modelHelper.GetTextGroup(groupID);
+            TextGroup groupToEdit = _modelHelper.TextHelper.GetTextGroup(groupID);
             if (groupToEdit.TextGroupId == -1)
             {
                 Status status = new Status()
@@ -398,18 +398,18 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "Submit Changes":
-                    status = _modelHelper.UpdateGroup(editedGroup);
+                    status = _modelHelper.GroupHelper.UpdateGroup(editedGroup);
                     break;
                 case "Clear":
                     if (verifyClear != null)
                     {
-                        status = _modelHelper.ClearTextsFromGroup(editedGroup.TextGroupId);
+                        status = _modelHelper.GroupHelper.ClearTextsFromGroup(editedGroup.TextGroupId);
                     }
                     break;
                 case "Delete Group":
                     if (verifyDeleteGroup != null)
                     {
-                        status = _modelHelper.DeleteGroup(editedGroup);
+                        status = _modelHelper.GroupHelper.DeleteGroup(editedGroup);
                     }
                     break;
             }
@@ -435,7 +435,7 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             Status status = new Status();
 
-            status = _modelHelper.CreateNewTextGroup(userId, newGroup);
+            status = _modelHelper.GroupHelper.CreateNewTextGroup(userId, newGroup);
 
             if (!status.success)
             {
@@ -455,7 +455,7 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             Status status = new Status();
 
-            status = _modelHelper.CreateNewBinder(userId);
+            status = _modelHelper.BinderHelper.CreateNewBinder(userId);
 
             if (!status.success)
             {
@@ -467,7 +467,7 @@ namespace RhymeBinder.Controllers
         public IActionResult ListBinders()
         {
             int userId = GetUserId();
-            List<DisplayBinder> binders = _modelHelper.GetDisplayBinders(userId);
+            List<DisplayBinder> binders = _modelHelper.BinderHelper.GetDisplayBinders(userId);
             if (binders[0].BinderId == -1)
             {
                 Status status = new Status()
@@ -482,7 +482,7 @@ namespace RhymeBinder.Controllers
         public IActionResult EditBinder(int binderID)
         {
             int userId = GetUserId();
-            DisplayBinder binder = _modelHelper.GetDisplayBinder(userId, binderID);
+            DisplayBinder binder = _modelHelper.BinderHelper.GetDisplayBinder(userId, binderID);
             if (binder.BinderId == -1)
             {
                 Status status = new Status()
@@ -502,28 +502,28 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "Submit Changes":
-                    status = _modelHelper.UpdateBinder(userId, editedBinder);
+                    status = _modelHelper.BinderHelper.UpdateBinder(userId, editedBinder);
                     break;
                 case "Duplicate":
-                    status = _modelHelper.DuplicateBinder(userId, editedBinder.BinderId);
+                    status = _modelHelper.BinderHelper.DuplicateBinder(userId, editedBinder.BinderId);
                     break;
                 case "Clear":
                     if (verifyClear != null)
                     {
-                        status = _modelHelper.ClearBinder(userId, editedBinder.BinderId);
+                        status = _modelHelper.BinderHelper.ClearBinder(userId, editedBinder.BinderId);
                     }
                     break;
                 case "Delete":
                     if (verifyDelete != null)
                     {
-                        status = _modelHelper.DeleteBinder(userId, editedBinder.BinderId);
+                        status = _modelHelper.BinderHelper.DeleteBinder(userId, editedBinder.BinderId);
                     }
                     break;
                 case "Delete All":
 
                     if (verifyDeleteAll != null)
                     {
-                        status = _modelHelper.DeleteBinderAndContents(userId, editedBinder.BinderId);
+                        status = _modelHelper.BinderHelper.DeleteBinderAndContents(userId, editedBinder.BinderId);
                     }
                     break;
                 default:
@@ -542,7 +542,7 @@ namespace RhymeBinder.Controllers
         public IActionResult OpenBinder(int binderId)
         {
             int userId = GetUserId();
-            Status status = _modelHelper.OpenBinder(userId, binderId);
+            Status status = _modelHelper.BinderHelper.OpenBinder(userId, binderId);
 
             if (!status.success)
             {
@@ -554,7 +554,7 @@ namespace RhymeBinder.Controllers
         public IActionResult SaveShelfChanges([FromBody] List<ShelfUpdateModel> shelfUpdates)
         {
             int userId = GetUserId();
-            Status status = _modelHelper.UpdateShelf(userId, shelfUpdates);
+            Status status = _modelHelper.BinderHelper.UpdateShelf(userId, shelfUpdates);
 
             if (!status.success)
             {
@@ -595,7 +595,7 @@ namespace RhymeBinder.Controllers
         public int GetUserId()
         {
             string aspUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            int userId = _modelHelper.GetCurrentSimpleUserID(aspUserId);
+            int userId = _modelHelper.UserHelper.GetCurrentSimpleUserID(aspUserId);
             return userId;
         }
         #endregion
