@@ -19,7 +19,6 @@ namespace RhymeBinder.Models.HelperModels
             _context = context;
             _logger = logger;
         }
-        public BaseHelper() { }
         public SavedView GetDefaultSavedView(int userId)
         {
             int currentBinderId = GetCurrentBinderID(userId);
