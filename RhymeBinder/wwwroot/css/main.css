@@ -188,6 +188,39 @@
         flex-direction: column;
     }
 
+
+
+    /*``[Alerts]*/
+    .alert {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        position: absolute;
+        z-index: 2;
+        right: 2%;
+        top: 2%;
+        width: 325px;
+        height: 80px;
+        overflow: auto;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border: 2px solid;
+        border-radius: 10px;
+        background-color: #f4f5ef;
+    }
+
+    .alert-text {
+
+    }
+    .alert-success-text{
+        color: darkgreen;
+    }
+    .alert-warn-text {
+        color: orangered;
+    }
+    .alert-fail-text {
+        color: darkred;
+    }
     /*``[Modals]*/
 
     .list-modal {
