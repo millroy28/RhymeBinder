@@ -102,7 +102,6 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
 
             TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
-            TempData["AlertMessage"] = "Viewing a Text!";
 
             return View(textEdit);
         }
@@ -116,8 +115,6 @@ namespace RhymeBinder.Controllers
 
             if ((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
             {
-                TempData["AlertMessage"] = "Can't Edit this text - text is locked.";
-                TempData["AlertSeverity"] = "Warn";
                 return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
             } 
             return View(textEdit);
@@ -226,7 +223,7 @@ namespace RhymeBinder.Controllers
 
             // testing!
             TempData["AlertMessage"] = "Listing Text!s";
-            TempData["AlertSeverity"] = "WARN";
+            TempData["AlertSeverity"] = "INFO";
 
             DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.TextHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
 
