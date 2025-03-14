@@ -46,11 +46,15 @@ namespace RhymeBinder.Models.HelperModels
                     status = AddRemoveHeaderFromGroup(newHeaderId, verifiedGroupId, true);
                     // calling function relies on textheaderid to redirect
                     status.recordId = newHeaderId;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
+
                 }
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to create new Text object";
                 return status;
             }
@@ -72,12 +76,16 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = newText.TextId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
+
             }
             catch
             {
                 status.success = false;
                 status.recordId = -1;
-                status.message = "Failed to save Text.";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save Text";
             }
             return status;
         }
@@ -114,11 +122,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = newTextHeader.TextHeaderId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
-                status.message = $"Failed creating header for text id {newTextId}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed creating header for text";
             }
             return status;
         }
@@ -157,11 +168,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = newTextHeader.TextHeaderId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.success = false;
-                status.message = $"Failed creating new child header for parent header id {parentHeader.TextHeaderId}";
+                status.message = $"Failed creating new child header for parent header";
             }
 
             // Migrate, if any, group associations from previous header to new header
@@ -181,6 +195,7 @@ namespace RhymeBinder.Models.HelperModels
                 status.success = false;
                 status.message = "Attempted to update groups from parent to child header when no parent header exists";
                 status.recordId = -1;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 return status;
             }
 
@@ -188,7 +203,9 @@ namespace RhymeBinder.Models.HelperModels
             if (textHeadersTextGroups.Count == 0)
             {
                 status.success = true;
-                return status;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
+                return status; 
             }
 
             //foreach(LnkTextHeadersTextGroup link in textHeadersTextGroups)
@@ -202,10 +219,13 @@ namespace RhymeBinder.Models.HelperModels
                 _context.UpdateRange(textHeadersTextGroups);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
-                status.success = false;
+                status.success = false; 
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to migrate text groups from parent to child header";
             }
 
@@ -257,10 +277,13 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = newTextRecord.TextRecordId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save new Text Record";
                 status.recordId = -1;
             }
@@ -296,12 +319,15 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = textHeaderId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.recordId = -1;
-                status.message = $"Failed to set default Edit Window Properties for text header {textHeaderId}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed to set default Edit Window Properties for text header";
             }
             return status;
         }
@@ -1021,11 +1047,21 @@ namespace RhymeBinder.Models.HelperModels
             if (!textUnchanged)
             {
                 status = CreateNewText(textEdit.UserId, textEdit.TextBody);  //New text created on each edit
-                if (!status.success) { return status; }
+                if (!status.success) 
+                {
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = "Failed to create new text body on edit";
+                    return status; 
+                }
                 origHeader.TextId = status.recordId; //point header to new text id
 
                 status = CreateNewTextRecord(textEdit.TextHeaderId, origHeader.TextId, textEdit.UserId);
-                if (!status.success) { return status; }
+                if (!status.success) 
+                {
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = "Failed to save text record on edit";
+                    return status; 
+                }
 
 
             };
@@ -1034,7 +1070,12 @@ namespace RhymeBinder.Models.HelperModels
             {
                 origNote.Note = textEdit.Note;
                 status = Update(origNote);
-                if (!status.success) { return status; }
+                if (!status.success) 
+                {
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = "Failed to save note on text edit";
+                    return status; 
+                }
             }
 
 
@@ -1047,12 +1088,22 @@ namespace RhymeBinder.Models.HelperModels
             origHeader.WordCount = GetWordCount(textEdit.TextBody);
 
             status = Update(origHeader);
-            if (!status.success) { return status; }
+            if (!status.success) 
+            {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to update header on text edit";
+                return status; 
+            }
 
 
             //Update group association changes, if any
             status = AddRemoveHeaderFromGroups(textEdit);
-            if (!status.success) { return status; }
+            if (!status.success) 
+            {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to update group associations on text edit";
+                return status; 
+            }
 
             //  update that EditWindowStatus to save the view preferences for this text header
             EditWindowProperty thisEditWindowProperty = _context.EditWindowProperties.Where(x => x.UserId == textEdit.UserId
@@ -1073,12 +1124,19 @@ namespace RhymeBinder.Models.HelperModels
             {
                 status = UpdateBinderLastWorkedIn(origHeader.BinderId, textEdit.UserId);
             }
-            if (!status.success) { return status; }
+            if (!status.success) 
+            {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to update window properties on text edit";
+                return status; 
+            }
             else
             {
                 // Still have to return a success status even if no new record was saved
                 status.success = true;
                 status.recordId = textEdit.TextHeaderId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             return status;
         }
@@ -1090,6 +1148,7 @@ namespace RhymeBinder.Models.HelperModels
             if (editedTexts == null || editedTexts.Count() == 0)
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to receive edited texts in edit sequence texts form";
                 return status;
             }
@@ -1110,26 +1169,48 @@ namespace RhymeBinder.Models.HelperModels
                 if (!TextsAreSame(origText.TextBody, text.TextBody))
                 {
                     status = CreateNewText(displaySequencedTexts.UserId, text.TextBody);
-                    if (!status.success) { return status; }
+                    if (!status.success) 
+                    {
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                        status.message = "Failed to create new text body in edited text sequence";
+                        return status; 
+                    }
                     origHeader.TextId = status.recordId; //point header to new text id
 
                     status = CreateNewTextRecord(origHeader.TextHeaderId, origHeader.TextId, displaySequencedTexts.UserId);
-                    if (!status.success) { return status; }
+                    if (!status.success) 
+                    {
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                        status.message = "Failed to create new text record in edited text sequence";
+                        return status; 
+                    }
                 }
 
                 origHeader.Title = text.Title;
                 origHeader.LastModified = GetUserLocalTime(displaySequencedTexts.UserId);
                 origHeader.LastModifiedBy = displaySequencedTexts.UserId;
                 status = Update(origHeader);
-                if (!status.success) { return status; }
+                if (!status.success) 
+                {
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = "Failed to update header in edited text sequence";
+                    return status; 
+                }
                 if (origNote.Note != text.Note)
                 {
                     origNote.Note = text.Note;
                     status = Update(origNote);
-                    if (!status.success) { return status; }
+                    if (!status.success) 
+                    {
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                        status.message = "Failed to update note in edited text sequence";
+                        return status; 
+                    }
                 }
             }
 
+            status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            status.message = "Changes saved!";
             return status;
         }
 
@@ -1152,12 +1233,15 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = savedView.View.SavedViewId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.recordId = savedView.View.SavedViewId;
-                status.message = $"Failed to save Text Hidden state to {hide} for view {savedView.View.SavedViewId}";
+                status.message = $"Failed to save Text Hidden state to {hide} for view";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
             }
 
             return status;
@@ -1183,7 +1267,8 @@ namespace RhymeBinder.Models.HelperModels
                     {
                         status.success = false;
                         status.recordId = -1;
-                        status.message = $"Failed to transfer text header {thisTextHeader.TextHeaderId} into binder {newBinderId}";
+                        status.message = $"Failed to transfer text header across binders";
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
                         return status;
                     }
                 }
@@ -1191,6 +1276,8 @@ namespace RhymeBinder.Models.HelperModels
 
             _context.SaveChanges();
             status.success = true;
+            status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            status.message = "Changes saved!";
             status.recordId = savedView.View.SavedViewId;
             return status;
         }
@@ -1202,12 +1289,16 @@ namespace RhymeBinder.Models.HelperModels
             status = CreateRevisionTextHeader(userId, currentTextHeader);
             if (!status.success)
             {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to create new header while adding revision";
                 return status;
             }
 
             status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
             if (!status.success)
             {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to create new window properties while adding revision";
                 return status;
             }
 
@@ -1219,22 +1310,19 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Entry(currentTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                 _context.Update(currentTextHeader);
                 _context.SaveChanges();
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.recordId = -1;
-                status.message = $"Failed to add revision to Text Header{textHeaderId}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save changes to new header while adding revision";
             }
 
             return status;
         }
-        public Status DuplicateTextHeader(int textHeaderId)
-        {
-            Status status = new();
-            return status;
-        }
-
         public List<TextHeader> GetPreviousVisions(int textHeaderID, List<TextHeader> prevTextHeaders)
         {
             //Recursively build out list of prevision visions for a given header
@@ -1283,12 +1371,15 @@ namespace RhymeBinder.Models.HelperModels
                     _context.LnkTextHeadersTextGroups.RemoveRange(lnkTextHeadersTextGroupsToRemove);
                     _context.SaveChanges();
                     status.success = true;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
                     status.success = false;
                     status.recordId = -1;
                     status.message = "Failed to remove selected texts from selected groups";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 }
             }
 
@@ -1322,12 +1413,15 @@ namespace RhymeBinder.Models.HelperModels
                         _context.LnkTextHeadersTextGroups.AddRange(lnkTextHeadersTextGroupsToAdd);
                         _context.SaveChanges();
                         status.success = true;
+                        status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                        status.message = "Changes saved!";
                     }
                     catch
                     {
                         status.success = false;
                         status.recordId = -1;
                         status.message = "Failed to add selected texts to selected groups";
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
                     }
                 }
             }
@@ -1339,6 +1433,8 @@ namespace RhymeBinder.Models.HelperModels
 
             if (!_context.TextGroups.Any(x => x.BinderId == textEdit.BinderId))
             {
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.success = true;
                 return status;
             }
@@ -1356,12 +1452,15 @@ namespace RhymeBinder.Models.HelperModels
                 {
                     _context.LnkTextHeadersTextGroups.RemoveRange(lnkTextHeadersTextGroupsToRemove);
                     _context.SaveChanges();
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                     status.success = true;
                 }
                 catch
                 {
                     status.success = false;
                     status.recordId = -1;
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
                     status.message = "Failed to remove selected texts from selected groups";
                 }
             }
@@ -1392,12 +1491,15 @@ namespace RhymeBinder.Models.HelperModels
                     {
                         _context.LnkTextHeadersTextGroups.AddRange(lnkTextHeadersTextGroupsToAdd);
                         _context.SaveChanges();
+                        status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                        status.message = "Changes saved!";
                         status.success = true;
                     }
                     catch
                     {
                         status.success = false;
                         status.recordId = -1;
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
                         status.message = "Failed to add selected texts to selected groups";
                     }
                 }
@@ -1427,11 +1529,13 @@ namespace RhymeBinder.Models.HelperModels
                     _context.SaveChanges();
                     status.success = true;
                     status.recordId = link.LnkHeaderGroupId;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
                     status.success = false;
-                    status.message = $"Failed to add text header with Id {textHeaderId} to group with id {groupId}";
+                    status.message = $"Failed to add text header to group";
                 }
             }
             else
@@ -1443,11 +1547,14 @@ namespace RhymeBinder.Models.HelperModels
                     _context.LnkTextHeadersTextGroups.Remove(link);
                     _context.SaveChanges();
                     status.success = true;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
                     status.success = false;
-                    status.message = $"Failed to remove text header with Id {textHeaderId} from group with id {groupId}";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = $"Failed to remove text header with from group";
                 }
             }
 
@@ -1466,10 +1573,13 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Update(thisBinder);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failure to update Binder";
             }
             return status;
@@ -1488,11 +1598,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Update(thisBinder);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.message = "Failure to update Binder";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
             }
             return status;
         }

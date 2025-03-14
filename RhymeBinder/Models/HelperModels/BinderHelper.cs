@@ -47,13 +47,16 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Binders.Add(newBinder);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.recordId = newBinder.BinderId;
             }
             catch
             {
                 status.recordId = -1;
                 status.success = false;
-                status.message = $"Failed to create binder {newBinder.Name}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed to create new binder";
                 return status;
             }
 
@@ -88,13 +91,16 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Binders.Add(newBinder);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.recordId = newBinder.BinderId;
             }
             catch
             {
                 status.recordId = -1;
                 status.success = false;
-                status.message = $"Failed to create binder {newBinder.Name}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed to create binder";
                 return status;
             }
 
@@ -125,11 +131,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Update(editedBinder);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.recordId = editedBinder.BinderId;
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = $"Failed to update binder {editedBinder.Name}";
                 status.recordId = -1;
             }
@@ -166,7 +175,8 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
-                status.message = $"Failed to open binder {binderToOpenId}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed to open binder";
             }
             return status;
         }
@@ -186,11 +196,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.UpdateRange(groupsToMove);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
-                status.message = $"Failed to clear move contents from {binderSourceId} to {binderDestinationId}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed moving binder contents";
             }
 
             return status;
@@ -213,10 +226,12 @@ namespace RhymeBinder.Models.HelperModels
                 if (!status.success) return status;
 
                 status = SetLoosePagesBinderHideState(userId);
+
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = $"Failed to clear binder {binderId}";
             }
             return status;
@@ -239,11 +254,14 @@ namespace RhymeBinder.Models.HelperModels
                     _context.Update(binderToDelete);
                     _context.SaveChanges();
                     status.success = true;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
                     status.success = false;
-                    status.message = $"Failed to delete binder {binderId}";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = $"Failed to delete binder";
                     status.recordId = -1;
                 }
             }
@@ -267,11 +285,15 @@ namespace RhymeBinder.Models.HelperModels
                 if (!status.success) return status;
 
                 status = DeleteBinder(userId, binderId);
+                if (!status.success) return status;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
-                status.message = $"Failed to delete binder and contents in binder {binderId}";
+                status.message = $"Failed to delete binder and contents";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
             }
             return status;
         }
@@ -305,11 +327,14 @@ namespace RhymeBinder.Models.HelperModels
 
                 status.success = true;
                 status.recordId = loosePagesBinder.BinderId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.recordId = -1;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failure to check or update Loose Pages Binder status";
             }
 
@@ -391,6 +416,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Binder while duplicating from source Binder";
                 return status;
             }
@@ -425,6 +451,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Text Groups for new Binder while duplicating";
                 return status;
             }
@@ -452,6 +479,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save SavedViews for new Binder while duplicating";
                 return status;
             }
@@ -475,6 +503,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Text Notes for new Binder while duplicating";
                 return status;
             }
@@ -501,6 +530,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Texts for new Binder while duplicating";
                 return status;
             }
@@ -545,6 +575,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Text Headers for new Binder while duplicating";
                 return status;
             }
@@ -561,6 +592,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save links between Text Headers and Text Groups for new Binder while duplicating";
                 return status;
             }
@@ -575,6 +607,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Text Records for new Binder while duplicating";
                 return status;
             }
@@ -585,10 +618,14 @@ namespace RhymeBinder.Models.HelperModels
             {
                 _context.EditWindowProperties.AddRange(editWindowProperties);
                 _context.SaveChanges();
+                status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to save Edit Window Properties for new Binder while duplicating";
                 return status;
             }
@@ -659,10 +696,13 @@ namespace RhymeBinder.Models.HelperModels
             {
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to update Binder Shelf settings";
             }
 

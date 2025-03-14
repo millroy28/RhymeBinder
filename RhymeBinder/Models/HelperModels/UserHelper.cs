@@ -35,11 +35,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
 
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
-                status.message = "Failed to save SimpleUser model.";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save new user!";
                 return status;
             }
 
@@ -56,13 +59,16 @@ namespace RhymeBinder.Models.HelperModels
                 _context.Update(user);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.recordId = user.UserId;
             }
             catch
             {
                 status.success = false;
                 status.recordId = -1;
-                status.message = $"Failed to update user {user.UserName}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed Saving User Changes!";
             }
             return status;
         }
@@ -129,6 +135,7 @@ namespace RhymeBinder.Models.HelperModels
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to create Default Binder Set";
                 return status;
             }

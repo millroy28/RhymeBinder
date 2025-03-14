@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.Enums;
 using RhymeBinder.Models.HelperModels;
 using RhymeBinder.Models.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 
 
@@ -48,6 +52,14 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult EditUser()
         {
+            
+
+            //if(incomingStatus != null)
+            //{
+            //    TempData["AlertMessage"] = incomingStatus.message;
+            //    TempData["AlertSeverity"] = incomingStatus.alertLevel.ToString();
+            //}
+
             int userId = GetUserId();
             DisplaySimpleUser user = _modelHelper.UserHelper.GetCurrentDisplaySimpleUser(userId);
 
@@ -57,10 +69,11 @@ namespace RhymeBinder.Controllers
                 Status status = new Status()
                 {
                     success = false,
-                    message = $"Failed to retrieve user {userId} to edit"
+                    alertLevel = Models.Enums.AlertLevelEnum.FAIL,
+                    message = $"Failed to retrieve user to edit"
                 };
 
-                return RedirectToAction("ErrorPage", status);
+                return RedirectToAction("ListTextsOnSessionStart", status);
             }
             return View(user);
         }
@@ -70,14 +83,8 @@ namespace RhymeBinder.Controllers
 
             Status status = _modelHelper.UserHelper.UpdateSimpleUser(editedUser);
 
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
-            else
-            {
-                return RedirectToAction("ListTextsOnSessionStart");
-            }
+            return RedirectToAction("ListTextsOnSessionStart", status);
+
         }
         #endregion
 
@@ -94,11 +101,16 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return RedirectToAction("ErrorPage", status);
+                return RedirectToAction("ListTextsOnSessionStart", status);
             }
         }
         public IActionResult ViewText(int textHeaderID)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"]; 
+            SetAlertCookie("", "");
+
             int userId = GetUserId();
 
             TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
@@ -108,17 +120,22 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult EditText(int textHeaderID)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"]; 
+            SetAlertCookie("", "");
+
             int userId = GetUserId();
 
             TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
-
             if ((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
             {
+                SetAlertCookie("Text Locked from Editing", "WARN");
                 return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
-            } 
-            return View(textEdit);
+            }
 
+            return View(textEdit);
         }
         [HttpPost]
         public IActionResult EditText(TextEdit textEdit, string action, string value)
@@ -575,6 +592,16 @@ namespace RhymeBinder.Controllers
         #region Misc
         public IActionResult Index()
         {
+            //if (!HttpContext.Request.Cookies.ContainsKey("AlertMessage"))
+            //{
+            //    HttpContext.Response.Cookies.Append("AlertMessage", "", new Microsoft.AspNetCore.Http.CookieOptions { Path = "/" });
+            //};
+            //if (!HttpContext.Request.Cookies.ContainsKey("AlertSeverity"))
+            //{
+            //    HttpContext.Response.Cookies.Append("AlertSeverity", "", new Microsoft.AspNetCore.Http.CookieOptions { Path = "/" });
+            //};
+
+
             int userId = GetUserId();
             //check that a SimpleUser record has been created for this user; if not, create one;
             if (userId == -1)
@@ -602,6 +629,23 @@ namespace RhymeBinder.Controllers
             string aspUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             int userId = _modelHelper.UserHelper.GetCurrentSimpleUserID(aspUserId);
             return userId;
+        }
+        public void SetAlertCookie(string alertMessage, string AlertSeverity)
+        {
+            //var cookieBuilder = new CookieBuilder();
+            //cookieBuilder.Path = "/";
+            //cookieBuilder.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            //cookieBuilder.IsEssential = true;
+            //cookieBuilder.Name = "Alerts";
+            //cookieBuilder.Expiration = TimeSpan.FromHours(1);
+            //cookieBuilder.HttpOnly = true;
+
+            HttpContext.Response.Cookies.Append("AlertMessage", alertMessage);
+            HttpContext.Response.Cookies.Append("AlertSeverity", AlertSeverity);
+
+
+
+
         }
         #endregion
     }

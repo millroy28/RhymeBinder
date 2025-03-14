@@ -14,6 +14,10 @@ function ShowAlertOnLoad() {
     var message = document.getElementById("alertText").innerHTML;
     var timer = -1;
 
+    if (severity === "") {
+        return;
+    }
+
     if (!severity || severity.length > 0) {
 
         switch (severity) {
@@ -35,9 +39,10 @@ function ShowAlertOnLoad() {
                 document.getElementById("alertText").classList.add("alert-fail-text");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/exclaimInOctagon.svg">';
                 break;
-
         }
+
         document.getElementById("alertBox").style.display = "flex";
+
 
         if (timer > 0) {
             CountdownToHide(timer);

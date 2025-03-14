@@ -51,10 +51,13 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SavedViews.Add(newGroupView);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
                 status.recordId = -1;
             }
@@ -69,11 +72,14 @@ namespace RhymeBinder.Models.HelperModels
             {
                 _context.TextGroups.Add(newGroup);
                 _context.SaveChanges();
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.recordId = newGroup.TextGroupId;
             }
             catch
             {
                 status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = $"Failed to save new text group {newGroup.GroupTitle}";
                 status.recordId = -1;
             }
@@ -85,10 +91,13 @@ namespace RhymeBinder.Models.HelperModels
             {
                 _context.SavedViews.Update(newGroupView);
                 _context.SaveChanges();
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
                 status.success = true;
             }
             catch
             {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.success = false;
                 status.message = $"Failed to save view for new text group {newGroup.GroupTitle}";
                 status.recordId = -1;
@@ -108,11 +117,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
                 status.success = true;
                 status.recordId = editedGroup.TextGroupId;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.message = $"Failed to update group {editedGroup.GroupTitle}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.recordId = -1;
             }
 
@@ -128,9 +140,12 @@ namespace RhymeBinder.Models.HelperModels
                     _context.Update(editedGroup);
                     _context.SaveChanges();
                     status.success = true;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
                     status.success = false;
                     status.message = $"Failed to update save view for group {editedGroup.GroupTitle}";
                     status.recordId = -1;
@@ -147,6 +162,7 @@ namespace RhymeBinder.Models.HelperModels
             {
                 status.success = false;
                 status.recordId = -1;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Unable to parse group ID from saved view when attempting to update Group Sequences";
                 return status;
             }
@@ -164,12 +180,15 @@ namespace RhymeBinder.Models.HelperModels
                     _context.SaveChanges();
                     status.success = true;
                     status.recordId = savedView.View.SavedViewId;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
                     status.success = false;
                     status.recordId = -1;
                     status.message = "Unable to save group sequence";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
                     return status;
                 }
             }
@@ -188,11 +207,14 @@ namespace RhymeBinder.Models.HelperModels
                 _context.LnkTextHeadersTextGroups.RemoveRange(groupHeaderLinks);
                 _context.SaveChanges();
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
-                status.message = $"Failed to clear text headers from group {groupId}";
+                status.message = $"Failed to clear text headers from group";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
             }
             return status;
         }
@@ -209,11 +231,14 @@ namespace RhymeBinder.Models.HelperModels
                     _context.TextGroups.Remove(editedGroup);
                     _context.SaveChanges();
                     status.success = true;
+                    status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                    status.message = "Changes saved!";
                 }
                 catch
                 {
                     status.success = false;
-                    status.message = $"Failed to delete text group {editedGroup.TextGroupId}";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    status.message = $"Failed to delete text group";
                 }
             }
             return status;
@@ -258,12 +283,15 @@ namespace RhymeBinder.Models.HelperModels
                 _context.SaveChanges();
 
                 status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
             }
             catch
             {
                 status.success = false;
                 status.recordId = newGroup.TextGroupId;
-                status.message = $"Failed to create a view for new group {newGroup.GroupTitle}";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = $"Failed to create a view for new group";
             }
             return status;
         }
