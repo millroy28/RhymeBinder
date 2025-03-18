@@ -22,21 +22,21 @@ function ShowAlertOnLoad() {
 
         switch (severity) {
             case "SUCCESS":
-                document.getElementById("alertText").classList.add("alert-success-text");
+                document.getElementById("alertBox").classList.add("alert-success");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/checkInCircle.svg">';
                 timer = 4;
                 break;
             case "INFO":
-                document.getElementById("alertText").classList.add("alert-info-text");
+                document.getElementById("alertBox").classList.add("alert-info");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/iInCircle.svg">';
                 timer = 8;
                 break;
             case "WARN":
-                document.getElementById("alertText").classList.add("alert-warn-text");
+                document.getElementById("alertBox").classList.add("alert-warn");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/exclaimInTriangle.svg">';
                 break;
             case "FAIL":
-                document.getElementById("alertText").classList.add("alert-fail-text");
+                document.getElementById("alertBox").classList.add("alert-fail");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/exclaimInOctagon.svg">';
                 break;
         }
