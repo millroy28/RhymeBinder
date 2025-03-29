@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.Enums;
 using RhymeBinder.Models.ViewModels;
 using System;
 using System.Collections.Generic;

@@ -155,6 +155,14 @@ namespace RhymeBinder.Models.HelperModels
 
             try
             {
+                //  ... for now, we will not allow user to "open" a binder they do not own. But let's not throw an error either
+                //  (if we need to allow opening of un-owned binders, we will need a table to link users and binders - currently it's just a flag on the binders tabletry{
+                if (!_context.Binders.Any(x => x.BinderId == binderToOpenId && x.CreatedBy == userId))
+                {
+                    status.success = true;
+                    return status;
+                }
+
                 Binder currentlySelectedBinder = _context.Binders.Single(x => x.BinderId == GetCurrentBinderID(userId));
 
                 Binder binderToOpen = _context.Binders.Single(x => x.BinderId == binderToOpenId);

@@ -91,7 +91,19 @@ namespace RhymeBinder.Controllers
         #region TextMethods
         public IActionResult StartNewText(int? groupId)
         { 
+            //  Authorization check
             int userId = GetUserId();
+            bool isAuthorised = true;
+            if(groupId != null)
+            {
+                isAuthorised = _modelHelper.TextHelper.UserAuthorized(userId, (int)groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.CREATE);
+            }
+            if (!isAuthorised)
+            {
+                SetAlertCookie("You do not have permission to add a text in this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
             Status status = _modelHelper.TextHelper.StartNewText(userId, groupId);
 
             if (status.success)
@@ -111,7 +123,13 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             ClearAlertCookie();
 
+            // Authorization check
             int userId = GetUserId();
+            if (!_modelHelper.TextHelper.UserAuthorized(userId, textHeaderID, SharedObjectTypeEnum.TextHeader, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to read this text", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
 
             TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
@@ -125,7 +143,13 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"]; 
             ClearAlertCookie();
 
+            // Authorization check
             int userId = GetUserId();
+            if(!_modelHelper.TextHelper.UserAuthorized(userId, textHeaderID, SharedObjectTypeEnum.TextHeader, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to edit this text", "WARN");
+                return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
+            }
 
             TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
@@ -181,11 +205,8 @@ namespace RhymeBinder.Controllers
         }
         public IActionResult ListTextsOnSessionStart(int? binderId)
         {   //grabs current user, then default view for that user, and sends viewID to ListTexts
-
-            // Check for alerts
-            //TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
-            //TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
-            // ClearAlertCookie(); don't clear here becuase it's redirecting
+            //  This has become a bit of a catch all route - failures, don't quite know which text to open, etc.
+            // Can I redo this to using cookies to lesson queries on database - this may be inefficient
 
             int userId = GetUserId();
             
@@ -194,6 +215,9 @@ namespace RhymeBinder.Controllers
                 binderId = 0;
             };
 
+            // If binderId is 0, GetSavedViewIdOnStart will look up user's selected (open) binder
+            // Open binders is currently written so it is tied to user id, so user can't mark a binder they don't own as open
+            // ...so auth here is not needed
             int savedViewId = _modelHelper.ViewHelper.GetSavedViewIdOnStart(userId, (int)binderId);
 
             if (savedViewId == -1)
@@ -215,10 +239,18 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             SetAlertCookie("", "");
 
+            //  Authorization check
             int userId = GetUserId();
+            if (!_modelHelper.TextHelper.UserAuthorized(userId, viewId, SharedObjectTypeEnum.TextView, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to access this view", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
             int currentPage;
             if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
 
+            // TO DO: ---> Figure out multi-user and how texts will be returned across views
             DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.TextHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
 
             if (displayTextHeadersAndSavedView.View.SavedViewId == -1)
@@ -332,7 +364,13 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             ClearAlertCookie();
 
+            // Authorization check -- TODO - when multi user set up, figure out how to check auth on each text header, b/c this is really checking the group and that's not  correct
             int userId = GetUserId();
+            if(!_modelHelper.TextHelper.UserAuthorized(userId, groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to read texts in this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
 
             DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
 
@@ -346,7 +384,14 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             SetAlertCookie("", "");
 
+
+            // Authorization check -- TODO - when multi user set up, figure out how to check auth on each text header, b/c this is really checking the group and that's not  correct
             int userId = GetUserId();
+            if (!_modelHelper.TextHelper.UserAuthorized(userId, groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to edit texts in this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
 
             DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
 
@@ -380,7 +425,14 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             ClearAlertCookie();
 
+            // Authorization check
             int userId = GetUserId();
+            if(!_modelHelper.BinderHelper.UserAuthorized(userId, binderId, SharedObjectTypeEnum.Binder, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to view this binder", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
             List<DisplayTextGroup> displayTextGroups = _modelHelper.TextHelper.GetDisplayTextGroups(userId, binderId);
             if (displayTextGroups.Count == 0) { displayTextGroups.Add(new DisplayTextGroup()); };
 
@@ -398,6 +450,14 @@ namespace RhymeBinder.Controllers
             TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             ClearAlertCookie();
+
+            //  Authorization check
+            int userId = GetUserId();
+            if(!_modelHelper.GroupHelper.UserAuthorized(userId, groupID, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to edit this", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
 
             TextGroup groupToEdit = _modelHelper.TextHelper.GetTextGroup(groupID);
             if (groupToEdit.TextGroupId == -1)
@@ -443,6 +503,14 @@ namespace RhymeBinder.Controllers
             TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             ClearAlertCookie();
+
+            //  Authorization check
+            int userId = GetUserId();
+            if (!_modelHelper.GroupHelper.UserAuthorized(userId, binderID, SharedObjectTypeEnum.Binder, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to make edits in this binder", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
 
             return View(binderID);
         }
@@ -505,7 +573,14 @@ namespace RhymeBinder.Controllers
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
             ClearAlertCookie();
 
+            //  Authorization check
             int userId = GetUserId();
+            if (!_modelHelper.GroupHelper.UserAuthorized(userId, binderID, SharedObjectTypeEnum.Binder, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to make edits in this binder", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
             DisplayBinder binder = _modelHelper.BinderHelper.GetDisplayBinder(userId, binderID);
             if (binder.BinderId == -1)
             {
@@ -555,6 +630,10 @@ namespace RhymeBinder.Controllers
          }
         public IActionResult OpenBinder(int binderId)
         {
+            // "Opening" binder sets the selected flag in the binders table to true
+            // We only want to do that for users who own the binder, natrually
+            // ...and it only affects users who own that binder
+            // ...therefore OpenBinder method checks for ownership, no auth needed here...
             int userId = GetUserId();
             Status status = _modelHelper.BinderHelper.OpenBinder(userId, binderId);
 

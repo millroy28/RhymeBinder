@@ -122,7 +122,8 @@ namespace RhymeBinder.Models.HelperModels
             try
             {
                 binderId = _context.Binders.Single(x => x.UserId == userId
-                                                     && x.Selected == true).BinderId;
+                                                     && x.Selected == true).BinderId;              
+
             }
             catch
             {
@@ -570,11 +571,11 @@ namespace RhymeBinder.Models.HelperModels
             }
             return status;
         }
-        public bool UserAuthorized(int userId, int objectId, int objectTypeId, int desiredAction)
+        public bool UserAuthorized(int userId, int objectId, SharedObjectTypeEnum objectType, SharedObjectActionEnum requestedAction)
         {
             bool userAuthorized = false;
-            SharedObjectTypeEnum objectType = (SharedObjectTypeEnum)objectTypeId;
-            // First, check ownership
+           
+            // First, check ownership - assuming if you are owner, you have full authority
             switch (objectType)
             {
                 case SharedObjectTypeEnum.Binder:
@@ -586,14 +587,17 @@ namespace RhymeBinder.Models.HelperModels
                 case SharedObjectTypeEnum.TextGroup:
                     userAuthorized = _context.TextGroups.Any(x => x.TextGroupId == objectId && x.OwnerId == userId);
                     break;
+                case SharedObjectTypeEnum.TextView:
+                    userAuthorized = _context.SavedViews.Any(x => x.SavedViewId == objectId && x.UserId == userId);
+                    break;
             }
-            // Then, check shared status
+            // If user is not owner, then check shared authorization
             if (!userAuthorized)
             {
                 userAuthorized = _context.SharedObjects.Any(x => x.Grantee == userId
-                                                            && x.SharedObjectTypeId == objectTypeId
+                                                            && x.SharedObjectTypeId == (int)objectType
                                                             && x.ObjectId == objectId
-                                                            && x.SharedObjectActionId == desiredAction);
+                                                            && x.SharedObjectActionId == (int)requestedAction);
             }
 
             return userAuthorized;

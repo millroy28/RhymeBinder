@@ -4,6 +4,7 @@
     {
         TextHeader = 1,
         TextGroup = 2,
-        Binder = 3
+        Binder = 3,
+        TextView = 4
     }
 }
