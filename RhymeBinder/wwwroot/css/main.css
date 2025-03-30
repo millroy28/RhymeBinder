@@ -239,6 +239,7 @@
 
         .alert-text {
             font-weight: 600;
+            padding: 0px 5px 0px 10px;
         }
 
         .alert-success {

@@ -24,7 +24,7 @@ function ShowAlertOnLoad() {
             case "SUCCESS":
                 document.getElementById("alertBox").classList.add("alert-success");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/checkInCircle.svg">';
-                timer = 4;
+                timer = 3;
                 break;
             case "INFO":
                 document.getElementById("alertBox").classList.add("alert-info");

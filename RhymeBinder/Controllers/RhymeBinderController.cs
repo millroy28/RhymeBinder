@@ -94,7 +94,7 @@ namespace RhymeBinder.Controllers
             //  Authorization check
             int userId = GetUserId();
             bool isAuthorised = true;
-            if(groupId != null)
+            if(groupId != null && groupId != -1)
             {
                 isAuthorised = _modelHelper.TextHelper.UserAuthorized(userId, (int)groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.CREATE);
             }
@@ -455,7 +455,7 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             if(!_modelHelper.GroupHelper.UserAuthorized(userId, groupID, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.EDIT))
             {
-                SetAlertCookie("You do not have permission to edit this", "WARN");
+                SetAlertCookie("You do not have permission to edit this group", "WARN");
                 return RedirectToAction("ListTextsOnSessionStart");
             }
 
