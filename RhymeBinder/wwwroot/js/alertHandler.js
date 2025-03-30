@@ -29,11 +29,12 @@ function ShowAlertOnLoad() {
             case "INFO":
                 document.getElementById("alertBox").classList.add("alert-info");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/iInCircle.svg">';
-                timer = 8;
+                timer = 5;
                 break;
             case "WARN":
                 document.getElementById("alertBox").classList.add("alert-warn");
                 document.getElementById("alertIcon").innerHTML = '<img src="/img/exclaimInTriangle.svg">';
+                timer = 8;
                 break;
             case "FAIL":
                 document.getElementById("alertBox").classList.add("alert-fail");

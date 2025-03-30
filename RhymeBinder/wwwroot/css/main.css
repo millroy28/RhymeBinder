@@ -1650,6 +1650,80 @@ text-decoration-line: underline;
     }
 
 
+    /*``[Alerts]*/
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .alert {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        position: absolute;
+        z-index: 2;
+        right: 2%;
+        top: 2%;
+        width: 325px;
+        height: 55px;
+        overflow: auto;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border: 3px solid;
+        border-radius: 10px;
+        background-color: #f4f5ef;
+        animation: slideInRight .25s forwards; /* Slide in from right */
+    }
+
+    .alert-hide {
+        animation: slideOutRight .7s forwards;
+    }
+
+    .alert-text {
+        font-weight: 600;
+        padding: 0px 5px 0px 10px;
+    }
+
+    .alert-success {
+        color: darkgreen;
+        border-color: darkgreen;
+    }
+
+    .alert-info {
+        color: black;
+        border-color: black;
+    }
+
+    .alert-warn {
+        color: orangered;
+        border-color: orangered;
+    }
+
+    .alert-fail {
+        color: darkred;
+        border-color: darkred;
+    }
+
+
     /*``[Modals]*/
 
     .list-modal {
