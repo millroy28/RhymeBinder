@@ -4,7 +4,7 @@
 
 @{
 }
-@model DisplayTextHeadersAndSavedView
+@model RhymeBinder.Models.ViewModels.DisplayTextHeadersAndSavedView
 @{
     int index = 0; int groupIndex = 0;
     string binderColorTag = null;
@@ -17,7 +17,7 @@
 
 }
 
-
+@Html.Partial("_Alert")
 
 <script language="Javascript" src="~/js/site.js"></script>
 
@@ -137,12 +137,13 @@
                         @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Hidden")
                         {
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
+                            <a class="menu-bar-dropdown-item" >――――――――</a>
                         } 
-                        @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Hidden" && Model.View.SetValue != "All")
+                        @* Disabling for now - questioning whether current hiding method works for my use or is confusing *@
+@*                         @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Hidden" && Model.View.SetValue != "All")
                         {
                             <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
-                        }
-                        <a class="menu-bar-dropdown-item" >――――――――</a>
+                        } *@
                         <a class="menu-bar-dropdown-item" onclick="populate_list_modal_footer_with_record_count_message(); open_modal_with_Id('binders')">Transfer To Binder</a>
 @*                         @foreach(var binder in Model.UserBinders)
                         {

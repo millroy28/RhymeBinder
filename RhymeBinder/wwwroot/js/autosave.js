@@ -103,6 +103,31 @@ function save_content() {
     
 }
 
+function prepare_to_submit() {
+    //set cursor position and form focus values in form to be saved to server
+    get_current_cursor_position_and_form_focus();
+    // un-comment for debug console logging:
+    //console.log('CURRENT FOCUS ELEMENT: ' + current_focus_element);
+    //console.log('CURRENT TEXT CURSOR POSITION: ' + current_body_cursor_position);
+    //console.log('CURRENT TEXT SCROLL POSITION: ' + current_body_scroll_position);
+    //console.log('CURRENT NOTE CURSOR POSITION: ' + current_note_cursor_position);
+    //console.log('CURRENT NOTE SCROLL POSITION: ' + current_note_scroll_position);
+    //console.log('CURRENT TITLE CURSOR POSITION: ' + current_title_cursor_position);
+    //setTimeout(3000);
+
+
+    document.getElementById('body_cursor_position').value = current_body_cursor_position;
+    document.getElementById('body_scroll_position').value = current_body_scroll_position;
+    document.getElementById('note_cursor_position').value = current_note_cursor_position;
+    document.getElementById('note_scroll_position').value = current_note_scroll_position;
+    document.getElementById('title_cursor_position').value = current_title_cursor_position;
+    document.getElementById('form_focus').value = current_focus_element;
+    //document.getElementById('edit').submit();
+
+    set_form_submitting_true();
+
+    return;
+}
 function wait_for_typing_to_finish_before_saving() {
     keyup_timer--;
     if (keyup_timer % 5 == 0 || keyup_timer < 4) {
@@ -110,27 +135,7 @@ function wait_for_typing_to_finish_before_saving() {
     }    
 
     if (keyup_timer == 0) {
-        //set cursor position and form focus values in form to be saved to server
-        get_current_cursor_position_and_form_focus();
-        // un-comment for debug console logging:
-        //console.log('CURRENT FOCUS ELEMENT: ' + current_focus_element);
-        //console.log('CURRENT TEXT CURSOR POSITION: ' + current_body_cursor_position);
-        //console.log('CURRENT TEXT SCROLL POSITION: ' + current_body_scroll_position);
-        //console.log('CURRENT NOTE CURSOR POSITION: ' + current_note_cursor_position);
-        //console.log('CURRENT NOTE SCROLL POSITION: ' + current_note_scroll_position);
-        //console.log('CURRENT TITLE CURSOR POSITION: ' + current_title_cursor_position);
-        //setTimeout(3000);
-
-
-        document.getElementById('body_cursor_position').value = current_body_cursor_position;
-        document.getElementById('body_scroll_position').value = current_body_scroll_position;
-        document.getElementById('note_cursor_position').value = current_note_cursor_position;
-        document.getElementById('note_scroll_position').value = current_note_scroll_position;
-        document.getElementById('title_cursor_position').value = current_title_cursor_position;
-        document.getElementById('form_focus').value = current_focus_element;
-        //document.getElementById('edit').submit();
-
-        set_form_submitting_true();
+        prepare_to_submit();
 
         button = document.getElementById('save');
         button.click();
@@ -225,3 +230,28 @@ autosave_counter();  //this is the one that runs continuously
 run_these_functions_on_page_load();
 
 
+//-----------Listener to submit on ctrl+s
+var isCtrl = false;
+window.addEventListener('load', function () {
+    window.addEventListener('keydown', function (e) {
+        if (e.key === "Control") {
+            e.preventDefault();
+            isCtrl = true;
+        }
+
+        if (e.key === "s" && isCtrl) {
+            e.preventDefault();
+
+            prepare_to_submit();
+
+            document.getElementById("save").click();
+        }
+    });
+    window.addEventListener('keyup', function (e) {
+        if (e.key === "Control") {
+            isCtrl = false; // Reset flag when Control is released
+        }
+    });
+
+
+});

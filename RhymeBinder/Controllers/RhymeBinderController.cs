@@ -1,9 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using RhymeBinder.Models;
+using RhymeBinder.Models.DBModels;
+using RhymeBinder.Models.DTOModels;
+using RhymeBinder.Models.Enums;
+using RhymeBinder.Models.HelperModels;
+using RhymeBinder.Models.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 
@@ -12,7 +21,7 @@ namespace RhymeBinder.Controllers
     [Authorize]
     public class RhymeBinderController : Controller
     {
-        public RhymeBinder.Models.ModelHelper _modelHelper;
+        public ModelHelper _modelHelper;
         public RhymeBinderController(ModelHelper modelHelper)
         {
             _modelHelper = modelHelper;
@@ -32,7 +41,8 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult SetupNewUser(SimpleUser newUser)
         {
-            Status status = _modelHelper.SetupNewUser(newUser);
+            Status status = _modelHelper.UserHelper.SetupNewUser(newUser);
+            SetAlertCookieGenericSaveStatus(status.success);
             if (status.success)
             {
                 return RedirectToAction("Index");
@@ -45,45 +55,56 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult EditUser()
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
+
             int userId = GetUserId();
-            DisplaySimpleUser user = _modelHelper.GetCurrentDisplaySimpleUser(userId);
+            DisplaySimpleUser user = _modelHelper.UserHelper.GetCurrentDisplaySimpleUser(userId);
 
 
             if (user.UserId == -1)
             {
-                Status status = new Status()
-                {
-                    success = false,
-                    message = $"Failed to retrieve user {userId} to edit"
-                };
+                SetAlertCookie("Failed to retrieve user data", "FAIL");
 
-                return RedirectToAction("ErrorPage", status);
+                return RedirectToAction("ListTextsOnSessionStart");
             }
             return View(user);
         }
         [HttpPost]
         public IActionResult EditUser(SimpleUser editedUser)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
 
-            Status status = _modelHelper.UpdateSimpleUser(editedUser);
+            Status status = _modelHelper.UserHelper.UpdateSimpleUser(editedUser);
+            SetAlertCookieGenericSaveStatus(status.success);
 
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
-            else
-            {
-                return RedirectToAction("ListTextsOnSessionStart");
-            }
+            return RedirectToAction("ListTextsOnSessionStart");
         }
         #endregion
 
         //-------TEXT:
         #region TextMethods
-        public IActionResult StartNewText(int? groupId)
+        public IActionResult StartNewText(int binderId, int? groupId)
         { 
+            //  Authorization check
             int userId = GetUserId();
-            Status status = _modelHelper.StartNewText(userId, groupId);
+            bool isAuthorised = true;
+            if(groupId != null && groupId != -1)
+            {
+                isAuthorised = _modelHelper.TextHelper.UserAuthorized(userId, (int)groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.CREATE);
+            }
+            if (!isAuthorised)
+            {
+                SetAlertCookie("You do not have permission to add a text in this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            Status status = _modelHelper.TextHelper.StartNewText(userId, binderId, groupId);
 
             if (status.success)
             {
@@ -91,30 +112,54 @@ namespace RhymeBinder.Controllers
             }
             else
             {
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed creating a new text", "FAIL");
+                return RedirectToAction("ListTextsOnSessionStart");
             }
         }
         public IActionResult ViewText(int textHeaderID)
         {
-            int userId = GetUserId();
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
 
-            TextEdit textEdit = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
+            // Authorization check
+            int userId = GetUserId();
+            if (!_modelHelper.TextHelper.UserAuthorized(userId, textHeaderID, SharedObjectTypeEnum.TextHeader, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to read this text", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
 
             return View(textEdit);
         }
         [HttpGet]
         public IActionResult EditText(int textHeaderID)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"]; 
+            ClearAlertCookie();
+
+            // Authorization check
             int userId = GetUserId();
-
-            TextEdit textEdit = _modelHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
-
-            if((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
+            if(!_modelHelper.TextHelper.UserAuthorized(userId, textHeaderID, SharedObjectTypeEnum.TextHeader, SharedObjectActionEnum.EDIT))
             {
+                SetAlertCookie("You do not have permission to edit this text", "WARN");
                 return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
-            } 
-            return View(textEdit);
+            }
 
+            TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
+
+            if ((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
+            {
+                SetAlertCookie("Text Locked from Editing", "WARN");
+                return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
+            }
+
+            return View(textEdit);
         }
         [HttpPost]
         public IActionResult EditText(TextEdit textEdit, string action, string value)
@@ -122,74 +167,47 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             Status status = new Status();
 
-            //Where do we go from here?
             switch (action)
             {
                 case "Return":
-                    status = _modelHelper.SaveEditedText(textEdit);
-                    if (!status.success)
-                    {
-                        return RedirectToAction("ErrorPage", status);
-                    }
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
+                    SetAlertCookieGenericSaveStatus(status.success);
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 case "Save":
-                    status = _modelHelper.SaveEditedText(textEdit);
-                    if (!status.success)
-                    {
-                        return RedirectToAction("ErrorPage", status);
-                    }
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
+                    SetAlertCookieGenericSaveStatus(status.success);
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
                 case "Revision":
-                    status = _modelHelper.SaveEditedText(textEdit);
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     if (status.success)
                     {
-                        status = _modelHelper.AddRevisionToText(userId, textEdit.TextHeaderId);
+                        status = _modelHelper.TextHelper.AddRevisionToText(userId, textEdit.TextHeaderId);
                     }
                     if (status.success)
                     {
+                        SetAlertCookieGenericSaveStatus(status.success);
                         return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
                     }
                     else
                     {
-                        return RedirectToAction("ErrorPage", status);
-                    }
-                //case "AddGroup":
-                //    status = _modelHelper.SaveEditedText(textEdit);
-                //    if (status.success)
-                //    {
-                //        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), true);
-                //    }
-                //    if (status.success)
-                //    {
-                //        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
-                //    }
-                //    else
-                //    {
-                //        return RedirectToAction("ErrorPage", status);
-                //    }
-                //case "RemoveGroup":
-                //    status = _modelHelper.SaveEditedText(textEdit);
-                //    if (status.success)
-                //    {
-                //        status = _modelHelper.AddRemoveHeaderFromGroup(textEdit.TextHeaderId, int.Parse(value), false);
-                //    }
-                //    if (status.success)
-                //    {
-                //        return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
-                //    }
-                //    else
-                //    {
-                //        return RedirectToAction("ErrorPage", status);
-                //    }
+                        SetAlertCookie("Failed to add revision to text", "FAIL"); 
+                        return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                    };
+                    
                 case "Timeout":
+                    SetAlertCookie("Editing timed out", "INFO");
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 default:
+                    SetAlertCookieGenericSaveStatus(status.success);
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
             }
 
         }
         public IActionResult ListTextsOnSessionStart(int? binderId)
         {   //grabs current user, then default view for that user, and sends viewID to ListTexts
+            //  This has become a bit of a catch all route - failures, don't quite know which text to open, etc.
+            // Can I redo this to using cookies to lesson queries on database - this may be inefficient
+
             int userId = GetUserId();
             
             if (binderId == null)
@@ -197,7 +215,10 @@ namespace RhymeBinder.Controllers
                 binderId = 0;
             };
 
-            int savedViewId = _modelHelper.GetSavedViewIdOnStart(userId, (int)binderId);
+            // If binderId is 0, GetSavedViewIdOnStart will look up user's selected (open) binder
+            // Open binders is currently written so it is tied to user id, so user can't mark a binder they don't own as open
+            // ...so auth here is not needed
+            int savedViewId = _modelHelper.ViewHelper.GetSavedViewIdOnStart(userId, (int)binderId);
 
             if (savedViewId == -1)
             {
@@ -213,26 +234,31 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult ListTexts(int viewId, int? page, string searchValue)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            SetAlertCookie("", "");
+
+            //  Authorization check
             int userId = GetUserId();
+            if (!_modelHelper.TextHelper.UserAuthorized(userId, viewId, SharedObjectTypeEnum.TextView, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to access this view", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
             int currentPage;
             if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
 
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
+            // TO DO: ---> Figure out multi-user and how texts will be returned across views
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.TextHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
 
-            if (displayTextHeadersAndSavedView.View.SavedViewId != -1)
+            if (displayTextHeadersAndSavedView.View.SavedViewId == -1)
             {
-                return View(displayTextHeadersAndSavedView);
+                TempData["AlertMessage"] = "Failed to retrieve texts";
+                TempData["AlertSeverity"] = "WARN";
             }
-            else
-            {
-                Status status = new Status()
-                {
-                    success = false,
-                    message = "Failed to get list of texts for view",
-                    recordId = viewId
-                };
-                return RedirectToAction("ErrorPage", status);
-            }
+            return View(displayTextHeadersAndSavedView);
         }
         [HttpPost]
         public IActionResult ListTexts(DisplayTextHeadersAndSavedView savedView, string action, string value)
@@ -242,35 +268,49 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "NewText":
-                    return Redirect($"/RhymeBinder/StartNewText?groupId={value}");
+                    return Redirect($"/RhymeBinder/StartNewText?binderId={savedView.View.BinderId}&groupId={value}");
 
                 case "LastView":
                     // Update current saved view with changed form values
-                    status = _modelHelper.UpdateView(savedView);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    if(!status.success) { SetAlertCookie("Failed to update saved view", "FAIL"); };
                     break;
 
                 case "SaveDefault":
                     // Applies current view grid settings to default view settings
-                    status = _modelHelper.SetDefaultView(userId, savedView.View);
+                    status = _modelHelper.ViewHelper.SetDefaultView(userId, savedView.View);
+                    SetAlertCookieGenericSaveStatus(status.success);
                     break;
 
                 case "Hide":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.ToggleHideSelectedHeaders(savedView, true);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.ToggleHideSelectedHeaders(savedView, true);
+                    if (!status.success) { SetAlertCookie("Failed to update saved view", "FAIL"); };
+
                     break;
 
                 case "Restore":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.ToggleHideSelectedHeaders(savedView, false);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.ToggleHideSelectedHeaders(savedView, false);
+                    if (!status.success) { SetAlertCookie("Failed to update saved view", "FAIL"); };
+
                     break;
 
                 case "GroupAddRemove":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.AddRemoveHeadersFromGroups(savedView);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.AddRemoveHeadersFromGroups(savedView);
+                    if (!status.success) { SetAlertCookie("Failed to update group associations", "FAIL"); } else
+                    {
+                        SetAlertCookieGenericSaveStatus(status.success);
+                    };
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
 
                 case "UpdateGroupSequence":
-                    status = _modelHelper.UpdateGroupSequence(savedView);
+                    status = _modelHelper.GroupHelper.UpdateGroupSequence(savedView);
+                    if (!status.success) { SetAlertCookie("Failed to update group sequence", "FAIL"); } else
+                    {
+                        SetAlertCookieGenericSaveStatus(status.success);
+                    };
                     break;
 
                 // previously used when setting groups individually from dropdowns
@@ -285,12 +325,17 @@ namespace RhymeBinder.Controllers
                 //    break;
 
                 case "GroupFilter":
-                    status = _modelHelper.SwitchToViewBySet(userId, value);
+                    status = _modelHelper.ViewHelper.SwitchToViewBySet(userId, value);
+                    if (!status.success) { SetAlertCookie("Failed to update view", "FAIL"); }
                     break;
 
                 case "Transfer":
-                    status = _modelHelper.UpdateView(savedView);
-                    status = _modelHelper.TransferHeadersAcrossBinders(savedView, (int)savedView.DestinationBinder);
+                    status = _modelHelper.ViewHelper.UpdateView(savedView);
+                    status = _modelHelper.TextHelper.TransferHeadersAcrossBinders(savedView, (int)savedView.DestinationBinder);
+                    if (!status.success) { SetAlertCookie("Failed to move texts across binders", "FAIL"); } else
+                    {
+                        SetAlertCookieGenericSaveStatus(status.success);
+                    };
                     break;
 
                 case "ManageGroups":
@@ -310,32 +355,49 @@ namespace RhymeBinder.Controllers
             }
 
             // For most switch cases we redirect back to the same list of texts...
-            if (status.success)
-            {
-                return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}&page={savedView.Page}");
-            }
-            else
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
+            return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}&page={savedView.Page}");
         }
         public IActionResult ViewTextsInSequence(int groupId)
         {
-            int userId = GetUserId();
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
 
-            DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+            // Authorization check -- TODO - when multi user set up, figure out how to check auth on each text header, b/c this is really checking the group and that's not  correct
+            int userId = GetUserId();
+            if(!_modelHelper.TextHelper.UserAuthorized(userId, groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to read texts in this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
 
             return View(sequencedTexts);
         }
         [HttpGet]
         public IActionResult EditTextsInSequence(int groupId)
         {
-            int userId = GetUserId();
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            SetAlertCookie("", "");
 
-            DisplaySequencedTexts sequencedTexts = _modelHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+
+            // Authorization check -- TODO - when multi user set up, figure out how to check auth on each text header, b/c this is really checking the group and that's not  correct
+            int userId = GetUserId();
+            if (!_modelHelper.TextHelper.UserAuthorized(userId, groupId, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to edit texts in this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
 
             if (sequencedTexts.BinderReadOnly)
             {
+                SetAlertCookie("Text Locked from Editing", "WARN");
                 return Redirect($"/RhymeBinder/ViewTextsInSequence?groupId={groupId}");
             }
 
@@ -344,10 +406,10 @@ namespace RhymeBinder.Controllers
         [HttpPost]
         public IActionResult EditTextsInSequence(DisplaySequencedTexts editedTexts)
         {
-            Status status = _modelHelper.SaveEditedTextsInSequence(editedTexts);
+            Status status = _modelHelper.TextHelper.SaveEditedTextsInSequence(editedTexts);
             if (!status.success)
             {
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed to save changes to texts", "FAIL");
             }
             return Redirect($"/RhymeBinder/EditTextsInSequence?groupId={editedTexts.GroupId}");
         }
@@ -358,31 +420,50 @@ namespace RhymeBinder.Controllers
         #region GroupMethods
         public IActionResult ListGroups(int binderId)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
+
+            // Authorization check
             int userId = GetUserId();
-            List<DisplayTextGroup> displayTextGroups = _modelHelper.GetDisplayTextGroups(userId, binderId);
+            if(!_modelHelper.BinderHelper.UserAuthorized(userId, binderId, SharedObjectTypeEnum.Binder, SharedObjectActionEnum.READ))
+            {
+                SetAlertCookie("You do not have permission to view this binder", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            List<DisplayTextGroup> displayTextGroups = _modelHelper.TextHelper.GetDisplayTextGroups(userId, binderId);
             if (displayTextGroups.Count == 0) { displayTextGroups.Add(new DisplayTextGroup()); };
 
             if (displayTextGroups[0].TextGroupId == -1)
             {
-                Status status = new Status()
-                {
-                    message = "Failed to retrieve Text Groups for display"
-                };
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed to retrieve list of groups", "FAIL");
+                return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={binderId}");
             }
             return View(displayTextGroups);
         }
         [HttpGet]
         public IActionResult EditGroup(int groupID)
         {
-            TextGroup groupToEdit = _modelHelper.GetTextGroup(groupID);
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
+
+            //  Authorization check
+            int userId = GetUserId();
+            if(!_modelHelper.GroupHelper.UserAuthorized(userId, groupID, SharedObjectTypeEnum.TextGroup, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to edit this group", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            TextGroup groupToEdit = _modelHelper.TextHelper.GetTextGroup(groupID);
             if (groupToEdit.TextGroupId == -1)
             {
-                Status status = new Status()
-                {
-                    message = $"Failed to retrieve Text Group Id {groupID}"
-                };
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed to retrieve group", "FAIL");
+                return RedirectToAction("ListTextsOnSessionStart");
             }
             return View(groupToEdit);
         }
@@ -395,35 +476,42 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "Submit Changes":
-                    status = _modelHelper.UpdateGroup(editedGroup);
+                    status = _modelHelper.GroupHelper.UpdateGroup(editedGroup);
                     break;
                 case "Clear":
                     if (verifyClear != null)
                     {
-                        status = _modelHelper.ClearTextsFromGroup(editedGroup.TextGroupId);
+                        status = _modelHelper.GroupHelper.ClearTextsFromGroup(editedGroup.TextGroupId);
                     }
                     break;
                 case "Delete Group":
                     if (verifyDeleteGroup != null)
                     {
-                        status = _modelHelper.DeleteGroup(editedGroup);
+                        status = _modelHelper.GroupHelper.DeleteGroup(editedGroup);
                     }
                     break;
             }
 
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
-            else
-            {
-                return Redirect($"/Rhymebinder/ListGroups?binderId={editedGroup.BinderId}");
-            }
+            SetAlertCookieGenericSaveStatus(status.success);
+            return Redirect($"/Rhymebinder/ListGroups?binderId={editedGroup.BinderId}");
         }
 
         [HttpGet]
         public IActionResult CreateGroup(int binderID)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
+
+            //  Authorization check
+            int userId = GetUserId();
+            if (!_modelHelper.GroupHelper.UserAuthorized(userId, binderID, SharedObjectTypeEnum.Binder, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to make edits in this binder", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
             return View(binderID);
         }
         [HttpPost]
@@ -432,16 +520,10 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             Status status = new Status();
 
-            status = _modelHelper.CreateNewTextGroup(userId, newGroup);
+            status = _modelHelper.GroupHelper.CreateNewTextGroup(userId, newGroup);
+            SetAlertCookieGenericSaveStatus(status.success);
 
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
-            else
-            {
-                return Redirect($"/Rhymebinder/ListGroups?binderId={newGroup.BinderId}");
-            }
+            return Redirect($"/Rhymebinder/ListGroups?binderId={newGroup.BinderId}");
         } 
         #endregion
 
@@ -452,41 +534,58 @@ namespace RhymeBinder.Controllers
             int userId = GetUserId();
             Status status = new Status();
 
-            status = _modelHelper.CreateNewBinder(userId);
+            status = _modelHelper.BinderHelper.CreateNewBinder(userId);
 
             if (!status.success)
             {
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed to create new binder", "FAIL");
+                return Redirect($"/RhymeBinder/ListTextsOnSessionStart");
+            }
+            else
+            {
+                SetAlertCookieGenericSaveStatus(status.success);
             }
 
             return Redirect($"/RhymeBinder/EditBinder?binderID={status.recordId}");
         }
+        [HttpGet]
         public IActionResult ListBinders()
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
+
             int userId = GetUserId();
-            List<DisplayBinder> binders = _modelHelper.GetDisplayBinders(userId);
+            List<DisplayBinder> binders = _modelHelper.BinderHelper.GetDisplayBinders(userId);
             if (binders[0].BinderId == -1)
             {
-                Status status = new Status()
-                {
-                    message = "Failed to retrieve Display Binders"
-                };
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed to retrieve binders", "FAIL");
+                return Redirect($"/RhymeBinder/ListTextsOnSessionStart");
             }
             return View(binders);
         }
         [HttpGet]
         public IActionResult EditBinder(int binderID)
         {
+            // Check for alerts
+            TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
+            TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];
+            ClearAlertCookie();
+
+            //  Authorization check
             int userId = GetUserId();
-            DisplayBinder binder = _modelHelper.GetDisplayBinder(userId, binderID);
+            if (!_modelHelper.GroupHelper.UserAuthorized(userId, binderID, SharedObjectTypeEnum.Binder, SharedObjectActionEnum.EDIT))
+            {
+                SetAlertCookie("You do not have permission to make edits in this binder", "WARN");
+                return RedirectToAction("ListTextsOnSessionStart");
+            }
+
+            DisplayBinder binder = _modelHelper.BinderHelper.GetDisplayBinder(userId, binderID);
             if (binder.BinderId == -1)
             {
-                Status status = new Status()
-                {
-                    message = $"Failed to retrieve Display Binder {binderID}"
-                };
-                return RedirectToAction("ErrorPage", status);
+                SetAlertCookie("Failed to retrieve binder", "FAIL");
+                return Redirect($"/RhymeBinder/ListTextsOnSessionStart");
             }
             return View(binder);
         }
@@ -499,66 +598,56 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "Submit Changes":
-                    status = _modelHelper.UpdateBinder(userId, editedBinder);
+                    status = _modelHelper.BinderHelper.UpdateBinder(userId, editedBinder);
                     break;
                 case "Duplicate":
-                    status = _modelHelper.DuplicateBinder(userId, editedBinder.BinderId);
+                    status = _modelHelper.BinderHelper.DuplicateBinder(userId, editedBinder.BinderId);
                     break;
                 case "Clear":
                     if (verifyClear != null)
                     {
-                        status = _modelHelper.ClearBinder(userId, editedBinder.BinderId);
+                        status = _modelHelper.BinderHelper.ClearBinder(userId, editedBinder.BinderId);
                     }
                     break;
                 case "Delete":
                     if (verifyDelete != null)
                     {
-                        status = _modelHelper.DeleteBinder(userId, editedBinder.BinderId);
+                        status = _modelHelper.BinderHelper.DeleteBinder(userId, editedBinder.BinderId);
                     }
                     break;
                 case "Delete All":
-
                     if (verifyDeleteAll != null)
                     {
-                        status = _modelHelper.DeleteBinderAndContents(userId, editedBinder.BinderId);
+                        status = _modelHelper.BinderHelper.DeleteBinderAndContents(userId, editedBinder.BinderId);
                     }
                     break;
                 default:
                     return RedirectToAction("ListBinders");
             }
 
-            if (status.success)
-            {
-                return RedirectToAction("ListBinders");
-            }
-            else
-            {
-                return ErrorPage(status);
-            }
+            SetAlertCookieGenericSaveStatus(status.success);
+            return RedirectToAction("ListBinders");
          }
         public IActionResult OpenBinder(int binderId)
         {
+            // "Opening" binder sets the selected flag in the binders table to true
+            // We only want to do that for users who own the binder, natrually
+            // ...and it only affects users who own that binder
+            // ...therefore OpenBinder method checks for ownership, no auth needed here...
             int userId = GetUserId();
-            Status status = _modelHelper.OpenBinder(userId, binderId);
+            Status status = _modelHelper.BinderHelper.OpenBinder(userId, binderId);
 
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
+            if (!status.success) { SetAlertCookie("Failed to open binder", "FAIL"); };
+
             return RedirectToAction("ListTextsOnSessionStart");
         }
         [HttpPost]
-        public IActionResult SaveShelfChanges([FromBody] List<ShelfUpdateModel> shelfUpdates)
+        public void SaveShelfChanges([FromBody] List<ShelfUpdateModel> shelfUpdates)
         {
             int userId = GetUserId();
-            Status status = _modelHelper.UpdateShelf(userId, shelfUpdates);
-
-            if (!status.success)
-            {
-                return RedirectToAction("ErrorPage", status);
-            }
-            return RedirectToAction("ListBinders");
-
+            Status status = _modelHelper.BinderHelper.UpdateShelf(userId, shelfUpdates);
+            SetAlertCookieGenericSaveStatus(status.success);
+            return;
         }
 
         #endregion
@@ -567,6 +656,16 @@ namespace RhymeBinder.Controllers
         #region Misc
         public IActionResult Index()
         {
+            //if (!HttpContext.Request.Cookies.ContainsKey("AlertMessage"))
+            //{
+            //    HttpContext.Response.Cookies.Append("AlertMessage", "", new Microsoft.AspNetCore.Http.CookieOptions { Path = "/" });
+            //};
+            //if (!HttpContext.Request.Cookies.ContainsKey("AlertSeverity"))
+            //{
+            //    HttpContext.Response.Cookies.Append("AlertSeverity", "", new Microsoft.AspNetCore.Http.CookieOptions { Path = "/" });
+            //};
+
+
             int userId = GetUserId();
             //check that a SimpleUser record has been created for this user; if not, create one;
             if (userId == -1)
@@ -592,8 +691,34 @@ namespace RhymeBinder.Controllers
         public int GetUserId()
         {
             string aspUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            int userId = _modelHelper.GetCurrentSimpleUserID(aspUserId);
+            int userId = _modelHelper.UserHelper.GetCurrentSimpleUserID(aspUserId);
             return userId;
+        }
+        public void ClearAlertCookie()
+        {
+            HttpContext.Response.Cookies.Append("AlertMessage", "");
+            HttpContext.Response.Cookies.Append("AlertSeverity", "");
+            return;
+        }
+        public void SetAlertCookie(string alertMessage, string alertSeverity)
+        {
+            HttpContext.Response.Cookies.Append("AlertMessage", alertMessage);
+            HttpContext.Response.Cookies.Append("AlertSeverity", alertSeverity);
+            return;
+        }
+        public void SetAlertCookieGenericSaveStatus(bool success)
+        {
+            if (success)
+            {
+                HttpContext.Response.Cookies.Append("AlertMessage", "Changes saved!");
+                HttpContext.Response.Cookies.Append("AlertSeverity", "SUCCESS");
+            }
+            else
+            {
+                HttpContext.Response.Cookies.Append("AlertMessage", "Failed to save changes!");
+                HttpContext.Response.Cookies.Append("AlertSeverity", "FAIL");
+            }
+            return;
         }
         #endregion
     }

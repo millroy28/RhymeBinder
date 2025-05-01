@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using RhymeBinder.Models.DBModels;
 
 namespace RhymeBinder.Models
 {
@@ -36,6 +37,9 @@ namespace RhymeBinder.Models
         public virtual DbSet<PublicationRating> PublicationRatings { get; set; }
         public virtual DbSet<PublicationType> PublicationTypes { get; set; }
         public virtual DbSet<SavedView> SavedViews { get; set; }
+        public virtual DbSet<SharedObjects> SharedObjects { get; set; }
+        public virtual DbSet<SharedObjectActions> SharedObjectActions { get; set; }
+        public virtual DbSet<SharedObjectTypes> SharedObjectTypes { get; set; }
         public virtual DbSet<Shelf> Shelves { get; set; }
         public virtual DbSet<SimpleUser> SimpleUsers { get; set; }
         public virtual DbSet<Submission> Submissions { get; set; }
@@ -46,7 +50,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<TextNote> TextNotes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
-        public virtual DbSet<TimeZone> TimeZones { get; set; }
+        public virtual DbSet<DBModels.TimeZone> TimeZones { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -408,6 +412,46 @@ namespace RhymeBinder.Models
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__SavedView__UserI__62AFA012");
             });
+
+            modelBuilder.Entity<SharedObjects>(entity =>
+            {
+                entity.HasKey(e => e.SharedObjectId)
+                    .HasName("PK_SharedObject");
+
+                entity.HasOne(d => d.SharedObjectType)
+                    .WithMany(p => p.SharedObjects)
+                    .HasForeignKey(d => d.SharedObjectTypeId)
+                    .HasConstraintName("FK_SharedObjects_ObjectTypeId");
+
+                entity.HasOne(d => d.SharedObjectAction)
+                    .WithMany(p => p.SharedObjects)
+                    .HasForeignKey(d => d.SharedObjectActionId)
+                    .HasConstraintName("FK_SharedObjects_ActionId");
+
+                entity.HasOne(d => d.GrantorUser)
+                    .WithMany(p => p.GrantorSharedObjects)
+                    .HasForeignKey(d => d.Grantor)
+                    .HasConstraintName("FK_SharedObject_GrantorId");
+
+                entity.HasOne(d => d.GranteeUser)
+                    .WithMany(p => p.GranteeSharedObjects)
+                    .HasForeignKey(d => d.Grantee)
+                    .HasConstraintName("FK_SharedObject_GranteeId");
+
+            });
+
+            modelBuilder.Entity<SharedObjectActions>(entity =>
+            {
+                entity.HasKey(e => e.SharedObjectActionId)
+                    .HasName("PK_SharedObjectActions");
+            });
+
+            modelBuilder.Entity<SharedObjectTypes>(entity =>
+            {
+                entity.HasKey(e => e.SharedObjectTypeId)
+                    .HasName("PK_SharedObjectTypes");
+            });
+
 
             modelBuilder.Entity<SimpleUser>(entity =>
             {
