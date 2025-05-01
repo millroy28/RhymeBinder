@@ -141,6 +141,10 @@ SET			[LastModified] = ImportBinders.LastModified
            ,[NewTextDefaultShowLineCount] = ImportBinders.NewTextDefaultShowLineCount
            ,[NewTextDefaultShowParagraphCount] = ImportBinders.NewTextDefaultShowParagraphCount
            ,[TextHeaderTitleDefaultFormat] = ImportBinders.TextHeaderTitleDefaultFormat
+		   ,LastWorkedIn = ImportBinders.LastWorkedIn
+		   ,LastWorkedInBy = ImportBinders.LastWorkedInBy
+		   ,Color = ImportBinders.Color
+		   ,[ReadOnly] = ImportBinders.[ReadOnly]
 
 FROM Binders
 
@@ -168,7 +172,11 @@ INSERT INTO [dbo].[Binders]
            ,[LastAccessedBy]
            ,[NewTextDefaultShowLineCount]
            ,[NewTextDefaultShowParagraphCount]
-           ,[TextHeaderTitleDefaultFormat])
+           ,[TextHeaderTitleDefaultFormat]
+		   ,LastWorkedIn
+		   ,LastWorkedInBy
+		   ,Color
+		   ,[ReadOnly])
 
 SELECT			BinderID
 		   ,[UserID]
@@ -185,6 +193,10 @@ SELECT			BinderID
            ,[NewTextDefaultShowLineCount]
            ,[NewTextDefaultShowParagraphCount]
            ,[TextHeaderTitleDefaultFormat]
+		   ,LastWorkedIn
+		   ,LastWorkedInBy
+		   ,Color
+		   ,[ReadOnly]
 
 FROM [AZURE SQL DATABASE].Rhymebinder.dbo.Binders ImportBinders
 WHERE NOT EXISTS (SELECT 1 FROM Binders WHERE Binders.BinderID = ImportBinders.BinderID)
@@ -234,6 +246,8 @@ SET
            ,[BinderID] = ImportSavedViews.BinderID
            ,[RecordsPerPage] = ImportSavedViews.RecordsPerPage
            ,[SearchValue] = ImportSavedViews.SearchValue
+		   ,WordCount = ImportSavedViews.WordCount
+		   ,CharacterCount = ImportSavedViews.CharacterCount
 
 FROM SavedViews
 INNER JOIN  [AZURE SQL DATABASE].Rhymebinder.dbo.SavedViews ImportSavedViews
@@ -257,7 +271,8 @@ WHERE		SavedViews.[SetValue] <> ImportSavedViews.SetValue
            OR SavedViews.[BinderID] <> ImportSavedViews.BinderID
            OR SavedViews.[RecordsPerPage] <> ImportSavedViews.RecordsPerPage
            OR SavedViews.[SearchValue] <> ImportSavedViews.SearchValue
-
+		   OR SavedViews.WordCount <> ImportSavedViews.WordCount
+		   OR SavedViews.CharacterCount <> ImportSavedViews.CharacterCount
 
 
 
@@ -283,7 +298,9 @@ INSERT INTO [dbo].[SavedViews]
 		   ,[GroupSequence]
            ,[BinderID]
            ,[RecordsPerPage]
-           ,[SearchValue])
+           ,[SearchValue]
+		   ,WordCount
+		   ,CharacterCount)
  SELECT 
 			SavedViewID
 		   ,[UserID]
@@ -305,6 +322,8 @@ INSERT INTO [dbo].[SavedViews]
            ,[BinderID]
            ,[RecordsPerPage]
            ,[SearchValue]
+		   ,WordCount
+		   ,CharacterCount
 
 FROM  [AZURE SQL DATABASE].Rhymebinder.dbo.SavedViews ImportSavedViews
 WHERE NOT EXISTS (SELECT 1 FROM SavedViews WHERE SavedViews.SavedViewID = ImportSavedViews.SavedViewID)
@@ -364,6 +383,8 @@ UPDATE TextHeaders
            ,[VisionCreated] = ImportTextHeaders.VisionCreated
            ,[VisionCreatedBy] = ImportTextHeaders.VisionCreatedBy
            ,[TextNoteID] = ImportTextHeaders.TextNoteID
+		   ,WordCount = ImportTextHeaders.WordCount
+		   ,CharacterCount = ImportTextHeaders.CharacterCount
 
 FROM TextHeaders
 INNER JOIN [AZURE SQL DATABASE].Rhymebinder.dbo.TextHeaders ImportTextHeaders
@@ -393,7 +414,9 @@ INSERT INTO [dbo].[TextHeaders]
            ,[BinderID]
            ,[VisionCreated]
            ,[VisionCreatedBy]
-           ,[TextNoteID])
+           ,[TextNoteID]
+		   ,WordCount
+		   ,CharacterCount)
 
 SELECT TextHeaderID
 		   ,[TextID]
@@ -414,7 +437,8 @@ SELECT TextHeaderID
            ,[VisionCreated]
            ,[VisionCreatedBy]
            ,[TextNoteID]
-
+		   ,WordCount
+		   ,CharacterCount
 
 FROM [AZURE SQL DATABASE].Rhymebinder.dbo.TextHeaders ImportTextHeaders
 WHERE NOT EXISTS (SELECT 1 FROM TextHeaders WHERE ImportTextHeaders.TextHeaderID = TextHEaders.TextHeaderID)
@@ -600,3 +624,47 @@ FROM  [AZURE SQL DATABASE].Rhymebinder.dbo.TextRecord ImportTextRecord
 WHERE NOT EXISTS (SELECT 1 FROM TextRecord WHERE TextRecord.TextRecordID = ImportTextRecord.TextRecordId)
 
 	SET IDENTITY_INSERT TextRecord OFF
+
+
+
+
+	--Shelves
+	PRINT 'UPDATE Shelves'
+
+UPDATE Shelves
+SET Shelves.UserId = ImportShelves.UserId
+,Shelves.BinderId = ImportShelves.BinderId
+,Shelves.ShelfLevel = ImportShelves.ShelfLevel
+,Shelves.SortOrder = ImportShelves.SortOrder
+
+FROM Shelves
+INNER JOIN [AZURE SQL DATABASE].Rhymebinder.dbo.Shelves ImportShelves
+ON ImportShelves.ShelfId = Shelves.ShelfId
+
+WHERE  Shelves.UserId <> ImportShelves.UserId
+OR Shelves.BinderId <> ImportShelves.BinderId
+OR Shelves.ShelfLevel <> ImportShelves.ShelfLevel
+OR Shelves.SortOrder <> ImportShelves.SortOrder
+
+
+PRINT 'INSERT Shelves'
+SET IDENTITY_INSERT Shelves ON
+
+INSERT INTO Shelves(
+ ShelfId
+,UserId
+,BinderId
+,ShelfLevel
+,SortOrder
+)
+SELECT 
+ ShelfId
+,UserId
+,BinderId
+,ShelfLevel
+,SortOrder
+
+FROM  [AZURE SQL DATABASE].Rhymebinder.dbo.Shelves ImportShelves
+WHERE NOT EXISTS (SELECT 1 FROM Shelves WHERE Shelves.ShelfId = ImportShelves.ShelfId)
+SET IDENTITY_INSERT Shelves OFF
+

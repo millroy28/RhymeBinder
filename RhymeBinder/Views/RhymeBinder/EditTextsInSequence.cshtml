@@ -3,7 +3,7 @@
     ViewData["Title"] = "Edit Texts In Group Sequence";
 }
 
-@model DisplaySequencedTexts
+@model RhymeBinder.Models.ViewModels.DisplaySequencedTexts
 @{ 
     int i = 0;
 
@@ -15,7 +15,7 @@
     string menuTextColorTag = $"color: {Model.BinderNameColor};";
     string styleTags = binderColorTag + menuTextColorTag;
 }
-
+@Html.Partial("_Alert")
 
 <form acion="EditTextsInSequence" class="sequence-view-wrapper" method="post" id="edit">
     <input type="submit" name="action" onclick="SetFormSubmit()" value="Save" id="submitButton" hidden />

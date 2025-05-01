@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "View Text";
 }
-@model TextEdit
+@model RhymeBinder.Models.DTOModels.TextEdit
 @{
     string binderColorTag = "";
     if (!string.IsNullOrWhiteSpace(Model.BinderColor))
@@ -12,6 +12,8 @@
     string menuTextColorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextColorTag;
 }
+
+@Html.Partial("_Alert")
 
 
 <div class="editor-view-wrapper">

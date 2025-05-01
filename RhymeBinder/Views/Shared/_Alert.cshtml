@@ -1,0 +1,19 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="alert" id="alertBox">
+    <div id="alertIcon"></div>
+    <div id="alertText" class="alert-text">
+        @TempData["AlertMessage"]
+    </div>
+    <div>
+        <img src="~/img/close.svg" onclick="HideAlert()"/>
+    </div>
+</div>
+<div id="alertSeverity" hidden>@TempData["AlertSeverity"]</div>
+<script language="Javascript" src="~/js/alertHandler.js"></script>
+<script language="Javascript">
+    window.onload = ShowAlertOnLoad();</script>

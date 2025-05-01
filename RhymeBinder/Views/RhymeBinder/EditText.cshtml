@@ -4,7 +4,7 @@
 }
 @{
 }
-@model TextEdit
+@model RhymeBinder.Models.DTOModels.TextEdit
 @{
     int groupIndex = 0; 
 
@@ -16,7 +16,7 @@
     string menuTextcolorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextcolorTag;
 }
- 
+@Html.Partial("_Alert")
 
 
 <form class="editor-view-wrapper" action="EditText" method="post" id="edit">

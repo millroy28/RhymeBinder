@@ -1,13 +1,14 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model DisplayBinder
+@model RhymeBinder.Models.ViewModels.DisplayBinder
 @{
     if (string.IsNullOrWhiteSpace(Model.Color))
     {
         Model.Color = "#8B0000";
     }
 }
+@Html.Partial("_Alert")
 <script language="Javascript" src="~/js/site.js"></script>
 <div class="view-wrapper">
 

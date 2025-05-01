@@ -5,13 +5,15 @@
 @model int
 <div class="view-wrapper">
 
-    <div class="menu-bar">
-        <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" >
-                About RhymeBinder:
-            </div>
-        </div>
-    </div>
+    @{
+        RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
+            {
+                Title = "About RhymeBinder:"
+            };
+        Html.RenderPartial("_MenuBar", menuBar);
+    }
+
+
     <div style="padding-left: 10px;">
         <h3>
         Release Notes:
@@ -20,6 +22,26 @@
     <div>
 
         <ul>
+            <li>
+                <h4>
+                    04/30/2025  1.15.263
+                </h4>
+
+                <ul>
+                    <li>Add toast messages to confirm success and warn on errors</li>
+                    <li>Helper class code refactor</li>
+                    <li>Update vulnerable package.</li>
+                    <li>Add authorization checks to controllers and helper methods.</li>
+                    <li>Disable hiding texts within binder.</li>
+                    <li>Added development flag and header color change for developer environment.</li>
+                    <li>Bug fixes:</li>
+                    <ul>
+                        <li>Fixed bug where cursor position would not save when saving via ctrl-s.</li>
+                        <li>Fixed bug where pressing ctrl would cause the form to submit a save the next time the s key was pressed, even if ctrl is not being held anymore. (super annoying!)</li>
+                        <li>Fixed bug where, if viewing texts from two binders open in two tabs, clicking New Text in the first binder opened would cause the new text to be created in the second binder.  Any time New Text is clicked, it will now create a text in the binder from which the texts are being viewed in that window.</li>
+                    </ul>
+                </ul>
+            </li>
             <li>
                 <h4>
                     02/24/2025  1.14.235

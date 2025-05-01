@@ -4,8 +4,8 @@
 
 @{
 }
-@model List<DisplayBinder>
-
+@model List<RhymeBinder.Models.ViewModels.DisplayBinder>
+@Html.Partial("_Alert")
     @* Menu  *@
     <div class="table-view-wrapper">
         <div class="list-texts-menu-bar-main">
@@ -224,11 +224,10 @@
                     data: JSON.stringify(shelfData),
                     contentType: 'application/json',
                     success: function (response) {
-                        // alert("Changes saved successfully!");
                         // Close the modal and refresh the page or update the view
                             setTimeout(function () {// wait for 5 secs(2)
                                 location.reload(); // then reload the page.(3)
-                            }, 1000);
+                            }, 50);
                     },
                     error: function (error) {
                         alert("An error occurred while saving changes.");
