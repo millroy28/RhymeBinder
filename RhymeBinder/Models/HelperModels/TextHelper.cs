@@ -21,7 +21,7 @@ namespace RhymeBinder.Models.HelperModels
             _context = context;
             _logger = logger;
         }
-        public Status StartNewText(int userId, int? groupId)
+        public Status StartNewText(int userId, int binderId, int? groupId)
         {
             Status status = new Status();
             int verifiedGroupId = 0;
@@ -38,7 +38,7 @@ namespace RhymeBinder.Models.HelperModels
             {
                 _context.Texts.Add(newText);
                 _context.SaveChanges();
-                status = CreateNewTextHeader(userId, newText.TextId);
+                status = CreateNewTextHeader(userId, newText.TextId, binderId);
                 int newHeaderId = status.recordId;
                 status = CreateNewTextHeaderEditWindowProperty(userId, status.recordId);
 
@@ -90,11 +90,10 @@ namespace RhymeBinder.Models.HelperModels
             }
             return status;
         }
-        public Status CreateNewTextHeader(int userId, int newTextId)
+        public Status CreateNewTextHeader(int userId, int newTextId, int binderId)
         {
             Status status = new Status();
             // Create a new TextHeader entry (DEFAULTS of a new TextHeader set here):
-            int binderId = GetCurrentBinderID(userId);
             DateTime userLocalNow = GetUserLocalTime(userId);
             TextNote textNote = new TextNote { Note = "" };
 

@@ -89,7 +89,7 @@ namespace RhymeBinder.Controllers
 
         //-------TEXT:
         #region TextMethods
-        public IActionResult StartNewText(int? groupId)
+        public IActionResult StartNewText(int binderId, int? groupId)
         { 
             //  Authorization check
             int userId = GetUserId();
@@ -104,7 +104,7 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ListTextsOnSessionStart");
             }
 
-            Status status = _modelHelper.TextHelper.StartNewText(userId, groupId);
+            Status status = _modelHelper.TextHelper.StartNewText(userId, binderId, groupId);
 
             if (status.success)
             {
@@ -268,7 +268,7 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "NewText":
-                    return Redirect($"/RhymeBinder/StartNewText?groupId={value}");
+                    return Redirect($"/RhymeBinder/StartNewText?binderId={savedView.View.BinderId}&groupId={value}");
 
                 case "LastView":
                     // Update current saved view with changed form values
