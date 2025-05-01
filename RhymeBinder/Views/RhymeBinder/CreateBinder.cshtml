@@ -3,11 +3,13 @@
     ViewData["Title"] = "Create Binder";
 }
 
-<div class="menu-bar-main">
-    <div class="menu-bar-title">
-        Create Binder:
-    </div>
-</div>
+@{
+    RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
+            {
+                Title = "Create Binder:"
+            };
+    Html.RenderPartial("_MenuBar", menuBar);
+}
 @Html.Partial("_Alert")
 
 <h1>New Binder:</h1>

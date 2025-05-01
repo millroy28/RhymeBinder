@@ -5,13 +5,15 @@
 @model int
 <div class="view-wrapper">
 
-    <div class="menu-bar">
-        <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" >
-                About RhymeBinder:
-            </div>
-        </div>
-    </div>
+    @{
+        RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
+            {
+                Title = "About RhymeBinder:"
+            };
+        Html.RenderPartial("_MenuBar", menuBar);
+    }
+
+
     <div style="padding-left: 10px;">
         <h3>
         Release Notes:

@@ -1,18 +1,28 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+@{
+    var env = Env.EnvironmentName;
+    bool isProduction = env == "Production" ? true : false;
+    var envTag = "";
+        if (!isProduction)
+        {
+            envTag = " - " + env.ToUpper();
+        }
+    }
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RhymeBinder</title>
+    <title>@ViewData["Title"] - RhymeBinder @envTag</title>
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />*@
     <link rel="stylesheet" href="~/css/main.css" />
 </head>
 <body>
-    <header>
+    <header style="background-color: @(isProduction ? "transparent" : "crimson");">
         <nav class="navbar">
            
-                    <div class="navbar-item-brand">RhymeBinder</div>
+                    <div class="navbar-item-brand">RhymeBinder @envTag</div>
                     <ul class="navbar-links">
 
                         <li class="navbar-item">
