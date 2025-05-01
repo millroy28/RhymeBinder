@@ -22,7 +22,11 @@ function SetEventListeners() {
                 SubmitForm();
             }
         });
-
+        window.addEventListener('keyup', function (e) {
+            if (e.key === "Control") {
+                isCtrl = false; // Reset flag when Control is released
+            }
+        });
     });
 
     // Warn user before navigating away from page if there is unsaved changes
