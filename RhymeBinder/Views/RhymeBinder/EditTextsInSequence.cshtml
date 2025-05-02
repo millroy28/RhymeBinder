@@ -38,12 +38,20 @@
 
     </div>
 
+    <div class="sequence-left-sidebar" id="left-sidebar">
+        @for(int j = 0; j < Model.SimpleTexts.Count; j++)
+        {
+            <a href="#section-@j" id="nav-@j" class="sequence-sidebar-link">@Model.SimpleTexts[j].Title</a>
+        }
+
+    </div>
+
     <input type="hidden" name="UserId" value="@Model.UserId" />
     <div class="sequence-block-body" id="edit_area">
         @foreach (var text in Model.SimpleTexts)
         {
                
-                <div class="sequence-title"  contenteditable="true" >@text.Title</div>
+                <div class="sequence-title"  contenteditable="true" id="section-@i">@text.Title</div>
                 <hr style="border-top: 1px dashed dimgray;" />
                 string expandText = "▼";
                 if (text.Note != null)
