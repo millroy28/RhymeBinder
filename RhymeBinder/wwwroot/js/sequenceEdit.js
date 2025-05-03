@@ -146,6 +146,7 @@ function SubmitForm() {
     if (hasUnsavedChanges) {
         SetFormSubmit();
         RemoveUnchangedElements();
+        GetCursorAndScrollPosition();
         submitButton.click();
     }
 }
@@ -164,4 +165,67 @@ function RemoveUnchangedElements() {
     }
 }
 
+function GetCursorAndScrollPosition() {
+    // Gets cursor position and current element in focus and updates hidden form inputs with the values
 
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    let preCaretRange = range.cloneRange();
+
+    var currentElement = document.activeElement;
+    preCaretRange.selectNodeContents(currentElement);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+    var cursorPosition = preCaretRange.toString().length;
+
+    document.getElementById("cursorPosition").value = cursorPosition;
+    document.getElementById("activeElementId").value = currentElement.id;
+    document.getElementById("scrollPosition").value = document.getElementById("edit_area").scrollTop;
+
+}
+
+function SetCursorAndScrollPosition() {
+    // On Load sets cursor position
+    var desiredActiveElementId = document.getElementById("activeElementId").value;
+    var desiredCursorPosition = document.getElementById("cursorPosition").value;
+    var desiredScrollPosition = document.getElementById("scrollPosition").value;
+    if (scrollPosition != null) {
+        document.getElementById("edit_area").scrollTop = scrollPosition;
+    }
+
+    if (desiredActiveElementId == null || desiredCursorPosition == null) {
+        return;
+    }
+
+    var desiredActiveElement = document.getElementById(desiredActiveElementId);
+
+    let range = document.createRange();
+    let selection = window.getSelection();
+
+    range.selectNodeContents(desiredActiveElement);
+    range.collapse(true);
+
+    let node = desiredActiveElement;
+    let charCount = 0, found = false;
+
+    function traverseNodes(node) {
+        if (node.nodeType === 3) { // Text node
+            let nextCharCount = charCount + node.length;
+            if (!found && desiredCursorPosition <= nextCharCount) {
+                range.setStart(node, desiredCursorPosition - charCount);
+                range.setEnd(node, desiredCursorPosition - charCount);
+                found = true;
+            }
+            charCount = nextCharCount;
+        } else {
+            for (let child of node.childNodes) traverseNodes(child);
+        }
+    }
+
+    traverseNodes(node);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+
+}

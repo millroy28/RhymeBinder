@@ -19,6 +19,10 @@
 
 <form acion="EditTextsInSequence" class="sequence-view-wrapper" method="post" id="edit">
     <input type="submit" name="action" onclick="SetFormSubmit()" value="Save" id="submitButton" hidden />
+    <input type="hidden" id="cursorPosition" name="CursorPosition" value="@Model.CursorPosition" />
+    <input type="hidden" id="activeElementId" name="ActiveElementId" value="@Model.ActiveElementId" />
+    <input type="hidden" id="scrollPosition" name="ScrollPosition" value="@Model.ScrollPosition" />
+
 
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
@@ -79,7 +83,7 @@
 
                 </div>
                 <hr style="border-top: 1px dashed dimgray;" />
-                <div class="sequence-text"  contenteditable="true" >@text.TextBody</div>
+                <div class="sequence-text"  contenteditable="true" id="TextBodyArea[@i]">@text.TextBody</div>
                 <hr style="border-top: 1px solid dimgray;" />
 
             <div id="modelContainer[@i]"> @* js function will remove this node for any models where IsChanged = false to cut down on size of post *@
@@ -108,6 +112,7 @@
 <script language="Javascript" src="~/js/sequenceEdit.js"></script>
 <script language="Javascript">
     SetEventListeners();
+    SetCursorAndScrollPosition();
 </script>
 
 
