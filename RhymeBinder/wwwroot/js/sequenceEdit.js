@@ -150,7 +150,7 @@ function SubmitForm() {
     if (hasUnsavedChanges) {
         SetFormSubmit();
         RemoveUnchangedElements();
-        GetCursorAndScrollPosition();
+        GetCursorPosition();
         submitButton.click();
     }
 }
@@ -169,7 +169,7 @@ function RemoveUnchangedElements() {
     }
 }
 
-function GetCursorAndScrollPosition() {
+function GetCursorPosition() {
     // Gets cursor position and current element in focus and updates hidden form inputs with the values
 
     var selection = window.getSelection();
@@ -187,7 +187,7 @@ function GetCursorAndScrollPosition() {
     document.getElementById("scrollPosition").value = document.getElementById("edit_area").scrollTop;
 
 }
-function SetCursorAndScrollPosition() {
+function SetCursorPosition() {
     var desiredActiveElementId = document.getElementById("activeElementId").value;
     var desiredCursorPosition = parseInt(document.getElementById("cursorPosition").value, 10);
 
@@ -223,9 +223,6 @@ function SetCursorAndScrollPosition() {
 
 }
 
-// window.addEventListener("load", setCaretPosition);
-
-// Helper function to find first text node within a contenteditable element
 function FindTextNode(element) {
     for (let child of element.childNodes) {
         if (child.nodeType === 3) { // Text node
@@ -235,113 +232,7 @@ function FindTextNode(element) {
     return null; // Fallback if no text node exists
 }
 
-
-
-    // On Load sets cursor position
-
-
-
-    //var desiredActiveElementId = document.getElementById("activeElementId").value;
-    //console.log("Set focus on " + desiredActiveElementId);
-    //var desiredCursorPosition = document.getElementById("cursorPosition").value;
-    //console.log("Set cursor to position " + desiredCursorPosition);
-    ////var desiredScrollPosition = document.getElementById("scrollPosition").value;
-    ////if (scrollPosition != null) {
-    ////    document.getElementById("edit_area").scrollTop = scrollPosition;
-    ////}
-
-    //if (desiredActiveElementId == null || desiredCursorPosition == null) {
-    //    return;
-    //}
-
-    //var desiredActiveElement = document.getElementById(desiredActiveElementId);
-    //desiredActiveElement.focus();
-
-
-    //var selection = window.getSelection();
-    //var range = selection.getRangeAt(0);
-    //let preCaretRange = range.cloneRange();
-
-    //preCaretRange.selectNodeContents(desiredActiveElement);
-    //preCaretRange.setEnd(range.endContainer, desiredCursorPosition);
-
-  
-
-
-    ////approach 3
-    //var range = window.getSelection().getRangeAt(0);
-    //window.getSelection().removeAllRanges();
-    //window.getSelection().addRange(range);
-
-
-
-
-
-
-    // approach 1
-    //range.selectNodeContents(desiredActiveElement);
-    //range.collapse(true);
-
-    //let charCount = 0, found = false;
-    //range.setStart(desiredActiveElement, desiredCursorPosition);
-    //range.setEnd(desiredActiveElement, desiredCursorPosition + 1);
-
-    //function traverseNodes(node) {
-    //    if (node.nodeType === 3) { // Text node
-    //        let nextCharCount = charCount + node.length;
-    //        if (!found && desiredCursorPosition <= nextCharCount) {
-    //            range.setStart(node, desiredCursorPosition - charCount);
-    //            range.setEnd(node, desiredCursorPosition - charCount);
-    //            found = true;
-    //        }
-    //        charCount = nextCharCount;
-    //    } else {
-    //        for (let child of node.childNodes) traverseNodes(child);
-    //    }
-    //}
-
-
-    //// approach 2
-    //let range = document.createRange();
-    //let selection = window.getSelection();
-    //function findTextNode(element) {
-    //    for (let child of element.childNodes) {
-    //        if (child.nodeType === 3) { // Look for first text node
-    //            console.log(child.id);
-    //            return child;
-    //        }
-    //    }
-    //    return element; // Fallback if no text node found
-    //}
-    //let textNode = findTextNode(desiredActiveElement);
-    //if (textNode.nodeType === 3) {
-    //    range.setStart(textNode, Math.min(desiredCursorPosition, textNode.length));
-    //    range.setEnd(textNode, Math.min(desiredCursorPosition, textNode.length));
-    //} else {
-    //    range.selectNodeContents(desiredActiveElement);
-    //    range.collapse(true);
-    //}
-
-
-    ////traverseNodes(node);
-
-    //selection.removeAllRanges();
-    //selection.addRange(range);
-
-
-//}
-
-
-
-//function ensureCursorVisible(element) {
-//    let selection = window.getSelection();
-//    let range = selection.getRangeAt(0);
-//    let rect = range.getBoundingClientRect(); // Get cursor position
-
-//    let parentRect = element.getBoundingClientRect();
-//    let offset = rect.top - parentRect.top; // Cursor position relative to the div
-
-//    if (offset < 0 || offset > element.clientHeight) {
-//        element.scrollTop += offset - element.clientHeight / 2; // Adjust scroll
-//    }
-//}
+function SetAppendGroupFlag() {
+    document.getElementById("appendNewGroup").value = 1;
+    SubmitForm();
+}
