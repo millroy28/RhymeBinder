@@ -22,7 +22,7 @@ namespace RhymeBinder.Models.ViewModels
         public int UserId { get; set; }
         public string CursorPosition { get; set; }
         public string ActiveElementId { get; set; }
-        public string ScrollPosition { get; set; }
+        public int? AddNewTextAfterSequenceNumber { get; set; }
     }
     public class DisplaySimpleText
     {

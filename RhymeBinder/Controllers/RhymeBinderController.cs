@@ -396,7 +396,6 @@ namespace RhymeBinder.Controllers
             DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
             sequencedTexts.ActiveElementId = GetCookieValue($"Sequence_{sequencedTexts.GroupId}_ActiveElement");
             sequencedTexts.CursorPosition = GetCookieValue($"sequence_{sequencedTexts.GroupId}_CursorPosition");
-            sequencedTexts.ScrollPosition = GetCookieValue($"sequence_{sequencedTexts.GroupId}_ScrollPosition");
 
             if (sequencedTexts.BinderReadOnly)
             {
@@ -416,7 +415,6 @@ namespace RhymeBinder.Controllers
             }
             SetCookieValue($"Sequence_{editedTexts.GroupId}_ActiveElement", editedTexts.ActiveElementId);
             SetCookieValue($"Sequence_{editedTexts.GroupId}_CursorPosition", editedTexts.CursorPosition);
-            SetCookieValue($"Sequence_{editedTexts.GroupId}_ScrollPosition", editedTexts.ScrollPosition);
 
             return Redirect($"/RhymeBinder/EditTextsInSequence?groupId={editedTexts.GroupId}");
         }
@@ -729,6 +727,7 @@ namespace RhymeBinder.Controllers
         }
         public void SetCookieValue(string key, string value)
         {
+            if(value == null) { value = "";  };
             HttpContext.Response.Cookies.Append(key, value);
             return;
         }

@@ -184,8 +184,6 @@ function GetCursorPosition() {
 
     document.getElementById("cursorPosition").value = cursorPosition;
     document.getElementById("activeElementId").value = currentElement.id;
-    document.getElementById("scrollPosition").value = document.getElementById("edit_area").scrollTop;
-
 }
 function SetCursorPosition() {
     var desiredActiveElementId = document.getElementById("activeElementId").value;
@@ -232,7 +230,9 @@ function FindTextNode(element) {
     return null; // Fallback if no text node exists
 }
 
-function SetAppendGroupFlag() {
-    document.getElementById("appendNewGroup").value = 1;
+function AddNewTextAfter(sequenceNumber) {
+    document.getElementById("addNewTextAfterSequenceNumber").value = sequenceNumber;
+    hasUnsavedChanges = true;
     SubmitForm();
 }
+

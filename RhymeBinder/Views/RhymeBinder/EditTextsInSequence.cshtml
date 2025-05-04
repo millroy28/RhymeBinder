@@ -21,8 +21,9 @@
     <input type="submit" name="action" onclick="SetFormSubmit()" value="Save" id="submitButton" hidden />
     <input type="hidden" id="cursorPosition" name="CursorPosition" value="@Model.CursorPosition" />
     <input type="hidden" id="activeElementId" name="ActiveElementId" value="@Model.ActiveElementId" />
-    <input type="hidden" id="scrollPosition" name="ScrollPosition" value="@Model.ScrollPosition" />
-
+    <input type="hidden" id="addNewTextAfterSequenceNumber" name="AddNewTextAfterSequenceNumber" value="@Model.AddNewTextAfterSequenceNumber" />
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="BinderId" value="@Model.BinderId" />
 
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
@@ -49,7 +50,6 @@
         }
     </div>
 
-    <input type="hidden" name="UserId" value="@Model.UserId" />
     <div class="sequence-block-body" id="edit_area">
         @foreach (var text in Model.SimpleTexts)
         {
@@ -84,8 +84,13 @@
                 </div>
                 <hr style="border-top: 1px dashed dimgray;" />
                 <div class="sequence-text"  contenteditable="true" id="TextBodyArea-@i">@text.TextBody</div>
+                <hr style="border-top: 1px dashed dimgray;" />
+                <div class="sequence-button-container">
+                    <div class="sequence-button menu-bar-button" onclick="AddNewTextAfter(@text.SequenceNumber)">Add New Text</div>
+                </div>
                 <hr style="border-top: 1px solid dimgray;" />
 
+                @* Hidden inputs for text comparison and form submission and all sorts of things *@
             <div id="modelContainer[@i]"> @* js function will remove this node for any models where IsChanged = false to cut down on size of post *@
                 <input type="hidden" name="SimpleTexts[@i].Title" class="textTitles" value="@text.Title" id="title" />
                 <input type="hidden" name="SimpleTexts[@i].TextBody" class="textBodies" value="@text.TextBody" id="textBody" />
