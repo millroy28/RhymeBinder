@@ -60,10 +60,10 @@
             {
                 expandText += " (Notes...)";
             }
-            <div class="sequence-text-accordian-button" id="notePanelButton[@i]" onclick="ToggleNotes(@i)">@expandText</div>
-            <div class="sequence-text-accordian-panel" id="notePanel[@i]">
+            <div class="sequence-text-accordian-button" id="notePanelButton-@i-" onclick="ToggleNotes(@i)">@expandText</div>
+            <div class="sequence-text-accordian-panel" id="notePanel-@i">
                 <div class="sequence-notes-label" style="border-left-style: none" >Notes:</div>
-                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote[@i]" >@text.Note</div>
+                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote-@i" >@text.Note</div>
                 <div class="sequence-info-pane">
                     <div class="sequence-info-label">Sequence:</div>
                     <div class="sequence-info">@text.SequenceNumber</div>
