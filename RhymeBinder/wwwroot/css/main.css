@@ -841,14 +841,15 @@
         overflow-y: scroll;
         overflow-x: hidden;
     }
-        .sequence-sidebar-link{
-            padding: 3px 0px 3px 0px;
-            text-decoration: none;
-            color: black;
-            font-size: smaller;
-            border-bottom: 1px;
-            border-bottom-style: solid;
-        }
+    .sequence-sidebar-link {
+        padding: 3px 0px 3px 0px;
+        text-decoration: none;
+        color: black;
+        font-size: smaller;
+        border-bottom: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: #8080805e;
+    }
         .sequence-sidebar-link.active {
             font-weight: bold;
             font-style: italic;
@@ -2417,6 +2418,17 @@ height: 70vh;
         font-size: small;
     }
 
+    .sequence-button {
+        font-size: small;
+        margin: 0px 10px 0px 5px;
+    }
+
+    .sequence-button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        background-color: #f7f7f7;
+    }
 
     /*``[Binder Shelf View]*/
 
