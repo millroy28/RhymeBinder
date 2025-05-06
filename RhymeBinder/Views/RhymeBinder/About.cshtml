@@ -2,226 +2,222 @@
 @{
     ViewData["Title"] = "About";
 }
-@model int
-<div class="view-wrapper">
 
-    @{
-        RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
+<div class="sequence-view-wrapper" >
+
+       @{
+            RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
             {
                 Title = "About RhymeBinder:"
             };
-        Html.RenderPartial("_MenuBar", menuBar);
-    }
+            Html.RenderPartial("_MenuBar", menuBar);
+        }
 
+    <div class="sequence-left-sidebar" id="left-sidebar">
+        <a href="#section-12" class="sequence-sidebar-link">05/05/2025  1.16.269</a>
+        <a href="#section-11" class="sequence-sidebar-link">04/30/2025  1.15.263</a>
+        <a href="#section-10" class="sequence-sidebar-link">02/24/2025  1.14.235</a>
+        <a href="#section-9" class="sequence-sidebar-link">01/26/2025  1.13.213</a>
+        <a href="#section-8" class="sequence-sidebar-link">08/04/2024  1.12.196</a>
+        <a href="#section-7" class="sequence-sidebar-link">08/01/2024  1.11.192</a>
+        <a href="#section-6" class="sequence-sidebar-link">06/01/2024  1.10.179</a>
+        <a href="#section-5" class="sequence-sidebar-link">05/25/2024  1.09.169</a>
+        <a href="#section-4" class="sequence-sidebar-link">05/04/2024  1.08.157</a>
+        <a href="#section-3" class="sequence-sidebar-link">01/20/2024  1.07.146</a>
+        <a href="#section-2" class="sequence-sidebar-link">12/10/2023  1.06.137</a>
+        <a href="#section-1" class="sequence-sidebar-link">11/16/2023  1.05.125</a>
 
-    <div style="padding-left: 10px;">
-        <h3>
-        Release Notes:
-        </h3>
     </div>
-    <div>
 
-        <ul>
-            <li>
-                <h4>
-                    04/30/2025  1.15.263
-                </h4>
+    <div class="sequence-block-body" id="edit_area">
 
-                <ul>
-                    <li>Add toast messages to confirm success and warn on errors</li>
-                    <li>Helper class code refactor</li>
-                    <li>Update vulnerable package.</li>
-                    <li>Add authorization checks to controllers and helper methods.</li>
-                    <li>Disable hiding texts within binder.</li>
-                    <li>Added development flag and header color change for developer environment.</li>
-                    <li>Bug fixes:</li>
-                    <ul>
-                        <li>Fixed bug where cursor position would not save when saving via ctrl-s.</li>
-                        <li>Fixed bug where pressing ctrl would cause the form to submit a save the next time the s key was pressed, even if ctrl is not being held anymore. (super annoying!)</li>
-                        <li>Fixed bug where, if viewing texts from two binders open in two tabs, clicking New Text in the first binder opened would cause the new text to be created in the second binder.  Any time New Text is clicked, it will now create a text in the binder from which the texts are being viewed in that window.</li>
-                    </ul>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                    02/24/2025  1.14.235
-                </h4>
+        <div class="sequence-title" style="border-left-style: none" id="section-12">05/05/2025  1.16.269</div>
+        <hr style="border-top: 1px dashed dimgray;" />
 
-                <ul>
-                    <li>Add new "Shelf View" to List Binders screen.</li>
-                    <ul>
-                        <li>Includes ability to choose color for each binder.</li>
-                        <li>Includes ability to arrange binders in desired order on each shelf.</li>
-                    </ul>
-                    <li>Add ability to "Lock" a binder, preventing any texts within from being edited.</li>
-                    <li>Add Return to Binder button to right of list texts view when the list being viewed is a group.</li>
-                    <li>Add word and character count to List Texts view.</li>
-                    <li>Add feature so when viewing texts within a group, create new text automatically places the new text within that group.</li>
-                    <li>Add notes and other text header information to sequence view/edit screens.</li>
-                    <li>Add ability to edit notes in edit sequence screens.</li>
-                    <li>Change "Modified" language to "Edit."</li>
-                    <li>Change dropdown for transferring texts from one binder to another to open a modal instead.</li>
-                    <li>Bug fixes:</li>
-                    <ul>
-                        <li>Fixed warning that would appear in text edit view if user tried to update groups and hit submit while unsaved changes were present that would result in a warning and an inability to submit form.</li>
-                    </ul>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                    01/26/2025  1.13.213
-                </h4>
+        <div class="sequence-text" style="border-left-style: none">
+- Sequence Editing Enhancements:
+    - Added navigation links as shortcuts on sidebar that track scrolling in main text area.
+    - Added code to return cursor and focus to where (okay, near where - it's not perfect) it was before save'
+    - Added button that allows adding a new text within the edit sequence view.
+- Updated format for About view</div>
+        <hr style="border-top: 1px solid dimgray;" />
 
-                <ul>
-                    <li>Add ability to view and edit all sequenced texts within a group</li>
-                    <li>Add ability to duplicate a binder</li>
-                    <li>Update UI for editing sequence of texts in a group</li>
-                    <li>Update UI for binder actions in edit binder page</li>
-                    <li>Bug fixes:</li>
-                    <ul>
-                        <li>Tab behavior in text editing not working in firefox.</li>
-                        <li>Binder names truncated in edit binder form.</li>
-                        <li>Error when displaying groups if gorup sequence value is null.</li>
+        <div class="sequence-title" style="border-left-style: none" id="section-11">04/30/2025  1.15.263</div>
+        <hr style="border-top: 1px dashed dimgray;" />
 
-                    </ul>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                08/04/2024  1.12.196
-                </h4>
+        <div class="sequence-text" style="border-left-style: none">
+- Add toast messages to confirm success and warn on errors
+- Helper class code refactor
+- Update vulnerable package.
+- Add authorization checks to controllers and helper methods.
+- Disable hiding texts within binder.
+- Added development flag and header color change for developer environment.
+- Bug fixes:
+    - Fixed bug where cursor position would not save when saving via ctrl-s.
+    - Fixed bug where pressing ctrl would cause the form to submit a save the next time the s key was pressed, even if ctrl is not being held anymore. (super annoying!)
+    - Fixed bug where, if viewing texts from two binders open in two tabs, clicking New Text in the first binder opened would cause the new text to be created in the second binder.  Any time New Text is clicked, it will now create a text in the binder from which the texts are being viewed in that window.
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
 
-                <ul>
-                    <li>Add ability to set sequence numbers for texts within a group:</li>
-                    <ul>
-                        <li>Sequence numbers are shown in only when viewing a group.</li>
-                        <li>Sequence numbers are updated upon edit.</li>
-                        <li>Sequence numbers are intended to be used to help sort texts within a group.</li>
-                        <li>Sequence numbers are associated with a group, so a text can have values for mutiple groups.</li>
-                    </ul>
-                    <li>Bug fixes:</li>
-                    <ul>
-                        <li>Error when only group in a binder is deleted.</li>
-                        <li>Error when saving a text in a binder that has no groups.</li>
-                        <li>Error when creating a new group from Edit Groups screen.</li>
-                        <li>Edit Groups in dropdown should be hidden when there are no groups to edit.</li>
-                        <li>Error when clicking on groups from View dropdown</li>
-                    </ul>
-                    <li>Removed groups from View dropdown in ListTexts view. A better way to navigate to viewing groups incoming.</li>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                08/01/2024  1.11.192
-                </h4>
 
-                <ul>
-                    <li>Changed add/remove group options from dropdown to a modal</li>
-                    <ul>
-                        <li>In List Texts view, allows for multiple texts / group associations to be edited in one operation.</li>
-                    </ul>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                06/01/2024  1.10.179
-                </h4>
+        <div class="sequence-title" style="border-left-style: none" id="section-10">02/24/2025  1.14.235</div>
+        <hr style="border-top: 1px dashed dimgray;" />
 
-                <ul>
-                    <li>Fixed bug to prevent blank or all space titles that create unreachable texts.</li>
-                    <li>Fixed bugs related to autosave behavior:</li>
-                    <ul>
-                        <li>Ensure countdown pauses to prevent saving page while typing in notes</li>
-                        <li>Ensure cursor is returned to note area if that was its position prior to save.</li>
-                        <li>Return scroll to its posiiton prior to save.</li>
-                    </ul>
-                    <li>Minor changes to menu bar appearance across multipel pages.</li>
-                    <li>Added button to return to binder from group management screen.</li>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                05/25/2024  1.09.169
-                </h4>
+        <div class="sequence-text" style="border-left-style: none">
+- Add new "Shelf View" to List Binders screen.
+    - Includes ability to choose color for each binder.
+    - Includes ability to arrange binders in desired order on each shelf.
+- Add ability to "Lock" a binder, preventing any texts within from being edited.
+- Add Return to Binder button to right of list texts view when the list being viewed is a group.
+- Add word and character count to List Texts view.
+- Add feature so when viewing texts within a group, create new text automatically places the new text within that group.
+- Add notes and other text header information to sequence view/edit screens.
+- Add ability to edit notes in edit sequence screens.
+- Change "Modified" language to "Edit."
+- Change dropdown for transferring texts from one binder to another to open a modal instead.
+- Bug fixes:
+    - Fixed warning that would appear in text edit view if user tried to update groups and hit submit while unsaved changes were present that would result in a warning and an inability to submit form.
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
 
-                <ul>
-                    <li>Binder Behavior:</li>
-                    <ul>
-                        <li>Multiple tabs can now be opened to work simultaneously in different browsers.</li>
-                    </ul>
-                    <li>Group Changes:</li>
-                    <ul>
-                        <li>Fixed bug that allowed text to be added to a group multiple times.</li>
-                        <li>Fixed bug that removed group from text when new vision is created.</li>
-                        <li>Added group information to Edit and View text screens.</li>
-                        <li>Added ability to add/remove text from groups from the Edit text screen.</li>
-                    </ul>
-                    <li>Added notes to the search feature.</li>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                05/04/2024  1.08.157
-                </h4>
 
-                <ul>
-                    <li>Add Notes:</li>
-                    <ul>
-                        <li>Notes can be entered along side of the text being worked on.</li>
-                        <li>Will be saved and track across revisions.</li>
-                        <li>Note history is not saved/archived the way Texts are, and previous versions will not be visible</li>
-                    </ul>
-                    <li>Add ability for user to specify time zone, and for that time zone to accurately reflect the create/update timestamps</li>
-                    <li>Change behavior so text edit screen redirects to view after a specified timeout period</li>
-                    <li>Adjust Autosave key-up timer from 5 seconds to 15</li>
-                </ul>
-            </li>
-            <li>
-                <h4>
-                01/20/2024  1.07.146
-                </h4>
 
-                <ul>
-                    <li>Track dates and creators of new Text Header Revisions</li>
-                    <li>Add return button to View Text page</li>
-                    <li>Adjust Autosave key-up timer from 5 seconds to 15</li>
-                    <li>Fix bugs:</li>
-                    <ul>
-                        <li>Selecting All when listing texts showed headers for previous revisions - which should be hidden</li>
-                        <li>Prevent locked headers (such as those for previous revisions) from being edited</li>
-                        <li>Allow hidden texts to be restored</li>
-                    </ul>
-                </ul>
-            </li>
+        <div class="sequence-title" style="border-left-style: none" id="section-9">01/26/2025  1.13.213</div>
+        <hr style="border-top: 1px dashed dimgray;" />
 
-            <li>
-                <h4>
-                    12/10/2023  1.06.137
-                </h4>
-                <ul>
-                    <li>Move NEW button to List Texts view</li>
-                    <li>Add ability to set binder level default behaviors for:</li>
-                    <ul>
-                        <li>Ruler display on new texts</li>
-                        <li>Default title for new texts</li>
-                    </ul>
-                    <li>Change behavior on clicking on text title so user has the ability to view, but must click edit to enable editing</li>
-                    <li>Fix bug where user ids instead of names displayed in Binder List</li>
-                    <li>Numerous misc bug fixes</li>
-                    <li>Add about page.</li>
-                </ul>
-            </li>
-    
-            <li>
-                <h4>
-                11/16/2023  1.05.125
-                </h4>
-                <ul>
-                    <li>Final bugfixes for golive on Azure</li>
-                </ul>
-            </li>
-        </ul>    
-    </div>
+        <div class="sequence-text" style="border-left-style: none">
+- Add ability to view and edit all sequenced texts within a group
+- Add ability to duplicate a binder
+- Update UI for editing sequence of texts in a group
+- Update UI for binder actions in edit binder page
+- Bug fixes:
+    - Tab behavior in text editing not working in firefox.
+    - Binder names truncated in edit binder form.
+    - Error when displaying groups if gorup sequence value is null.
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-8">08/04/2024  1.12.196</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Add ability to set sequence numbers for texts within a group:
+    - Sequence numbers are shown in only when viewing a group.
+    - Sequence numbers are updated upon edit.
+    - Sequence numbers are intended to be used to help sort texts within a group.
+    - Sequence numbers are associated with a group, so a text can have values for mutiple groups.
+- Bug fixes:
+    - Error when only group in a binder is deleted.
+    - Error when saving a text in a binder that has no groups.
+    - Error when creating a new group from Edit Groups screen.
+    - Edit Groups in dropdown should be hidden when there are no groups to edit.
+    - Error when clicking on groups from View dropdown
+- Removed groups from View dropdown in ListTexts view. A better way to navigate to viewing groups incoming.
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+        <div class="sequence-title" style="border-left-style: none" id="section-7">08/01/2024  1.11.192</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Changed add/remove group options from dropdown to a modal
+    - In List Texts view, allows for multiple texts / group associations to be edited in one operation.
 </div>
+        <hr style="border-top: 1px solid dimgray;" />
 
-    
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-6">06/01/2024  1.10.179</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Fixed bug to prevent blank or all space titles that create unreachable texts.
+- Fixed bugs related to autosave behavior:
+    - Ensure countdown pauses to prevent saving page while typing in notes
+    - Ensure cursor is returned to note area if that was its position prior to save.
+    - Return scroll to its posiiton prior to save.
+- Minor changes to menu bar appearance across multipel pages.
+- Added button to return to binder from group management screen.
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-5">05/25/2024  1.09.169</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Binder Behavior:
+    - Multiple tabs can now be opened to work simultaneously in different browsers.
+- Group Changes:
+    - Fixed bug that allowed text to be added to a group multiple times.
+    - Fixed bug that removed group from text when new vision is created.
+    - Added group information to Edit and View text screens.
+    - Added ability to add/remove text from groups from the Edit text screen.
+- Added notes to the search feature.
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-4">05/04/2024  1.08.157</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Add Notes:
+    -Notes can be entered along side of the text being worked on.
+    -Will be saved and track across revisions.
+    -Note history is not saved/archived the way Texts are, and previous versions will not be visible
+- Add ability for user to specify time zone, and for that time zone to accurately reflect the create/update timestamps
+- Change behavior so text edit screen redirects to view after a specified timeout period
+- Adjust Autosave key-up timer from 5 seconds to 15
+</div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-3">01/20/2024  1.07.146</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Track dates and creators of new Text Header Revisions
+- Add return button to View Text page
+- Adjust Autosave key-up timer from 5 seconds to 15
+- Fix bugs:
+    - Selecting All when listing texts showed headers for previous revisions - which should be hidden
+    - Prevent locked headers (such as those for previous revisions) from being edited
+    - Allow hidden texts to be restored
+</div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-2">12/10/2023  1.06.137</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Move NEW button to List Texts view
+- Add ability to set binder level default behaviors for:
+    - Ruler display on new texts
+    - Default title for new texts
+- Change behavior on clicking on text title so user has the ability to view, but must click edit to enable editing
+- Fix bug where user ids instead of names displayed in Binder List
+- Numerous misc bug fixes
+- Add about page.
+
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+
+        <div class="sequence-title" style="border-left-style: none" id="section-1">11/16/2023  1.05.125</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Final bugfixes for golive on Azure
+            
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
+
+    </div>
+
+</div>
