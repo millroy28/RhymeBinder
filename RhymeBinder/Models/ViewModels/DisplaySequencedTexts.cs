@@ -20,6 +20,9 @@ namespace RhymeBinder.Models.ViewModels
         public string BinderNameColor { get; set; }
         public bool BinderReadOnly { get; set; }
         public int UserId { get; set; }
+        public string CursorPosition { get; set; }
+        public string ActiveElementId { get; set; }
+        public int? AddNewTextAfterSequenceNumber { get; set; }
     }
     public class DisplaySimpleText
     {

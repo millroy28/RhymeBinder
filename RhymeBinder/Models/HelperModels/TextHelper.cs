@@ -1143,10 +1143,25 @@ namespace RhymeBinder.Models.HelperModels
         public Status SaveEditedTextsInSequence(DisplaySequencedTexts displaySequencedTexts)
         {
             Status status = new();
+
+            // Add a new text at sequence position
+            if(displaySequencedTexts.AddNewTextAfterSequenceNumber != null)
+            {
+                status = AddNewTextAtPositionInSequence(displaySequencedTexts);
+                if(!status.success) { return status; }
+            }
+
             List<DisplaySimpleText> editedTexts = displaySequencedTexts.EditedSimpleTexts.Where(x => x.IsChanged == true).ToList();
 
+            // Did we some how get here without edits?
             if (editedTexts == null || editedTexts.Count() == 0)
             {
+                // It's possible user wanted to add a text with no edits made to existing text.  In that case, exit happily.
+                if(displaySequencedTexts.AddNewTextAfterSequenceNumber != null && status.success)
+                {
+                    return status;
+                }
+
                 status.success = false;
                 status.alertLevel = Enums.AlertLevelEnum.FAIL;
                 status.message = "Failed to receive edited texts in edit sequence texts form";
@@ -1213,7 +1228,53 @@ namespace RhymeBinder.Models.HelperModels
             status.message = "Changes saved!";
             return status;
         }
+        public Status AddNewTextAtPositionInSequence(DisplaySequencedTexts displaySequencedTexts)
+        {
+            Status status = new Status();
+            // Add a new text after sequence number indicated.
+            try
+            {
+                int addAfterSequenceNumber = (int)displaySequencedTexts.AddNewTextAfterSequenceNumber;
+                // Create new text
+                status = StartNewText(displaySequencedTexts.UserId, displaySequencedTexts.BinderId, null);
 
+                if (!status.success) { return status; }
+                // Get existing links that occur after indicated sequence number
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroups = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == displaySequencedTexts.GroupId
+                                                                                                                   && x.Sequence > addAfterSequenceNumber).ToList();
+
+                // Add 10 to the addAfterSequenceNumber (sequence number of text we want this text to be immediately after)
+                addAfterSequenceNumber = addAfterSequenceNumber + 10;
+
+                // Will there be overlap with the sequence number of the text immediately following ?
+                if (lnkTextHeadersTextGroups.Count > 0 && addAfterSequenceNumber  >= lnkTextHeadersTextGroups.OrderBy(x => x.Sequence).First().Sequence)
+                {
+                    // Shift existing sequence numbers by 10
+                    lnkTextHeadersTextGroups.ForEach(x => x.Sequence = x.Sequence + 10);
+                    _context.UpdateRange(lnkTextHeadersTextGroups);
+                    _context.SaveChanges();
+                }
+
+                // Create new link for newly made text
+                _context.LnkTextHeadersTextGroups.Add(new LnkTextHeadersTextGroup()
+                {
+                    TextGroupId = displaySequencedTexts.GroupId,
+                    TextHeaderId = status.recordId,
+                    Sequence = addAfterSequenceNumber 
+                });
+                _context.SaveChanges();
+            }
+            catch
+            {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to add a new text to sequence";
+                return status;
+            }
+
+            status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            status.message = "Changes saved!";
+            return status;
+        }
         public Status ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
         {
             Status status = new Status();

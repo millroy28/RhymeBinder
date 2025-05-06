@@ -571,7 +571,7 @@
         }
 
         .menu-bar-item-right-final {
-            align-self: flex-start;
+            align-self: center;
             padding-right: 24px;
             padding-top: 4px;
             padding-bottom: 4px;
@@ -831,6 +831,31 @@
             justify-content: center;
         }
 
+    .sequence-left-sidebar {
+        grid-column: 3/4;
+        grid-row: 2/3;
+        display: flex;
+        flex-flow: column;
+        padding: 15px 5px 15px 5px;
+        height: 82vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    .sequence-sidebar-link {
+        padding: 3px 0px 3px 0px;
+        text-decoration: none;
+        color: black;
+        font-size: smaller;
+        border-bottom: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: #8080805e;
+    }
+        .sequence-sidebar-link.active {
+            font-weight: bold;
+            font-style: italic;
+            
+        }
+
         .sequence-block-body {
             grid-column: 4/5;
             grid-row: 2/3;
@@ -842,7 +867,7 @@
             border-bottom-right-radius: 8px;
             border-top-right-radius: 8px;
             border-style: groove;
-            height: 88vh;
+            height: 85vh;
             overflow-y: scroll;
             overflow-x: hidden;
             box-sizing: border-box;
@@ -852,6 +877,7 @@
             text-align: left;
             color: dimgray;
             font-family: Courier New, Courier, monospace;
+            font-weight: 600;
             width: 95%;
             margin: 5px;
             padding: 8px;
@@ -948,6 +974,18 @@
             font-style: italic;
             font-size: small;
         }
+        .sequence-button {
+            font-size: small;
+            margin: 0px 10px 0px 5px;
+        }
+    .sequence-button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        background-color: #f7f7f7;
+    }
+
+
         /*``[Binder Shelf View]*/
         .shelf-view-container {
             grid-column: 1/4;
@@ -2256,7 +2294,10 @@ height: 70vh;
         background-color: #eff3d8;
         justify-content: center;
     }
+    .sequence-left-sidebar {
+        display: none;
 
+    }
     .sequence-block-body {
 /*        grid-column: 4/5;
         grid-row: 2/3;*/
@@ -2377,6 +2418,17 @@ height: 70vh;
         font-size: small;
     }
 
+    .sequence-button {
+        font-size: small;
+        margin: 0px 10px 0px 5px;
+    }
+
+    .sequence-button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        background-color: #f7f7f7;
+    }
 
     /*``[Binder Shelf View]*/
 

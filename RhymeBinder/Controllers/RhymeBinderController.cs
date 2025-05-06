@@ -394,6 +394,8 @@ namespace RhymeBinder.Controllers
             }
 
             DisplaySequencedTexts sequencedTexts = _modelHelper.TextHelper.GetSequenceOfTextHeaderBodyUserRecord(userId, groupId);
+            sequencedTexts.ActiveElementId = GetCookieValue($"Sequence_{sequencedTexts.GroupId}_ActiveElement");
+            sequencedTexts.CursorPosition = GetCookieValue($"sequence_{sequencedTexts.GroupId}_CursorPosition");
 
             if (sequencedTexts.BinderReadOnly)
             {
@@ -411,6 +413,9 @@ namespace RhymeBinder.Controllers
             {
                 SetAlertCookie("Failed to save changes to texts", "FAIL");
             }
+            SetCookieValue($"Sequence_{editedTexts.GroupId}_ActiveElement", editedTexts.ActiveElementId);
+            SetCookieValue($"Sequence_{editedTexts.GroupId}_CursorPosition", editedTexts.CursorPosition);
+
             return Redirect($"/RhymeBinder/EditTextsInSequence?groupId={editedTexts.GroupId}");
         }
 
@@ -719,6 +724,16 @@ namespace RhymeBinder.Controllers
                 HttpContext.Response.Cookies.Append("AlertSeverity", "FAIL");
             }
             return;
+        }
+        public void SetCookieValue(string key, string value)
+        {
+            if(value == null) { value = "";  };
+            HttpContext.Response.Cookies.Append(key, value);
+            return;
+        }
+        public string GetCookieValue(string key)
+        {
+            return HttpContext.Request.Cookies[key];
         }
         #endregion
     }

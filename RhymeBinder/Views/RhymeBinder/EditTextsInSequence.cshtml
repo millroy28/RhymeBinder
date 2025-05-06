@@ -19,6 +19,11 @@
 
 <form acion="EditTextsInSequence" class="sequence-view-wrapper" method="post" id="edit">
     <input type="submit" name="action" onclick="SetFormSubmit()" value="Save" id="submitButton" hidden />
+    <input type="hidden" id="cursorPosition" name="CursorPosition" value="@Model.CursorPosition" />
+    <input type="hidden" id="activeElementId" name="ActiveElementId" value="@Model.ActiveElementId" />
+    <input type="hidden" id="addNewTextAfterSequenceNumber" name="AddNewTextAfterSequenceNumber" value="@Model.AddNewTextAfterSequenceNumber" />
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="BinderId" value="@Model.BinderId" />
 
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
@@ -38,22 +43,28 @@
 
     </div>
 
-    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <div class="sequence-left-sidebar" id="left-sidebar">
+        @for(int j = 0; j < Model.SimpleTexts.Count; j++)
+        {
+            <a href="#section-@j" id="nav-@j" class="sequence-sidebar-link">@Model.SimpleTexts[j].Title</a>
+        }
+    </div>
+
     <div class="sequence-block-body" id="edit_area">
         @foreach (var text in Model.SimpleTexts)
         {
                
-                <div class="sequence-title"  contenteditable="true" >@text.Title</div>
+                <div class="sequence-title"  contenteditable="true" id="section-@i">@text.Title</div>
                 <hr style="border-top: 1px dashed dimgray;" />
                 string expandText = "▼";
                 if (text.Note != null)
                 {
                     expandText += " (Notes...)";
                 }
-                <div class="sequence-text-accordian-button" id="notePanelButton[@i]" onclick="ToggleNotes(@i)">@expandText</div>
-                <div class="sequence-text-accordian-panel" id="notePanel[@i]">
+                <div class="sequence-text-accordian-button" id="notePanelButton-@i" onclick="ToggleNotes(@i)">@expandText</div>
+                <div class="sequence-text-accordian-panel" id="notePanel-@i">
                     <div class="sequence-notes-label" >Notes:</div>
-                    <div class="sequence-notes" contenteditable="true" id="sequenceNote[@i]">@text.Note</div>
+                    <div class="sequence-notes" contenteditable="true" id="sequenceNote-@i">@text.Note</div>
                     <div class="sequence-info-pane">
                         <div class="sequence-info-label">Sequence:</div>
                         <div class="sequence-info">@text.SequenceNumber</div>
@@ -72,9 +83,14 @@
 
                 </div>
                 <hr style="border-top: 1px dashed dimgray;" />
-                <div class="sequence-text"  contenteditable="true" >@text.TextBody</div>
+                <div class="sequence-text"  contenteditable="true" id="TextBodyArea-@i">@text.TextBody</div>
+                <hr style="border-top: 1px dashed dimgray;" />
+                <div class="sequence-button-container">
+                    <div class="sequence-button menu-bar-button" onclick="AddNewTextAfter(@text.SequenceNumber)">Add New Text</div>
+                </div>
                 <hr style="border-top: 1px solid dimgray;" />
 
+                @* Hidden inputs for text comparison and form submission and all sorts of things *@
             <div id="modelContainer[@i]"> @* js function will remove this node for any models where IsChanged = false to cut down on size of post *@
                 <input type="hidden" name="SimpleTexts[@i].Title" class="textTitles" value="@text.Title" id="title" />
                 <input type="hidden" name="SimpleTexts[@i].TextBody" class="textBodies" value="@text.TextBody" id="textBody" />
@@ -98,8 +114,10 @@
 
 
 <script language="Javascript" src="~/js/sequenceView.js"></script>
+<script language="Javascript" src="~/js/sequenceEdit.js"></script>
 <script language="Javascript">
     SetEventListeners();
+    SetCursorPosition();
 </script>
 
 

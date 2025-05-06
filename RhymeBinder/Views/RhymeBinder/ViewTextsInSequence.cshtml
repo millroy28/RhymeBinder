@@ -41,10 +41,18 @@
 
     </div>
 
+
+    <div class="sequence-left-sidebar" id="left-sidebar">
+        @for (int j = 0; j < Model.SimpleTexts.Count; j++)
+        {
+            <a href="#section-@j" id="nav-@j" class="sequence-sidebar-link">@Model.SimpleTexts[j].Title</a>
+        }
+    </div>
+
     <div class="sequence-block-body" id="edit_area">
         @foreach (var text in Model.SimpleTexts)
         {
-            <div class="sequence-title" style="border-left-style: none">@text.Title</div>
+            <div class="sequence-title" style="border-left-style: none" id="section-@i">@text.Title</div>
             <hr style="border-top: 1px dashed dimgray;" />
 
             string expandText = "▼";
@@ -52,10 +60,10 @@
             {
                 expandText += " (Notes...)";
             }
-            <div class="sequence-text-accordian-button" id="notePanelButton[@i]" onclick="ToggleNotes(@i)">@expandText</div>
-            <div class="sequence-text-accordian-panel" id="notePanel[@i]">
+            <div class="sequence-text-accordian-button" id="notePanelButton-@i-" onclick="ToggleNotes(@i)">@expandText</div>
+            <div class="sequence-text-accordian-panel" id="notePanel-@i">
                 <div class="sequence-notes-label" style="border-left-style: none" >Notes:</div>
-                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote[@i]" >@text.Note</div>
+                <div class="sequence-notes" style="border-left-style: none" id="sequenceNote-@i" >@text.Note</div>
                 <div class="sequence-info-pane">
                     <div class="sequence-info-label">Sequence:</div>
                     <div class="sequence-info">@text.SequenceNumber</div>
@@ -73,7 +81,6 @@
                 </div>
             </div>
             <hr style="border-top: 1px dashed dimgray;" />
-
             <div class="sequence-text" style="border-left-style: none">@text.TextBody</div>
             <hr style="border-top: 1px solid dimgray;" />
             i++;
