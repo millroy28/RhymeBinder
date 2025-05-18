@@ -599,6 +599,9 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.TextRevisionStatusId).HasColumnName("TextRevisionStatusID");
 
+                entity.Property(e => e.IsPinned).HasColumnName("IsPinned");
+                entity.Property(e => e.ExcludeFromWordCount).HasColumnName("ExcludeFromWordCount");
+
                 entity.Property(e => e.Title)
                     .HasMaxLength(1000)
                     .IsUnicode(false);

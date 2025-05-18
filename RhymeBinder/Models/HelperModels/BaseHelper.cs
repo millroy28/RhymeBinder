@@ -462,9 +462,9 @@ namespace RhymeBinder.Models.HelperModels
                     List<TextHeader> headers = textHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
                     textCount = headers.Count();
 
-                    characterCount = headers.Sum(x => x.CharacterCount ?? 0);
+                    characterCount = headers.Where(x => x.ExcludeFromWordCount == false).Sum(x => x.CharacterCount ?? 0);
 
-                    wordCount = headers.Sum(x => x.WordCount ?? 0);
+                    wordCount = headers.Where(x => x.ExcludeFromWordCount == false).Sum(x => x.WordCount ?? 0);
 
                     groupCount = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroups in groupLinks
                                   join TextHeader header in textHeaders

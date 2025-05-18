@@ -113,7 +113,9 @@ namespace RhymeBinder.Models.HelperModels
                 LastReadBy = userId,
                 TextId = newTextId,
                 BinderId = binderId,
-                TextNote = textNote
+                TextNote = textNote,
+                ExcludeFromWordCount = false,
+                IsPinned = false
             };
 
             try
@@ -159,7 +161,9 @@ namespace RhymeBinder.Models.HelperModels
                 LastReadBy = userId,
                 TextId = parentHeader.TextId,
                 BinderId = parentHeader.BinderId,
-                TextNoteId = parentHeader.TextNoteId
+                TextNoteId = parentHeader.TextNoteId,
+                ExcludeFromWordCount = parentHeader.ExcludeFromWordCount,
+                IsPinned = parentHeader.IsPinned
             };
 
             try
@@ -494,7 +498,9 @@ namespace RhymeBinder.Models.HelperModels
                     RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
                     GroupSequence = groupSequence,
                     CharacterCount = textHeader.CharacterCount ?? 0,
-                    WordCount = textHeader.WordCount ?? 0
+                    WordCount = textHeader.WordCount ?? 0,
+                    IsPinned = textHeader.IsPinned,
+                    ExcludeFromWordCount = textHeader.ExcludeFromWordCount
                 });
             }
 
@@ -517,7 +523,7 @@ namespace RhymeBinder.Models.HelperModels
                     List<DisplayTextHeader> searchFilteredDisplayTextHeaders = theseDisplayTextHeaders.Where(x => x.Title.ToLower().Contains(savedView.SearchValue.ToLower())
                                                                                                                || searchFilteredTexts.Select(y => y.TextId).Contains(x.TextId)
                                                                                                                || searchFilteredNotes.Select(z => z.TextNoteId).Contains(x.TextNoteId)
-                                                                                                               ).ToList();
+       ).ToList();
 
 
                     theseDisplayTextHeaders.RemoveAll(x => !searchFilteredDisplayTextHeaders.Exists(y => y.TextHeaderId == x.TextHeaderId));
@@ -544,36 +550,89 @@ namespace RhymeBinder.Models.HelperModels
             }
 
             //sort the list based on the sort values/descending value
+            bool descending = savedView.Descending ?? false;
             switch (savedView.SortValue)
             {
                 case "Title":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Title).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.Title).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.Title).ToList();
+                    }
                     break;
                 case "Last Modified":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.LastModified).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.LastModified).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.LastModified).ToList();
+                    }
                     break;
                 case "Last Modified By":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.ModifyByName).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.ModifyByName).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.ModifyByName).ToList();
+                    }
                     break;
                 case "Created":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.Created).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.Created).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.Created).ToList();
+                    }
                     break;
                 case "Created By":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.CreatedByName).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.CreatedByName).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.CreatedByName).ToList();
+                    }
                     break;
                 case "Vision Number":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.VisionNumber).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.VisionNumber).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.VisionNumber).ToList();
+                    }
                     break;
                 case "Revision":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.TextRevisionStatusId).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.TextRevisionStatusId).ToList();
+                    }
                     break;
                 case "Sequence":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.GroupSequence).ToList();
+                    if (descending)
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenByDescending(x => x.GroupSequence).ToList();
+                    }
+                    else
+                    {
+                        theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.IsPinned).ThenBy(x => x.GroupSequence).ToList();
+                    }
                     break;
-            }
-            if (savedView.Descending == true)
-            {
-                theseDisplayTextHeaders.Reverse();
             }
 
             return theseDisplayTextHeaders;
