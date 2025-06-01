@@ -1,5 +1,7 @@
 ﻿var button;
 var showSequence = 0;
+var editMode = false;
+var draggedRow = null;
 
 //--------HIDING/SHOWING ELEMENTS-------------------------------------------------------
 function toggle_hide_element(formElementID, clickElementID, hideableElementName, init) {
@@ -35,7 +37,7 @@ function toggle_hide_element(formElementID, clickElementID, hideableElementName,
 
     } else {
         if (show == 0) {
-            document.getElementById(formElementID).value = 1;  
+            document.getElementById(formElementID).value = 1;
 
             let newClickElementText = clickElementText.replace('Show', 'Hide');
             document.getElementById(clickElementID).innerText = newClickElementText;
@@ -44,7 +46,7 @@ function toggle_hide_element(formElementID, clickElementID, hideableElementName,
 
         }
         if (show == 1) {
-            document.getElementById(formElementID).value = 0;  
+            document.getElementById(formElementID).value = 0;
 
             let newClickElementText = clickElementText.replace('Hide', 'Show');
             document.getElementById(clickElementID).innerText = newClickElementText;
@@ -77,22 +79,174 @@ function show_element(element) {
     element.hidden = false;
     return;
 }
-function hide_element(element){
+function hide_element(element) {
     element.hidden = true;
     return;
 }
-function show_sequence_inputs(savedViewId) {
-    var inputs = document.getElementsByClassName("sequence-number-input");
-    var numbers = document.getElementsByName("groupSequence");
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].hidden = false;
-        numbers[i].hidden = true;
-    }
-    let sequenceButton = document.getElementById("updateSequenceButton");
+
+//--------DRAG AND DROP SEQUENCE FUNCTIONALITY-----------------------------------------
+function toggle_edit_mode(savedViewId) {
+    editMode = true;
+
+    // Change button text and functionality
+    let sequenceButton = document.getElementById("editButton");
     sequenceButton.onclick = function () { selected_action_form_submit('UpdateGroupSequence', savedViewId); };
     sequenceButton.innerText = "Update Sequence";
+
+    // Enable drag and drop on table rows
+    enableRowDragAndDrop();
+
+    // Convert links to plain text and add visual indicators
+    convertLinksToTextInEditMode();
+
+    // Add visual styling to indicate edit mode
+    addEditModeVisualIndicators();
 }
 
+function enableRowDragAndDrop() {
+    const tableRows = document.querySelectorAll('table tr');
+
+    // Skip header row and any special rows, target only data rows
+    for (let i = 0; i < tableRows.length; i++) {
+        const row = tableRows[i];
+
+        // Only make rows with TextHeaders data draggable
+        if (row.querySelector('input[name*="TextHeaders"]')) {
+            row.draggable = true;
+            row.classList.add('draggable-row');
+
+            // Add drag event listeners
+            row.addEventListener('dragstart', handleDragStart);
+            row.addEventListener('dragover', handleDragOver);
+            row.addEventListener('drop', handleDrop);
+            row.addEventListener('dragend', handleDragEnd);
+            row.addEventListener('dragenter', handleDragEnter);
+            row.addEventListener('dragleave', handleDragLeave);
+        }
+    }
+}
+
+function handleDragStart(e) {
+    draggedRow = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedRow) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (draggedRow != this) {
+        // Swap the rows
+        swapRows(draggedRow, this);
+        updateSequenceNumbers();
+    }
+
+    this.classList.remove('drag-over');
+    return false;
+}
+
+function handleDragEnd(e) {
+    // Clean up
+    const draggableRows = document.querySelectorAll('.draggable-row');
+    draggableRows.forEach(row => {
+        row.classList.remove('dragging', 'drag-over');
+    });
+    draggedRow = null;
+}
+
+function swapRows(row1, row2) {
+    const parent = row1.parentNode;
+    const next1 = row1.nextSibling === row2 ? row1 : row1.nextSibling;
+    const next2 = row2.nextSibling === row1 ? row2 : row2.nextSibling;
+
+    parent.insertBefore(row1, next2);
+    parent.insertBefore(row2, next1);
+}
+
+function updateSequenceNumbers() {
+    const dataRows = document.querySelectorAll('tr.draggable-row');
+
+    dataRows.forEach((row, index) => {
+        // Update the sequence number in the hidden input
+        const sequenceInput = row.querySelector('input[name*="GroupSequence"]');
+        if (sequenceInput) {
+            sequenceInput.value = index + 1;
+        }
+
+        // Update the visible sequence number
+        const sequenceDiv = row.querySelector('div[name="groupSequence"]');
+        if (sequenceDiv) {
+            sequenceDiv.textContent = index + 1;
+        }
+    });
+}
+
+function convertLinksToTextInEditMode() {
+    const dataRows = document.querySelectorAll('tr.draggable-row');
+
+    dataRows.forEach(row => {
+        // Convert title links to plain text
+        const titleLink = row.querySelector('a.link-item');
+        if (titleLink) {
+            const span = document.createElement('span');
+            span.textContent = titleLink.textContent;
+            span.classList.add('converted-link');
+            titleLink.parentNode.replaceChild(span, titleLink);
+        }
+
+        // Convert group links to plain text
+        const groupLinks = row.querySelectorAll('a.link-item');
+        groupLinks.forEach(link => {
+            const span = document.createElement('span');
+            span.textContent = link.textContent;
+            span.classList.add('converted-link');
+            link.parentNode.replaceChild(span, link);
+        });
+    });
+}
+
+function addEditModeVisualIndicators() {
+    // Add CSS class to table for styling
+    const table = document.querySelector('table');
+    if (table) {
+        table.classList.add('edit-mode');
+    }
+
+    // Add drag handles or visual indicators
+    const dataRows = document.querySelectorAll('tr.draggable-row');
+    dataRows.forEach(row => {
+        // Add a drag handle indicator
+        const firstCell = row.querySelector('td');
+        if (firstCell && !firstCell.querySelector('.drag-handle')) {
+            const dragHandle = document.createElement('span');
+            dragHandle.innerHTML = '⋮⋮'; // Vertical dots as drag handle
+            dragHandle.className = 'drag-handle';
+            dragHandle.style.cssText = 'cursor: grab; color: #666; margin-right: 5px; font-size: 14px;';
+            firstCell.insertBefore(dragHandle, firstCell.firstChild);
+        }
+    });
+}
 
 //--------MODALS------------------------------------------------------------------------
 function open_group_list_modal_with_id(elementId, view) {
@@ -167,7 +321,7 @@ function populate_list_modal_footer_with_record_count_message() {
         for (let i = 0; i < footerRecordCounts.length; i++) {
             footerRecordCounts[i].innerText = "No records selected!";
         }
-        
+
     } else {
         for (let i = 0; i < footerRecordCounts.length; i++) {
             footerRecordCounts[i].innerText = "Apply changes to " + checkedBoxes + " selected records: ";
@@ -211,7 +365,7 @@ function populate_group_selected_text_header_counts() {
     // Get Selected Text Header IDs
     var inputs = document.getElementsByTagName("input");
     var selectedTextHeaderIds = [];
-    
+
     for (var i = 0; i < inputs.length; i++) {
         if (inputs[i].type == "checkbox" && inputs[i].checked == true && inputs[i].name.startsWith("TextHeaders")) {
             var index = inputs[i].name.replace("TextHeaders[", "").replace("].Selected", "");
@@ -231,7 +385,7 @@ function populate_group_selected_text_header_counts() {
             }
         }
 
-    } else {    
+    } else {
         for (var i = 0; i < groupIds.length; i++) {
 
             // Get text header IDs associated with group
@@ -248,7 +402,7 @@ function populate_group_selected_text_header_counts() {
                 var matchCount = 0;
 
                 for (var j = 0; j < groupTextHeaderIds.length; j++) {
-               
+
                     for (var k = 0; k < selectedTextHeaderIds.length; k++) {
                         // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
                         if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
@@ -282,7 +436,7 @@ function populate_group_selected() {
             document.getElementById("Group" + groupIds[i].innerHTML).checked = false;
         }
     }
-      
+
     return;
 }
 
@@ -296,13 +450,13 @@ function set_group_selected_values_to_checkbox_states() {
             document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value = true;
         } else if (!checkbox.checked && !checkbox.indeterminate) { //specifically don't want indeterminate
             document.getElementById("Group" + groupIds[i].innerHTML + "Selected").value = false;
-        } 
+        }
     }
 
-    return; 
+    return;
 }
 
-function set_group_selected_value_on_checkbox(groupId){
+function set_group_selected_value_on_checkbox(groupId) {
     var checkbox = document.getElementById("Group" + groupId);
 
     if (checkbox.checked) {
@@ -378,7 +532,7 @@ function col_header_sort_change(clickedHeaderID, currentSortValueID, currentSort
             newSortOrderValue = 'True';
         }
     }
-    
+
     console.log('Changing sort from ' + currentSortValue + '/' + currentSortOrderValue + ' to ' + clickedSortValue + '/' + newSortOrderValue + '...');
 
     currentSort.value = clickedSortValue;
@@ -403,7 +557,7 @@ function on_start_mark_sorted_column(sortValueID, sortOrderValueID) {
         newSortValue = newSortValue + ' ▲';
     }
 
-    
+
     columnHeader.innerHTML = '<a>' + newSortValue + '</a>';
     console.log('Marking sort column :' + newSortValue);
     return;
