@@ -2,6 +2,12 @@ USE RhymeBinderLive;
 
 GO
 
+/*
+	LAST EXECUTED:		DURATION: 
+	2025-06-13			01:07
+
+
+*/
 
 -- Importing records from database hosted on azure
 /*
@@ -99,6 +105,7 @@ FROM SimpleUsers
 
 INNER JOIN [AZURE SQL DATABASE].Rhymebinder.dbo.SimpleUsers ImportSimpleUsers
 ON ImportSimpleUsers.UserID = SimpleUsers.UserID
+
 
 PRINT 'INSERT SimpleUsers'
 SET IDENTITY_INSERT [SimpleUsers] ON 

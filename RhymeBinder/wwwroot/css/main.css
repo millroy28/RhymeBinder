@@ -533,6 +533,19 @@
         display: inline-block;
     }
 
+    .sequenceNumbers{
+        display: inline-block;
+    }
+    .groupSequence{
+        color: green;
+    }
+    .referenceGroupSequence{
+       
+    }
+    .groupSequenceDifference{
+        color: red;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .drag-handle {

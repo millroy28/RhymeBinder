@@ -224,7 +224,10 @@
                             {
                                 <td style="text-align: center" name="group_sequence_col">
                                 <input type="number" min="0" max="99999" class="sequence-number-input" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" hidden/>
-                                    <div name="groupSequence">@text.GroupSequence</div>
+                                    <div name="sequenceNumbers">
+                                        <div name="groupSequence">@text.GroupSequence</div>
+                                        <div name="referenceGroupSequence" hidden>@text.GroupSequence</div>
+                                    </div>
                                 </td>
                             }
                             else

@@ -199,6 +199,12 @@ function updateSequenceNumbers() {
         if (sequenceDiv) {
             sequenceDiv.textContent = index + 1;
         }
+
+        // Highlight any changed rows
+        const sequenceReference = row.querySelector('div[name="referenceGroupSequence"]');
+        if (sequenceReference.textContent != sequenceDiv.textContent) {
+            sequenceInput.classList.add("groupSequenceDifference");
+        }
     });
 }
 
@@ -246,6 +252,8 @@ function addEditModeVisualIndicators() {
             firstCell.insertBefore(dragHandle, firstCell.firstChild);
         }
     });
+    // Unhide reference sequence numbers
+    document.getElementsByClassName("referenceGroupSequence").hidden = false;
 }
 
 //--------MODALS------------------------------------------------------------------------
