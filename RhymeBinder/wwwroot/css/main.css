@@ -433,13 +433,13 @@
 
     /* Edit mode visual indicators */
     table.edit-mode {
-        border: 2px dashed #007acc;
+        border: 1px dashed #007acc;
         border-radius: 4px;
-        background-color: #f8f9fa;
+        /*background-color: #f8f9fa;*/
     }
 
         table.edit-mode thead th {
-            background-color: #e9ecef;
+            /*background-color: #e9ecef;*/
             border-bottom: 2px solid #007acc;
         }
 
@@ -458,8 +458,8 @@
 
         /* Row being dragged */
         .draggable-row.dragging {
-            opacity: 0.5;
-            transform: rotate(2deg);
+            opacity: 0.25;
+    /*        transform: rotate(2deg);*/
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             z-index: 1000;
             background-color: #e3f2fd;
@@ -499,9 +499,9 @@
         color: #495057;
         font-weight: 500;
         padding: 2px 4px;
-        background-color: #f8f9fa;
-        border-radius: 3px;
-        border: 1px solid #dee2e6;
+        /*background-color: #f8f9fa;*/
+        /*border-radius: 3px;*/
+        /*border: 1px solid #dee2e6;*/
     }
 
     /* Edit mode notice/indicator */
@@ -522,14 +522,14 @@
 
     /* Sequence number styling in edit mode */
     table.edit-mode div[name="groupSequence"] {
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
+        /*background-color: #e9ecef;*/
+        /*border: 1px solid #ced4da;*/
         border-radius: 3px;
         padding: 4px 8px;
         font-weight: bold;
         color: #495057;
         text-align: center;
-        min-width: 30px;
+        /*min-width: 30px;*/
         display: inline-block;
     }
 
