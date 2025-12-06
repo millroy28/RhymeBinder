@@ -860,7 +860,7 @@ namespace RhymeBinder.Models.HelperModels
             //get text groups
             List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
 
-            string binderColor = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).Color;
+            Binder binder = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId);
             bool readOnly = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).ReadOnly;
 
             //wrap it up and send it
@@ -893,8 +893,9 @@ namespace RhymeBinder.Models.HelperModels
                 Top = thisTextHeader.Top,
                 BinderId = thisTextHeader.BinderId,
 
-                BinderColor = binderColor,
-                DisplayTitleColor = GetMenuTextColor(binderColor),
+                BinderName = binder.Name,
+                BinderColor = binder.Color,
+                DisplayTitleColor = GetMenuTextColor(binder.Color),
                 DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0, 20) + "..." : thisTextHeader.Title,
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,

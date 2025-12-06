@@ -44,6 +44,7 @@ namespace RhymeBinder.Models.DTOModels
 
 
         //  Display fields
+        public string BinderName { get; set; }
         public string BinderColor { get; set; }
         public string DisplayTitleColor { get; set; }
         public string DisplayTitle { get; set; }
