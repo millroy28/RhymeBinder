@@ -674,6 +674,27 @@
             border-bottom-right-radius: 0px;
             cursor: default;
         }
+
+        /*`Site Footer`*/
+        .site-footer{
+            border: solid;
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 0px;
+            border-right-width: 0px;
+            padding: 2px;
+            display: flex;
+            flex-flow: row;
+            justify-content: space-between;
+        }
+        .site-footer-copyright {
+            font-weight: 100;
+        }
+        .site-footer-additional {
+
+        }
+
+
         /*``[Editor:Title/TextBox*/
         .title-bar {
             grid-column: 4 / 5;
