@@ -119,7 +119,7 @@
     </div>
 
     <div class="editor-container">
-        <textarea name="TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()">@Model.TextBody</textarea>
+        <textarea name="TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()" onchange="update_word_count()">@Model.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
         <textarea class="ruler-box ruler-box-b" id="paragraph_count" name="paragraph_count" readonly></textarea>
@@ -245,7 +245,7 @@
 
     <div class="site-footer-additional-statusbox">
         <div class="site-footer-additional-statusbox-status">Word Count: </div>
-        <div class="site-footer-additional-statusbox-title countstatus-width">100,000</div>
+        <div id="word_count" class="site-footer-additional-statusbox-title countstatus-width"></div>
     </div>
 
     <div class="site-footer-additional-statusbox titlestatus-green">
@@ -258,8 +258,13 @@
 <script language="Javascript" src="~/js/autosave.js"></script>
 <script language="Javascript" src="~/js/site.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>
+<script language="Javascript" src="~/js/statusBar.js"></script>
     <script language="Javascript">
-    window.onload = on_start_get_form_sub_button('bttn_sub');
+    window.onload = function(){
+        on_start_get_form_sub_button('bttn_sub');
+        window.onload = initialize_word_count();
+    }
+
 </script>
 
 <br />
