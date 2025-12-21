@@ -15,6 +15,8 @@
     }
     string menuTextcolorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextcolorTag;
+    string titleShortened = Model.Title.Length > 52 ? $"{ Model.Title.Substring(0, 52)}..." : Model.Title;
+
 }
 @Html.Partial("_Alert")
 
@@ -215,9 +217,6 @@
 
 </form>
 
-@section Footer {
-    Custom footer content for this page!
-}
 
 @* Populate Drawers *@
 @foreach (var prev in Model.PreviousTexts)
@@ -238,6 +237,22 @@
 }
 
 <div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
+
+@section Footer {
+    <div class="site-footer-additional-statusbox">
+        <div class="site-footer-additional-statusbox-status savedstatus-width savedstatus-safe">SAVED</div>
+    </div>
+
+    <div class="site-footer-additional-statusbox">
+        <div class="site-footer-additional-statusbox-status">Word Count: </div>
+        <div class="site-footer-additional-statusbox-title countstatus-width">100,000</div>
+    </div>
+
+    <div class="site-footer-additional-statusbox titlestatus-green">
+        <div class="site-footer-additional-statusbox-status">EDIT: </div>
+        <div class="site-footer-additional-statusbox-title titlestatus-width">@titleShortened</div>
+    </div>
+}
 
 
 <script language="Javascript" src="~/js/autosave.js"></script>

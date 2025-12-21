@@ -677,6 +677,7 @@
 
         /*`Site Footer`*/
         .site-footer{
+            font-family: Verdana;
             border: solid;
             border-top-width: 1px;
             border-bottom-width: 1px;
@@ -686,13 +687,65 @@
             display: flex;
             flex-flow: row;
             justify-content: space-between;
+            font-size: smaller;
         }
         .site-footer-copyright {
             font-weight: 100;
+            font-size: small;
         }
         .site-footer-additional {
-
+            display: flex;
+            flex-flow: row;
         }
+
+        .site-footer-additional-statusbox{
+            display: flex;
+            background-color: ghostwhite;
+            border-radius: 4px;
+            border-style: ridge;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+        .titlestatus-green {
+            background-color: greenyellow;
+        }
+        .titlestatus-width{
+            width: 360px;
+        }
+        .countstatus-width {
+            width: 55px;
+        }
+        .savedstatus-width{
+            width: 30px;
+        }
+    .savedstatus-safe {
+        background-color: greenyellow;
+    }
+    .savedstatus-warn {
+        background-color: coral;
+    }
+    .site-footer-additional-statusbox-status {
+        margin-left: 3px;
+        font-weight: bolder;
+    }
+    .site-footer-additional-statusbox-title {
+        margin-left: 3px;
+    }
+        .site-footer-additional-text{
+            margin-left: 3px;
+            padding: 2px;
+        }
+        .site-footer-additional-status-box-good {
+            padding: 2px;
+            margin: 1px;
+            background-color: limegreen;
+            margin-left: 3px;
+            border-radius: 2px;
+            border-style: solid;
+        }
+
+
+
 
 
         /*``[Editor:Title/TextBox*/

@@ -11,6 +11,7 @@
     }
     string menuTextColorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextColorTag;
+    string titleShortened = Model.Title.Length > 40 ? $"{Model.Title.Substring(0, 40)}..." : Model.Title;
 }
 
 @Html.Partial("_Alert")
@@ -126,6 +127,17 @@
 }
 
 <div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
+
+@section Footer {
+    <div class="site-footer-additional-statusbox">
+        <div class="site-footer-additional-statusbox-status">Word Count: </div>
+        <div class="site-footer-additional-statusbox-title">0</div>
+    </div>
+    <div class="site-footer-additional-statusbox">
+        <div class="site-footer-additional-statusbox-status">VIEW: </div>
+        <div class="site-footer-additional-statusbox-title">@titleShortened</div>
+    </div>
+}
 
 
 <br />
