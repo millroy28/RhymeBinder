@@ -28,3 +28,4 @@ function initialize_word_count() {
     document.getElementById('body_edit_field')
         .addEventListener("input", (event) => update_word_count());
 }
+

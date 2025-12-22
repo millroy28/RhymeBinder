@@ -239,30 +239,31 @@
 <div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
 
 @section Footer {
-    <div class="site-footer-additional-statusbox">
-        <div class="site-footer-additional-statusbox-status savedstatus-width savedstatus-safe">SAVED</div>
+    <div id="save_status" class="site-footer-additional-statusbox savedstatus-safe">
+        <div id="save_status_text" class="site-footer-additional-statusbox-status savedstatus-width"></div>
     </div>
 
-    <div class="site-footer-additional-statusbox">
+    <div class="site-footer-additional-statusbox site-footer-additional-statusbox-mobile ">
         <div class="site-footer-additional-statusbox-status">Word Count: </div>
         <div id="word_count" class="site-footer-additional-statusbox-title countstatus-width"></div>
     </div>
 
-    <div class="site-footer-additional-statusbox titlestatus-green">
+    <div class="site-footer-additional-statusbox site-footer-additional-statusbox-mobile  titlestatus-green">
         <div class="site-footer-additional-statusbox-status">EDIT: </div>
         <div class="site-footer-additional-statusbox-title titlestatus-width">@titleShortened</div>
     </div>
 }
 
 
+<script language="Javascript" src="~/js/statusBar.js"></script>
 <script language="Javascript" src="~/js/autosave.js"></script>
 <script language="Javascript" src="~/js/site.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>
-<script language="Javascript" src="~/js/statusBar.js"></script>
     <script language="Javascript">
     window.onload = function(){
         on_start_get_form_sub_button('bttn_sub');
-        window.onload = initialize_word_count();
+        initialize_word_count();
+        run_these_functions_on_page_load();
     }
 
 </script>

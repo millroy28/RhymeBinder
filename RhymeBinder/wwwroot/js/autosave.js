@@ -1,6 +1,7 @@
 ﻿var autosave_timer;
 
-let check_content_interval = 500;
+const check_content_interval = 1000;
+
 
 var original_title_string;
 var check_title_string;
@@ -42,7 +43,7 @@ function set_form_submitting_true() {
 
 
 function reset_autosave_timer() {
-    autosave_timer = 10; //seconds before autosaving
+    autosave_timer = 60; //seconds before autosaving
 }
 
 function reset_keyup_timer() {
@@ -70,15 +71,16 @@ function autosave_counter() {
 
     } else
     {
-      //  autosave_timer--;
+        console.log('content changed - counting down to autosave ' + autosave_timer );
+        autosave_timer--;
         reset_timeout_timer();
-        //if (autosave_timer == 0)
-        //{
+        if (autosave_timer == 0)
+        {
             save_content();
             return;
-        //}
+        }
     }
-    setTimeout('autosave_counter()', 1000); //elapses one second before calling function again
+    setTimeout('autosave_counter()', check_content_interval); //elapses one second before calling function again
 }
 
 function submit_timeout_action()
@@ -176,15 +178,24 @@ function check_content_for_difference() {
     check_revision_status = document.getElementById('revision_status').value;
     check_note_string = document.getElementById('note_edit_field').value;
 
+
     if (   (check_title_string != original_title_string)
         || (check_body_string != original_body_string)
         || (check_revision_status != original_revision_status)
         || (check_note_string != original_note_string)
         ) {
+
+        if (is_content_different = 0) {
+        }
+            toggle_saved_status(false);
+
         is_content_different = 1;
         document.getElementById('save').disabled = false;
-        console.log('content changed - counting down to autosave');
+
+
     } else {
+            toggle_saved_status(true);
+
         is_content_different = 0;
         document.getElementById('save').disabled = true;
     }
@@ -224,11 +235,26 @@ get_initial_content_values();
 reset_autosave_timer();
 reset_keyup_timer();
 reset_timeout_timer();
+
 autosave_counter();  //this is the one that runs continuously 
 }
 
-run_these_functions_on_page_load();
 
+
+
+
+function toggle_saved_status(isSaved) {
+    if (isSaved) {
+        document.getElementById('save_status_text').innerHTML = "SAVED";
+        document.getElementById('save_status').classList.remove('savedstatus-warn');
+        document.getElementById('save_status').classList.add('savedstatus-safe');
+    } else {
+        document.getElementById('save_status_text').innerHTML = "UNSAVED";
+        document.getElementById('save_status').classList.remove('savedstatus-safe');
+        document.getElementById('save_status').classList.add('savedstatus-warn');
+
+    }
+}
 
 //-----------Listener to submit on ctrl+s
 var isCtrl = false;
