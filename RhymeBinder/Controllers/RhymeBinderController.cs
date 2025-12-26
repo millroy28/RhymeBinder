@@ -677,7 +677,7 @@ namespace RhymeBinder.Controllers
             {
                 return RedirectToAction("SetupNewUser");
             };
-            return RedirectToAction("ListTextsOnSessionStart");
+            return RedirectToAction("ListBinders");
         }
         public IActionResult Manage()
         {

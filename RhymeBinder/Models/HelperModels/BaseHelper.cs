@@ -429,7 +429,7 @@ namespace RhymeBinder.Models.HelperModels
             List<DisplayBinder> displayBinders = new List<DisplayBinder>();
             try
             {
-                List<Binder> binders = _context.Binders.Where(x => x.UserId == userId && x.Hidden == false).OrderByDescending(x => x.LastAccessed).ToList();
+                List<Binder> binders = _context.Binders.Where(x => x.UserId == userId && x.Hidden == false).OrderBy(x => x.Name).ToList();
 
                 List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userId
                                                                             && x.Top == true
