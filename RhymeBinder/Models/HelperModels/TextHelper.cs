@@ -1006,7 +1006,9 @@ namespace RhymeBinder.Models.HelperModels
                                Deleted = joinTextHeader.Deleted,
                                Locked = joinTextHeader.Locked,
                                Top = joinTextHeader.Top,
-                               BinderId = joinTextHeader.BinderId
+                               BinderId = joinTextHeader.BinderId,
+                               WordCount = joinTextHeader.WordCount,
+                               CharacterCount = joinTextHeader.CharacterCount
                            }
                                   ).ToList();
             return textHeaders;
