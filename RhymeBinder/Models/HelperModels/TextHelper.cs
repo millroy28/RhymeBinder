@@ -570,6 +570,13 @@ namespace RhymeBinder.Models.HelperModels
                 case "Sequence":
                     theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.GroupSequence).ToList();
                     break;
+                case "Word Count":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.WordCount).ToList();
+                    break;
+                case "Character Count":
+                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.CharacterCount).ToList();
+                    break;
+
             }
             if (savedView.Descending == true)
             {
