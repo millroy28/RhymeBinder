@@ -604,7 +604,7 @@ namespace RhymeBinder.Models.HelperModels
                     GroupTitle = "All",
                     SavedViewId = _context.SavedViews.Single(x => x.BinderId == binder.BinderId
                                                                && x.SetValue == "All").SavedViewId,
-                    TextGroupId = -1
+                    TextGroupId = -1,
                 });
                 groups.Add(new DisplayTextGroup()
                 {
@@ -758,7 +758,8 @@ namespace RhymeBinder.Models.HelperModels
                     HeaderCount = 0,
                     BinderName = null,
                     Selected = false,
-                    LinkedTextHeaderIds = textHeaderIds
+                    LinkedTextHeaderIds = textHeaderIds,
+                    SavedViewId = group.SavedViewId                    
                 });
             }
             return displayGroups;

@@ -1333,6 +1333,9 @@ text-decoration-line: underline;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #ddd;
+        }
+
+        .drawer__editor-view-text {
             font-size: smaller;
             font-family: Courier New, Courier, monospace;
         }
@@ -1341,9 +1344,9 @@ text-decoration-line: underline;
             margin: 0;
             padding: 0;
             border: none;
-            background-color: transparent;
+            background-color: white;
             cursor: pointer;
-            background-image: url("../img/left-collapse.jpg");
+            background-image: url("../img/close.svg");            
             width: 20px;
             height: 20px;
         }
@@ -1378,8 +1381,6 @@ text-decoration-line: underline;
             height: 100%;
             flex-grow: 1;
             padding: 1.5rem;
-            font-size: smaller;
-            font-family: Courier New, Courier, monospace;
             resize: none;
         }
 
@@ -2873,6 +2874,9 @@ text-decoration-line: underline;
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #ddd;
+    }
+
+    .drawer__editor-view-text {
         font-size: smaller;
         font-family: Courier New, Courier, monospace;
     }
@@ -2883,7 +2887,7 @@ text-decoration-line: underline;
         border: none;
         background-color: transparent;
         cursor: pointer;
-        background-image: url("../img/left-collapse.jpg");
+        background-image: url("../img/close.svg");
         width: 20px;
         height: 20px;
     }
@@ -2918,8 +2922,6 @@ text-decoration-line: underline;
         height: 100%;
         flex-grow: 1;
         padding: 1.5rem;
-        font-size: smaller;
-        font-family: Courier New, Courier, monospace;
         resize: none;
     }
 
