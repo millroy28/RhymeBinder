@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RhymeBinder.Models.DBModels;
@@ -331,7 +332,11 @@ namespace RhymeBinder.Models.HelperModels
             }
             return status;
         }
-
+        
+        public List<AdjacentHeadersInSequence> GetAdjacentHeadersInSequences(int textHeaderId)
+        {
+            return _context.AdjacentHeadersInSequence.Where(x => x.TextHeaderID == textHeaderId).ToList();
+        }
         public List<DisplayTextGroup> GetDisplayTextGroups(int userId, int binderId, int textHeaderId)
         {
             List<TextGroup> groups = GetTextGroupsInBinder(userId, binderId);
@@ -776,6 +781,7 @@ namespace RhymeBinder.Models.HelperModels
             //grab the note for the text
             TextNote thisTextNote = _context.TextNotes.Single(x => x.TextNoteId == thisTextHeader.TextNoteId);
 
+                //  HERE is where you would do some getting for customized fields 
             //grab up the revision statuses for display in the dropdown list
             List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
 
@@ -865,18 +871,19 @@ namespace RhymeBinder.Models.HelperModels
                 }
             }
 
-            //get text groups
+            //get ALL text groups in binder - for group add/remove modal
             List<DisplayTextGroup> displayTextGroups = GetDisplayTextGroups(userId, thisTextHeader.BinderId, textHeaderID);
 
+            List<AdjacentHeadersInSequence> memberOfGroups = GetAdjacentHeadersInSequences(textHeaderID);
+
             Binder binder = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId);
-            bool readOnly = _context.Binders.DefaultIfEmpty().Single(x => x.BinderId == thisTextHeader.BinderId).ReadOnly;
 
             //wrap it up and send it
             TextEdit textEdit = new TextEdit()
             {
                 UserId = userId,
 
-                BinderReadOnly = readOnly,
+                BinderReadOnly = binder.ReadOnly,
 
                 TextId = thisText.TextId,
                 TextBody = thisText.TextBody,
@@ -908,7 +915,8 @@ namespace RhymeBinder.Models.HelperModels
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
                 CurrentRevisionStatus = currentRevisionStatus,
-                Groups = displayTextGroups,
+                BinderGroups = displayTextGroups,
+                MemberOfGroups = memberOfGroups,
                 //MemberOfGroups = memberOfGroups,
                 //AvailableGroups = availableGroups,
 
@@ -1286,6 +1294,58 @@ namespace RhymeBinder.Models.HelperModels
             status.message = "Changes saved!";
             return status;
         }
+        public Status AddNewTextAtPositionInSequence(TextEdit textEdit, string value)
+        {// front end will be send pre/post as the value - indicating whether the new text should go before or after the text header in sequence
+            Status status = new();
+            try
+            {
+                status = StartNewText(textEdit.UserId, (int)textEdit.BinderId, textEdit.SequenceGroupId);
+                if (!status.success) { return status; }
+                // It's sloppy, but we're going to work in 10s here...
+                // ... so we'll take the sequence numbers starting at the high header number
+                // ... and we'll add 20 to it an all others after in the sequence
+                // ... and add 10 to the high headder id and insert the sequence there
+
+                var newLink = _context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == status.recordId && x.TextGroupId == textEdit.SequenceGroupId);
+                int sequenceAnchor = (int)_context.LnkTextHeadersTextGroups.Single(x => x.TextHeaderId == textEdit.TextHeaderId && x.TextGroupId == textEdit.SequenceGroupId).Sequence;
+                
+                List<LnkTextHeadersTextGroup> lnkTextHeadersTextGroupsToExtend = new();
+                
+                if(value == "pre")
+                {
+                    lnkTextHeadersTextGroupsToExtend = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == textEdit.SequenceGroupId
+                                                              && x.Sequence != null
+                                                              && x.Sequence >= sequenceAnchor).ToList();
+
+                    newLink.Sequence = sequenceAnchor;
+                } 
+                else if (value == "post")
+                {
+                    lnkTextHeadersTextGroupsToExtend = _context.LnkTextHeadersTextGroups.Where(x => x.TextGroupId == textEdit.SequenceGroupId
+                                          && x.Sequence != null
+                                          && x.Sequence > sequenceAnchor).ToList();
+
+                    newLink.Sequence = sequenceAnchor + 10;
+                }
+
+                foreach(var link in lnkTextHeadersTextGroupsToExtend)
+                {
+                    link.Sequence = (int)link.Sequence + 10;
+                }
+
+                _context.SaveChanges();
+            }
+            catch
+            {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to add a new text to sequence";
+                return status;
+            }
+            
+            status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            status.message = "Changes saved!";
+            return status;
+        }
         public Status ToggleHideSelectedHeaders(DisplayTextHeadersAndSavedView savedView, bool hide)
         {
             Status status = new Status();
@@ -1511,8 +1571,13 @@ namespace RhymeBinder.Models.HelperModels
                 return status;
             }
 
-            List<int> groupIdsToRemove = textEdit.Groups.Where(x => x.Selected != null && x.Selected == false).Select(x => x.TextGroupId).ToList();
-            List<int> groupIdsToAdd = textEdit.Groups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
+            List<int> groupIdsToRemove = new(); 
+            List<int> groupIdsToAdd = new();
+            if (textEdit.BinderGroups.Any(x => x.Selected == true))
+            {
+                groupIdsToRemove = textEdit.BinderGroups.Where(x => x.Selected != null && x.Selected == false).Select(x => x.TextGroupId).ToList();
+                groupIdsToAdd = textEdit.BinderGroups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
+            }
 
             //removals
             if (groupIdsToRemove.Count > 0)

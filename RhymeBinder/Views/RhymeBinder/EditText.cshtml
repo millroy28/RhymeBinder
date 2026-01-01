@@ -25,8 +25,7 @@
     <input type="hidden" name="TextHeaderId" value="@Model.TextHeaderId" />
     <input type="hidden" name="TextId" value="@Model.TextId" />
     <input type="hidden" name="TextNoteId" value="@Model.TextNoteId" />    
-    <input type="hidden" name="BinderId" value="@Model.BinderId" />   
- 
+    <input type="hidden" name="BinderId" value="@Model.BinderId" />    
     <input type="hidden" name="UserId" value="@Model.UserId" />
     <input type="hidden" name="BodyCursorPosition" id="body_cursor_position" value="@Model.BodyCursorPosition" />
     <input type="hidden" name="BodyScrollPosition" id="body_scroll_position" value="@Model.BodyScrollPosition" />
@@ -36,8 +35,8 @@
     <input type="hidden" name="ActiveElement" id="form_focus" value="@Model.ActiveElement" />
     <input type="hidden" name="ShowLineCount" id="show_line_count" value="@Model.ShowLineCount" />
     <input type="hidden" name="ShowParagraphCount" id="show_paragraph_count" value="@Model.ShowParagraphCount" />
+    <input type="hidden" name="SequenceGroupId" id="SequenceGroupId" value="@Model.SequenceGroupId" />
     <input type="submit" hidden name="action" value="" id="bttn_sub" />
-
     <input type="hidden" name="value" value="-1" id="record_id" />
 
    
@@ -63,27 +62,14 @@
                 </select>
             </div>
 
-            @if(Model.Groups.Count() > 0)
+            @if(Model.BinderGroups.Count() > 0)
             {
                 <div class="menu-bar-dropdown menu-bar-dropdown-mobile">
                     <div class="button  menu-bar-button" onclick="open_group_list_modal_with_id('groups','EditText')">
                         Groups
                     </div>
-
-
-
-
-
-@*                    <div class="menu-bar-dropdown-content">
-                        <a class="menu-bar-dropdown-item" onclick="">Add to Group... </a> 
-                            @foreach (var group in Model.AvailableGroups)
-                            {
-                               <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('AddGroup', @group.TextGroupId)">  + @group.GroupTitle</a>
-                            }
-                    </div>*@
                 </div>
             }
-
 
             <div class="menu-bar-dropdown menu-bar-dropdown-mobile">
                 <div class="button menu-bar-button-dropdown">
@@ -93,7 +79,6 @@
                     <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_line_count', this.id, 'line_count')" id="toggle_line_count">? Line Count</a>
                     <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_paragraph_count', this.id, 'paragraph_count')" id="toggle_paragraph_count">? Stanza Count</a>
                 </div>
-
             </div>
         </div>
 
@@ -130,6 +115,28 @@
 
 
     <div class="left-sidebar">
+        @if (Model.MemberOfGroups.Count > 0)
+        {
+            <div class="left-sidebar-item-heading">Member of Groups:</div>
+            @foreach (var group in Model.MemberOfGroups)
+            {
+                <div class="left-sidebar-item-sub-heading">@group.GroupTitle</div>
+                <div class="left-sidebar-items-container">
+                    <div class="left-sidebar-previous-in-group">
+                        <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.PreviousInSequenceTextHeaderId)">@group.PreviousInSequenceTextHeaderTitle</div>
+                        <div class="left-sidebar-item" onclick="insert_new_text_in_sequence(@group.GroupId, 'pre')">Insert New ◄</div>
+                    </div>
+                    <div class="left-sidebar-next-in-group">
+                        <div class="left-sidebar-item" onclick="insert_new_text_in_sequence(@group.GroupId, 'post')">► Insert New</div>
+                        <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.NextInSequenceTextHeaderId)">@group.NextInSequenceTextHeaderTitle</div>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="sidebar-horizontal-spacer"></div>
+
+        <div class="left-sidebar-item-heading">Visioning:</div>
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
         <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
         <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
@@ -150,21 +157,8 @@
 
 
     <div class="right-sidebar">
-        @if (Model.Groups.Count > 0)
-        {
-            <div class="right-sidebar-item-heading">Member of Groups:</div>
-            @foreach(var group in Model.Groups)
-            {
-                <div class="right-sidebar-item">
-                    @if(group.Selected == true){
-                        @group.GroupTitle
-                    }
-                </div>
-            }
-        }
         <div class="right-sidebar-item-heading">Notes:</div>
-            <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
-
+        <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
     </div>
 
 
@@ -176,7 +170,7 @@
         <div class="list-modal-content">
 
 
-                @foreach(var group in Model.Groups)
+                @foreach(var group in Model.BinderGroups)
                 {
                     if (group.TextGroupId > 0)
                         {
@@ -188,7 +182,7 @@
                             string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
 
                             <div class = "list-modal-content-item" name = @groupIdCheckboxName>
-                            <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
+                            <input type="hidden" name="BinderGroups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
                             @if (group.Locked)
                             {
                                 <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled/>
@@ -197,7 +191,7 @@
                             {
                                 <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true"/>
                             }
-                            <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
+                            <input type="hidden" name="BinderGroups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
                             <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
                             <div>@group.GroupTitle</div>
                             </div>
@@ -236,6 +230,7 @@
     </section>
 }
 
+
 <div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
 
 @section Footer {
@@ -248,7 +243,7 @@
         <div id="word_count" class="site-footer-additional-statusbox-title countstatus-width"></div>
     </div>
 
-    <div class="site-footer-additional-statusbox site-footer-additional-statusbox-mobile  titlestatus-green">
+    <div class="site-footer-additional-statusbox site-footer-additional-statusbox-mobile  titlestatus-yellow">
         <div class="site-footer-additional-statusbox-status">EDIT: </div>
         <div class="site-footer-additional-statusbox-title titlestatus-width">@titleShortened</div>
     </div>

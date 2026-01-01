@@ -86,10 +86,10 @@
 
 
     <div class="right-sidebar">
-        @if (Model.Groups.Count > 0)
+        @if (Model.BinderGroups.Count > 0)
         {
             <div class="right-sidebar-item-heading">Member of Groups:</div>
-            @foreach(var group in Model.Groups)
+            @foreach(var group in Model.BinderGroups)
             {
                 @if(group.Selected == true)
                 {

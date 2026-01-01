@@ -41,7 +41,7 @@ namespace RhymeBinder.Models.DTOModels
         public bool? Locked { get; set; }
         public bool? Top { get; set; }
         public int? BinderId { get; set; }
-
+        public int? SequenceGroupId { get; set; }
 
         //  Display fields
         public string BinderName { get; set; }
@@ -51,9 +51,9 @@ namespace RhymeBinder.Models.DTOModels
         public string CreatedByUserName { get; set; }
         public string LastModifiedByUserName { get; set; }
         public string CurrentRevisionStatus { get; set; }
-        public List<DisplayTextGroup> Groups { get; set; }
-        //public List<TextGroup> MemberOfGroups { get; set; }
-        //public List<TextGroup> AvailableGroups { get; set; }
+        public List<DisplayTextGroup> BinderGroups { get; set; } // For Modal
+        public List<AdjacentHeadersInSequence> MemberOfGroups { get; set; } // For Sidebar Group Navigation
+        
 
         //  EditWindowProperty fields
         public int EditWindowPropertyId { get; set; }

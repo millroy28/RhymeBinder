@@ -703,8 +703,11 @@
             background-color: floralwhite;
             border-radius: 4px;
             border-style: ridge;
+            border-width: 2px;
             padding-left: 4px;
             padding-right: 4px;
+            margin-left: 2px;
+            margin-right: 2px;
         }
         .titlestatus-green {
             background-color: greenyellow;
@@ -849,6 +852,10 @@
             background-color: #c6c9b6;
         }
 
+        .sidebar-horizontal-spacer {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
 
         .left-sidebar {
             grid-column: 1 / 2;
@@ -865,13 +872,50 @@
             align-self: flex-start;
             font-size: small;
             padding-left: 6px;
+            cursor: pointer;
         }
+
+        .left-sidebar-item:hover {
+            text-decoration: underline;
+        }
+
 
         .left-sidebar-item-heading {
             align-self: flex-start;
             font-size: small;
             font-weight: 600;
-            padding-top: 4px;
+            margin-top: 4px;
+        }
+        .left-sidebar-item-sub-heading {
+            align-self: flex-start;
+            font-size: small;
+            font-weight: 600;
+            padding-left: 6px;
+            margin-top: 3px;
+        }
+        .left-sidebar-items-container{
+            display: flex;
+            flex-flow: column;
+        }
+        .left-sidebar-previous-in-group {
+            display: flex;
+            flex-flow: row;
+            margin-left: 6px;
+            justify-content: space-between;
+            border-bottom-style: dashed;
+            border-bottom-color: darkgray;
+            border-bottom-width: 1px;
+        }
+        .left-sidebar-next-in-group {
+            display: flex;
+            flex-flow: row;
+            margin-left: 6px;
+            justify-content: space-between;
+        }
+        .left-sidebar-inline-container{
+            display: flex;
+            flex-flow: row;
+            justify-content: space-between;
         }
 
         .right-sidebar {
@@ -898,6 +942,10 @@
             font-weight: 600;
             padding-top: 4px;
         }
+
+        
+
+
         /*``[View Sequenced Texts]*/
         .sequence-view-wrapper {
             display: grid;
@@ -2288,6 +2336,9 @@ text-decoration-line: underline;
         border-style: ridge;
         padding-left: 4px;
         padding-right: 4px;
+        border-width: 1px;
+        margin-left: 1px;
+        margin-right: 1px;
     }
     .site-footer-additional-statusbox-mobile {
         display: none;
@@ -2420,7 +2471,10 @@ height: 80vh;
         background-color: #c6c9b6;
     }
 
-
+    .sidebar-horizontal-spacer {
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
     .left-sidebar {
         display: none;
     }

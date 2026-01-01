@@ -314,6 +314,7 @@ function set_group_selected_value_on_checkbox(groupId){
 }
 
 
+
 //--------LIST VIEWS: BUTTON CLICKS ON VIEW CHANGES-------------------------------------
 function hidden_view_form_submit(actionValue, formElementID, clickElementID, hideableElementName) {
     toggle_hide_element(formElementID, clickElementID, hideableElementName);
@@ -329,7 +330,7 @@ function grouping_view_form_submit(actionValue, formElementID, groupingElementID
 
 //--------SELECTED ACTIONS: SUBMITTING IDS FOR CHANGES----------------------------------
 function selected_action_form_submit(actionValue, recordId) {
-    console.log("I am being submitted!");
+    console.log("I am being submitted with action " + actionValue + " and value " + recordId);
     // group Id value stored in form under id 'record_id'
     document.getElementById("record_id").value = recordId;
     sub_form(actionValue);

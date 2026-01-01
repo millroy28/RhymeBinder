@@ -197,6 +197,19 @@ namespace RhymeBinder.Controllers
                 case "Timeout":
                     SetAlertCookie("Editing timed out", "INFO");
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
+                case "InsertNewTextInSequence":
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
+                    if (status.success)
+                    {
+                        status = _modelHelper.TextHelper.AddNewTextAtPositionInSequence(textEdit, value);
+                    }
+                    SetAlertCookieGenericSaveStatus(status.success);
+
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                case "OpenText":
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
+                    SetAlertCookieGenericSaveStatus(status.success);
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={value}");
                 default:
                     SetAlertCookieGenericSaveStatus(status.success);
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
