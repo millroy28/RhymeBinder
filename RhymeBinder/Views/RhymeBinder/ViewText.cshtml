@@ -109,20 +109,8 @@
 
 
     <div class="right-sidebar">
-        @if (Model.BinderGroups.Count > 0)
-        {
-            <div class="right-sidebar-item-heading">Member of Groups:</div>
-            @foreach(var group in Model.BinderGroups)
-            {
-                @if(group.Selected == true)
-                {
-                    <div class="right-sidebar-item">@group.GroupTitle</div>
-                }
-            }
-        }
         <div class="right-sidebar-item-heading">Notes:</div>
-            <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
-
+        <textarea name="Note" id="note_edit_field" class="editor-box" readonly>@Model.Note</textarea>
     </div>
 
 
