@@ -66,23 +66,46 @@
 
 
     <div class="left-sidebar">
+        @if (Model.MemberOfGroups.Count > 0)
+        {
+            <div class="left-sidebar-item-heading">Member of Groups:</div>
+            @foreach (var group in Model.MemberOfGroups)
+            {
+                <div class="left-sidebar-item-sub-heading">@group.GroupTitle</div>
+                if (group.IsSequenced)
+                {
+                    <div class="left-sidebar-items-container">
+                        <div class="left-sidebar-next-in-group">
+                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.PreviousInSequenceTextHeaderId">@group.PreviousInSequenceTextHeaderTitle</a>
+                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.NextInSequenceTextHeaderId">@group.NextInSequenceTextHeaderTitle</a>
+                        </div>
+                    </div>
+
+                }
+            }
+        }
+
+        <div class="sidebar-horizontal-spacer"></div>
+
+        <div class="left-sidebar-item-heading">Visioning:</div>
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
         <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
         <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
-            
+            <div></div>
             <div class="left-sidebar-item-heading" style="text-indent: 1em">Previous visions:</div>
             foreach (var prev in Model.PreviousTexts)
             {
 
-                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: @prev.Title</div>
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls="@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
                 <div class="left-sidebar-item">Status: @prev.Status</div>
                 <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
                 <div class="left-sidebar-item">Last Edited @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
             }
         }
     </div>
+
 
 
     <div class="right-sidebar">
