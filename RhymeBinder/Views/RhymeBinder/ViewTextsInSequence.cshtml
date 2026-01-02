@@ -27,7 +27,8 @@
             <div class="menu-bar-item-right-final">
                 <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
             </div>
-            <div class="menu-bar-item-right-final">
+            @* disabling to try force edit in single view *@
+@*             <div class="menu-bar-item-right-final">
                 @if (Model.BinderReadOnly)
                 {
                     <a class="menu-bar-button-disabled mobile-menu-bar-button-edit-disabled" disabled="true">Read Only</a>
@@ -36,7 +37,7 @@
                 {
                     <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditTextsInSequence?groupId=@Model.GroupId">Edit</a>                   
                 }
-            </div>
+            </div> *@
         </div>
 
     </div>
@@ -52,7 +53,14 @@
     <div class="sequence-block-body" id="edit_area">
         @foreach (var text in Model.SimpleTexts)
         {
-            <div class="sequence-title" style="border-left-style: none" id="section-@i">@text.Title</div>
+
+            <div class="sequence-title" style="border-left-style: none" id="section-@i">
+                @text.Title
+                @if (!Model.BinderReadOnly)
+                {
+                    <a href="..\RhymeBinder\EditText?textHeaderID=@text.TextHeaderId" target="_blank" class="button menu-bar-button">Edit</a>                
+                }
+            </div>
             <hr style="border-top: 1px dashed dimgray;" />
 
             string expandText = "▼";
