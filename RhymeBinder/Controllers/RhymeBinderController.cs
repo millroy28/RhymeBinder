@@ -736,6 +736,19 @@ namespace RhymeBinder.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpPost]
+        public JsonResult SaveUserWindowWidth(int userId, int widthLevel)
+        {
+            try
+            {
+                _modelHelper.UserHelper.SaveUserWindowWidth(userId, widthLevel);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         public int GetUserId()
         {
             string aspUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;

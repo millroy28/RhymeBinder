@@ -108,14 +108,85 @@ function saveFontSizePreference(userId, fontSize) {
         }
     });
 }
+
 //-----------Window Size Functions
+
+const minwidthSize = 0; // refer to EditWindowWidthLevel enum
+const maxwidthSize = 2;
+function adjustWidth(direction) {
+    var currentWidth = document.getElementById("ViewWidth").value;
+
+    if (direction == "increase" && currentWidth < maxwidthSize) {
+        currentWidth++; 
+    } else if (direction == "decrease" && currentWidth > minwidthSize) {
+        currentWidth--;
+    }
+    setWindowWidth(currentWidth);
+    const userId = document.getElementById("userId").value;
+    saveUserWindowWidthPreference(userId, currentWidth);
+
+    document.getElementById("ViewWidth").value = currentWidth;
+}
+
+function setWindowWidth(level) {
+    var editWindow = document.getElementById("edit");
+    var leftSidebar = document.getElementById("leftSidebar");
+    var rightSidebar = document.getElementById("rightSidebar");
+
+    if (level == 0) {
+        editWindow.classList.remove("editor-view-wrapper-wideFull");
+        editWindow.classList.remove("editor-view-wrapper-wideMed");
+
+        editWindow.classList.add("editor-view-wrapper-withSidebars");
+
+        leftSidebar.classList.remove("hidden");
+        rightSidebar.classList.remove("hidden");
+        
+    } else if (level == 1) {
+        editWindow.classList.remove("editor-view-wrapper-wideFull");
+        editWindow.classList.remove("editor-view-wrapper-withSidebars");
+
+        editWindow.classList.add("editor-view-wrapper-wideMed");
+        leftSidebar.classList.add("hidden");
+        rightSidebar.classList.remove("hidden");
+    } else if (level == 2) {
+        editWindow.classList.remove("editor-view-wrapper-wideMed");
+        editWindow.classList.remove("editor-view-wrapper-withSidebars");
+
+        editWindow.classList.add("editor-view-wrapper-wideFull");
+        leftSidebar.classList.add("hidden");
+        rightSidebar.classList.add("hidden");
+    }
+
+    toggleWidthButtons(level);
+}
+
+function toggleWidthButtons(widthSize) {
+    var widthIncrease = document.getElementById("widthIncrease");
+    var widthDecrease = document.getElementById("widthDecrease");
+
+    if (widthSize <= minwidthSize) {
+        widthDecrease.classList.add("menu-bar-button-disabled");
+        widthDecrease.classList.remove("menu-bar-button");
+    }
+    else if (widthSize >= maxwidthSize) {
+        widthIncrease.classList.add("menu-bar-button-disabled");
+        widthIncrease.classList.remove("menu-bar-button");
+    } else {
+        widthDecrease.classList.remove("menu-bar-button-disabled");
+        widthIncrease.classList.remove("menu-bar-button-disabled");
+        widthDecrease.classList.add("menu-bar-button");
+        widthIncrease.classList.add("menu-bar-button");
+    }
+    return;
+}
 function saveUserWindowWidthPreference(userId, widthLevel) {
     $.ajax({
-        url: '/RhymeBinder/SaveUserWidthLevel',
+        url: '/RhymeBinder/SaveUserWindowWidth',
         type: 'POST',
         data: {
             userId: userId,
-            fontSize: fontSize
+            widthLevel: widthLevel
         },
         success: function (response) {
             console.log('Width level saved successfully');

@@ -36,6 +36,7 @@
     <input type="hidden" name="ShowLineCount" id="show_line_count" value="@Model.ShowLineCount" />
     <input type="hidden" name="ShowParagraphCount" id="show_paragraph_count" value="@Model.ShowParagraphCount" />
     <input type="hidden" name="SequenceGroupId" id="SequenceGroupId" value="@Model.SequenceGroupId" />
+    <input type="hidden" id="ViewWidth" name="EditViewExpandLevel" value=@Model.EditViewExpandLevel />
     <input type="submit" hidden name="action" value="" id="bttn_sub" />
     <input type="hidden" name="value" value="-1" id="record_id" />
 
@@ -44,9 +45,14 @@
         <div class="menu-bar-main mobile-menu-bar-main">
             <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags" >@Model.BinderName</div>
             <div class="menu-bar-item">
-                <span class="menu-bar-button" style="margin-left: 0px !important" onclick="adjustFontSize('decrease')"> - </span>
+                <span class="menu-bar-button" id="fontDecrease" style="margin-left: 0px !important" onclick="adjustFontSize('decrease')"> - </span>
                 <span class="mobile-menu-bar-font"> Font Size </span>
-                <span class="menu-bar-button" style="margin-left: 0px !important" onclick="adjustFontSize('increase')"> + </span>
+                <span class="menu-bar-button" id="fontIncrease" style="margin-left: 0px !important" onclick="adjustFontSize('increase')"> + </span>
+            </div>
+            <div class="menu-bar-item menu-bar-item-mobileHide">
+                <span class="menu-bar-button" id="widthDecrease" style="margin-left: 0px !important" onclick="adjustWidth('decrease')"> - </span>
+                <span> Width </span>
+                <span class="menu-bar-button" id="widthIncrease" style="margin-left: 0px !important" onclick="adjustWidth('increase')"> + </span>
             </div>
             <div class="menu-bar-item menu-bar-item-mobileHide">
                 Status:
@@ -119,7 +125,7 @@
     </div>
 
 
-    <div class="left-sidebar">
+    <div class="left-sidebar" id="leftSidebar">
         @if (Model.MemberOfGroups.Count > 0)
         {
             <div class="left-sidebar-item-heading">Member of Groups:</div>
@@ -198,7 +204,7 @@
     </div>
 
 
-    <div class="right-sidebar">
+    <div class="right-sidebar" id="rightSidebar">
         <div class="right-sidebar-item-heading">Notes:</div>
         <textarea name="Note" id="note_edit_field" style="font-size: @fontSize" class="editor-box">@Model.Note</textarea>
     </div>
@@ -316,6 +322,7 @@
         on_start_get_form_sub_button('bttn_sub');
         initialize_word_count();
         toggleFontSizeButtons(@Model.EditViewFontSize);
+        setWindowWidth(@Model.EditViewExpandLevel);
         run_these_functions_on_page_load();
     }
 

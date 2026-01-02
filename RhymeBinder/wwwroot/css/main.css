@@ -10,6 +10,9 @@
         cursor: default;
     }
 
+    .hidden{
+        display: none !important;
+    }
 
     .navbar {
         display: contents;
@@ -429,7 +432,7 @@
         .editor-view-wrapper {
             display: grid;
             grid-gap: 0px;
-            grid-template-columns: 26% 2% 2% 50% 20%;
+            /*grid-template-columns: 20% 2.5% 2.5% 50% 25%;*/
             grid-template-rows: auto;
             box-sizing: border-box;
             width: 100%;
@@ -437,6 +440,17 @@
             justify-content: center;
         }
 
+        .editor-view-wrapper-withSidebars {
+            grid-template-columns: 20% 2.5% 2.5% 50% 25%;
+        }
+
+        .editor-view-wrapper-wideMed {
+            grid-template-columns: 10% 2.5% 2.5% 70% 15%;
+        }
+
+        .editor-view-wrapper-wideFull {
+            grid-template-columns: 0% 2.5% 2.5% 90% 5%;
+        }
 
         .list-texts-menu-bar-main {
             grid-column: 1 / 4;
