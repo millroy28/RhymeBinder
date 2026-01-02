@@ -2372,7 +2372,17 @@ text-decoration-line: underline;
         border: 0px !important;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
     }
-
+    .mobile-menu-bar-font {
+        background: url("../img/font.svg") no-repeat;
+        font-size: 1px;
+        color: transparent;
+        border-color: transparent;
+        padding: 8px !important;
+        margin: 0px !important;
+        border: 0px !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        display: inline-block;
+    }
 
 
     /*`Site Footer`*/

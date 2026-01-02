@@ -16,7 +16,7 @@
     string menuTextcolorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextcolorTag;
     string titleShortened = Model.Title.Length > 52 ? $"{ Model.Title.Substring(0, 52)}..." : Model.Title;
-
+    string fontSize = $"{Model.EditViewFontSize}px";
 }
 @Html.Partial("_Alert")
 
@@ -26,7 +26,7 @@
     <input type="hidden" name="TextId" value="@Model.TextId" />
     <input type="hidden" name="TextNoteId" value="@Model.TextNoteId" />    
     <input type="hidden" name="BinderId" value="@Model.BinderId" />    
-    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="UserId" id="userId" value="@Model.UserId" />
     <input type="hidden" name="BodyCursorPosition" id="body_cursor_position" value="@Model.BodyCursorPosition" />
     <input type="hidden" name="BodyScrollPosition" id="body_scroll_position" value="@Model.BodyScrollPosition" />
     <input type="hidden" name="NoteCursorPosition" id="note_cursor_position" value="@Model.NoteCursorPosition" />
@@ -43,6 +43,11 @@
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
             <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags" >@Model.BinderName</div>
+            <div class="menu-bar-item">
+                <span class="menu-bar-button" style="margin-left: 0px !important" onclick="adjustFontSize('decrease')"> - </span>
+                <span class="mobile-menu-bar-font"> Font Size </span>
+                <span class="menu-bar-button" style="margin-left: 0px !important" onclick="adjustFontSize('increase')"> + </span>
+            </div>
             <div class="menu-bar-item menu-bar-item-mobileHide">
                 Status:
             </div>
@@ -100,11 +105,11 @@
 
 
     <div class="title-bar">
-        <textarea name="Title" class="title-box" id="title_edit_field" required>@Model.Title</textarea>
+        <textarea name="Title" class="title-box" id="title_edit_field" style="font-size: @fontSize" required>@Model.Title</textarea>
     </div>
 
     <div class="editor-container">
-        <textarea name="TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()" onchange="update_word_count()">@Model.TextBody</textarea>
+        <textarea name="TextBody" class="editor-box" id="body_edit_field" style="font-size: @fontSize" onscroll="sync_scroll()" onchange="update_word_count()">@Model.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
         <textarea class="ruler-box ruler-box-b" id="paragraph_count" name="paragraph_count" readonly></textarea>
@@ -195,7 +200,7 @@
 
     <div class="right-sidebar">
         <div class="right-sidebar-item-heading">Notes:</div>
-        <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
+        <textarea name="Note" id="note_edit_field" style="font-size: @fontSize" class="editor-box">@Model.Note</textarea>
     </div>
 
     <div class="dialog-modal" id="createNewRevision">
@@ -300,12 +305,12 @@
 }
 
 
-<script language="Javascript" src="~/js/statusBar.js"></script>
+
 <script language="Javascript" src="~/js/autosave.js"></script>
 <script language="Javascript" src="~/js/site.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>
 <script language="Javascript" src="~/js/drawers.js"></script>
-<script language="Javascript" src="~/js/textSidebar.js"></script>
+<script language="Javascript" src="~/js/textView.js"></script>
     <script language="Javascript">
     window.onload = function(){
         on_start_get_form_sub_button('bttn_sub');

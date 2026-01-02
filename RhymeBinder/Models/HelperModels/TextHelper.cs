@@ -920,6 +920,9 @@ namespace RhymeBinder.Models.HelperModels
                 //MemberOfGroups = memberOfGroups,
                 //AvailableGroups = availableGroups,
 
+                EditViewExpandLevel = currentUser.EditViewExpandLevel,
+                EditViewFontSize = currentUser.EditViewFontSize,
+
                 EditWindowPropertyId = thisEditWindowProperty.EditWindowPropertyId,
                 ActiveElement = thisEditWindowProperty.ActiveElement,
                 BodyCursorPosition = thisEditWindowProperty.BodyCursorPosition,

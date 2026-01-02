@@ -31,7 +31,8 @@ namespace RhymeBinder.Models.DBModels
         public bool DefaultShowLineCount { get; set; }
         public bool DefaultShowParagraphCount { get; set; }
         public int TimeZone { get; set; }
-
+        public int EditViewExpandLevel { get; set; }
+        public int EditViewFontSize { get; set; }
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual ICollection<Binder> BinderCreatedByNavigations { get; set; }
         public virtual ICollection<Binder> BinderLastModifiedByNavigations { get; set; }

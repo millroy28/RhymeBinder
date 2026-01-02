@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NuGet.Protocol;
 using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.ViewModels;
 using System;
@@ -144,6 +145,35 @@ namespace RhymeBinder.Models.HelperModels
             status = CreateNewBinderViewSet(defaultBinder.BinderId, newUserId);
             if (status.success) status = CreateNewBinderViewSet(trashBinder.BinderId, newUserId);
             if (status.success) status = CreateNewBinderViewSet(loosePages.BinderId, newUserId);
+
+            return status;
+        }
+        public Status SaveUserFontSize(int userId, int fontSize)
+        {
+            Status status = new();
+            if(fontSize > 72 || fontSize < 6)
+            {
+                status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.WARN;
+                status.message = "Minimum or Maximum Allowable Font Size Reached";
+                return status;
+            }
+            try
+            {
+                var currentUser = _context.SimpleUsers.Single(x => x.UserId == userId);
+                currentUser.EditViewFontSize = fontSize;
+                _context.SaveChanges();
+
+                status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            }
+            catch
+            {
+                status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save User's font preference";
+                return status;
+            }
 
             return status;
         }

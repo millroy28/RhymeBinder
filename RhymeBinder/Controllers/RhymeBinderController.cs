@@ -723,6 +723,19 @@ namespace RhymeBinder.Controllers
             status.userId = GetUserId();
             return View(status);
         }
+        [HttpPost]
+        public JsonResult SaveUserFontSize(int userId, int fontSize)
+        {
+            try
+            {
+                _modelHelper.UserHelper.SaveUserFontSize(userId, fontSize);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         public int GetUserId()
         {
             string aspUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
