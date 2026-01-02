@@ -91,7 +91,7 @@
                 <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" value="Save" id="save" onclick="set_form_submitting_true()" />
             </div>
             <div class="menu-bar-item-right-final">
-                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-revision" value="Revision" id="revision" onclick="set_form_submitting_true()" />
+                <a class="button menu-bar-button mobile-menu-bar-button-revision" onclick="open_modal_with_Id('createNewRevision')">Revision</a>
             </div>
         </div>
 
@@ -121,20 +121,57 @@
             @foreach (var group in Model.MemberOfGroups)
             {
                 <div class="left-sidebar-item-sub-heading">@group.GroupTitle</div>
-                <div class="left-sidebar-items-container">
-                    <div class="left-sidebar-previous-in-group">
-                        <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.PreviousInSequenceTextHeaderId)">@group.PreviousInSequenceTextHeaderTitle</div>
-                        <div class="left-sidebar-item" onclick="insert_new_text_in_sequence(@group.GroupId, 'pre')">Insert New ◄</div>
+                if (group.IsSequenced)
+                {
+                    <div class="left-sidebar-items-container">
+                        <div class="left-sidebar-previous-in-group">
+                            <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.PreviousInSequenceTextHeaderId)">@group.PreviousInSequenceTextHeaderTitle</div>
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPrior')">Insert New ◄</div>
+                        </div>
+                        <div class="left-sidebar-next-in-group">
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPost')">► Insert New</div>
+                            <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.NextInSequenceTextHeaderId)">@group.NextInSequenceTextHeaderTitle</div>
+                        </div>
                     </div>
-                    <div class="left-sidebar-next-in-group">
-                        <div class="left-sidebar-item" onclick="insert_new_text_in_sequence(@group.GroupId, 'post')">► Insert New</div>
-                        <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.NextInSequenceTextHeaderId)">@group.NextInSequenceTextHeaderTitle</div>
+
+                    <div class="dialog-modal" id="insertNewPrior">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence before this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPrior')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'pre')">Yes</a>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="dialog-modal" id="insertNewPost">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence after this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPost')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'post')">Yes</a>
+                        </div>
+                    </div>
+                }
             }
         }
 
-        <div class="sidebar-horizontal-spacer"></div>
+        <div class="sidebar-horizontal-spacer"></div>.
 
         <div class="left-sidebar-item-heading">Visioning:</div>
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
@@ -161,6 +198,22 @@
         <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
     </div>
 
+    <div class="dialog-modal" id="createNewRevision">
+        <div class="list-modal-header">
+            Create New Revision?
+        </div>
+
+        <div class="dialog-modal-content">
+            <div class="dialog-modal-content-item">
+                Would you like create a revision of this text?
+            </div>
+        </div>
+
+        <div class="dialog-modal-footer">
+            <a class="button menu-bar-button" onclick="close_modal_with_id('createNewRevision')">Cancel</a>
+            <input type="submit" name="action" class="button menu-bar-button" value="Revision" id="revision" onclick="set_form_submitting_true()" />
+        </div>
+    </div>
 
     <div class="list-modal" id="groups"  >
         <div class="list-modal-header">
@@ -168,8 +221,6 @@
         </div>
         
         <div class="list-modal-content">
-
-
                 @foreach(var group in Model.BinderGroups)
                 {
                     if (group.TextGroupId > 0)
@@ -197,9 +248,7 @@
                             </div>
                             { groupIndex++; }
                     }
-                }
-             
-
+                }          
         </div>
         
         <div class="list-modal-footer">
@@ -207,6 +256,7 @@
             <a class="button menu-bar-button" onclick="set_form_submitting_true(); submit_modal('EditText')">Submit</a>
         </div>
     </div>
+
 
 
 </form>
