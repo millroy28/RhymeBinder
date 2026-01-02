@@ -39,7 +39,8 @@ function insert_new_text_in_sequence(groupId, value) {
 
 
 //-----------Font Size Functions
-
+const maxFontSize = 40;
+const minFontSize = 8;
 function adjustFontSize(direction) {
     var titleBox = document.getElementById("title_edit_field");
     var editorBox = document.getElementById("body_edit_field");
@@ -49,20 +50,45 @@ function adjustFontSize(direction) {
 
     var currentFontSizeInt = parseInt(currentFontSizeString.replace("px", ""));
 
-    if (direction == "increase") {
+    if (direction == "increase" && currentFontSizeInt < maxFontSize) {
         currentFontSizeInt++;
-    } else if (direction == "decrease") {
+    } else if (direction == "decrease" && currentFontSizeInt > minFontSize) {
         currentFontSizeInt--;
+    } else {
+        return;
     }
+
     newFontSizeString = currentFontSizeInt.toString() + "px";
 
     titleBox.style.fontSize = newFontSizeString;
     editorBox.style.fontSize = newFontSizeString;
     notesBox.style.fontSize = newFontSizeString;
 
+    toggleFontSizeButtons(currentFontSizeInt);
+
     const userId = document.getElementById("userId").value;
     saveFontSizePreference(userId, currentFontSizeInt);
 
+    return;
+}
+
+function toggleFontSizeButtons(fontSize) {
+    var fontIncrease = document.getElementById("fontIncrease");
+    var fontDecrease = document.getElementById("fontDecrease");
+
+    if (fontSize <= minFontSize) {
+        fontDecrease.classList.add("menu-bar-button-disabled");
+        fontDecrease.classList.remove("menu-bar-button");
+    }
+    else if (fontSize >= maxFontSize) {
+        fontIncrease.classList.add("menu-bar-button-disabled");
+        fontIncrease.classList.remove("menu-bar-button");
+    } else {
+        fontDecrease.classList.remove("menu-bar-button-disabled");
+        fontIncrease.classList.remove("menu-bar-button-disabled");
+        fontDecrease.classList.add("menu-bar-button");
+        fontIncrease.classList.add("menu-bar-button");
+    }
     return;
 }
 
@@ -83,5 +109,20 @@ function saveFontSizePreference(userId, fontSize) {
     });
 }
 //-----------Window Size Functions
-
+function saveUserWindowWidthPreference(userId, widthLevel) {
+    $.ajax({
+        url: '/RhymeBinder/SaveUserWidthLevel',
+        type: 'POST',
+        data: {
+            userId: userId,
+            fontSize: fontSize
+        },
+        success: function (response) {
+            console.log('Width level saved successfully');
+        },
+        error: function (xhr, status, error) {
+            console.error('Error saving width level:', error);
+        }
+    });
+}
 

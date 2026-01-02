@@ -151,7 +151,7 @@ namespace RhymeBinder.Models.HelperModels
         public Status SaveUserFontSize(int userId, int fontSize)
         {
             Status status = new();
-            if(fontSize > 72 || fontSize < 6)
+            if(fontSize > 40 || fontSize < 8)
             {
                 status.success = false;
                 status.alertLevel = Enums.AlertLevelEnum.WARN;
