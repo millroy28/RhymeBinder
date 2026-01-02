@@ -1297,6 +1297,14 @@ namespace RhymeBinder.Models.HelperModels
         public Status AddNewTextAtPositionInSequence(TextEdit textEdit, string value)
         {// front end will be send pre/post as the value - indicating whether the new text should go before or after the text header in sequence
             Status status = new();
+
+            if(value != "pre" && value != "post")
+            {
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to add a new text to sequence";
+                return status;
+            }
+
             try
             {
                 status = StartNewText(textEdit.UserId, (int)textEdit.BinderId, textEdit.SequenceGroupId);

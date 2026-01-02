@@ -114,12 +114,7 @@ function sync_scroll() {
 }
 
 
-//--------EDIT VIEW SIDEBAR-------------------------------------------------------------
-function insert_new_text_in_sequence(groupId, value) {
-    console.log("TESTING GROUP ID : " + groupId + "   VALUE: " + value);
-    document.getElementById("SequenceGroupId").value = groupId;
-    selected_action_form_submit('InsertNewTextInSequence', value);
-}
+
 
 //-----------Initializing auto-hide elements
 toggle_hide_element('show_line_count', 'toggle_line_count', 'line_count', 'init');

@@ -18,8 +18,15 @@
 
 
 
-<div class="editor-view-wrapper">
-    
+@* <div class="editor-view-wrapper"> *@
+<form class="editor-view-wrapper" action="ViewText" method="post" id="edit">
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="BinderId" value="@Model.BinderId" />
+    <input type="hidden" name="TextHeaderId" value="@Model.TextHeaderId" />
+    <input type="hidden" name="SequenceGroupId" id="SequenceGroupId" value="@Model.SequenceGroupId" />
+    <input type="hidden" name="value" value="-1" id="record_id" />
+    <input type="submit" hidden name="action" value="" id="bttn_sub" />
+
     <div class="menu-bar">
 
 
@@ -65,7 +72,7 @@
 
 
 
-    <div class="left-sidebar">
+@*     <div class="left-sidebar">
         @if (Model.MemberOfGroups.Count > 0)
         {
             <div class="left-sidebar-item-heading">Member of Groups:</div>
@@ -106,7 +113,84 @@
         }
     </div>
 
+ *@
+    <div class="left-sidebar">
+        @if (Model.MemberOfGroups.Count > 0)
+        {
+            <div class="left-sidebar-item-heading">Member of Groups:</div>
+            @foreach (var group in Model.MemberOfGroups)
+            {
+                <div class="left-sidebar-item-sub-heading">@group.GroupTitle</div>
+                if (group.IsSequenced)
+                {
+                    <div class="left-sidebar-items-container">
+                        <div class="left-sidebar-previous-in-group">
+                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.PreviousInSequenceTextHeaderId">@group.PreviousInSequenceTextHeaderTitle</a>
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPrior')">Insert New ◄</div>
+                        </div>
+                        <div class="left-sidebar-next-in-group">
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPost')">► Insert New</div>
+                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.NextInSequenceTextHeaderId">@group.NextInSequenceTextHeaderTitle</a>
+                        </div>
+                    </div>
 
+                    <div class="dialog-modal" id="insertNewPrior">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence before this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPrior')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'pre')">Yes</a>
+                        </div>
+                    </div>
+
+                    <div class="dialog-modal" id="insertNewPost">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence after this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPost')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'post')">Yes</a>
+                        </div>
+                    </div>
+                }
+            }
+        }
+
+        <div class="sidebar-horizontal-spacer"></div>
+
+        <div class="left-sidebar-item-heading">Visioning:</div>
+        <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
+        <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
+        <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
+        @if (Model.PreviousTexts.Count() > 0)
+        {
+            <div></div>
+            <div class="left-sidebar-item-heading" style="text-indent: 1em">Previous visions:</div>
+            foreach (var prev in Model.PreviousTexts)
+            {
+
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls="@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
+                <div class="left-sidebar-item">Status: @prev.Status</div>
+                <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
+                <div class="left-sidebar-item">Last Edited @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
+            }
+        }
+    </div>
 
     <div class="right-sidebar">
         <div class="right-sidebar-item-heading">Notes:</div>
@@ -117,7 +201,7 @@
 
 
 
-</div>
+</form>
 
 @* Populate Drawers *@
 @foreach (var prev in Model.PreviousTexts)
@@ -154,9 +238,10 @@
 <br />
 
 <script language="Javascript" src="~/js/statusBar.js"></script>
+<script language="Javascript" src="~/js/textSidebar.js"></script>
 <script language="Javascript">
     window.onload = function(){
-
+        on_start_get_form_sub_button('bttn_sub');
         initialize_word_count();
     }
 </script>

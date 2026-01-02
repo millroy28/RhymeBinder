@@ -12,7 +12,6 @@ namespace RhymeBinder.Models.DTOModels
         public int UserId { get; set; }
 
         // Text Status
-
         public bool BinderReadOnly { get; set; }
 
         // Text fields

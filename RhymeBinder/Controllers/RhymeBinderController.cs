@@ -116,6 +116,7 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ListTextsOnSessionStart");
             }
         }
+        [HttpGet]
         public IActionResult ViewText(int textHeaderID)
         {
             // Check for alerts
@@ -135,6 +136,22 @@ namespace RhymeBinder.Controllers
 
             return View(textEdit);
         }
+        [HttpPost]
+        public IActionResult ViewText(TextEdit textEdit, string action, string value)
+        {
+            Status status = new Status();
+
+            switch (action) 
+            {
+                case "InsertNewTextInSequence":
+                    status = _modelHelper.TextHelper.AddNewTextAtPositionInSequence(textEdit, value);
+                    SetAlertCookieGenericSaveStatus(status.success);
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                default:
+                    return Redirect($"/RhymeBinder/ViewText?textHeaderID={textEdit.TextHeaderId}");
+            }
+        }
+
         [HttpGet]
         public IActionResult EditText(int textHeaderID)
         {
