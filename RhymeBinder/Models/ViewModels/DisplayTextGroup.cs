@@ -12,6 +12,5 @@ namespace RhymeBinder.Models.ViewModels
         public string BinderName { get; set; }
         public bool? Selected { get; set; }
         public List<int> LinkedTextHeaderIds { get; set; }
-
     }
 }

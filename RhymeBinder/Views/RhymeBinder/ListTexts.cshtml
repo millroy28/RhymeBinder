@@ -1,4 +1,5 @@
-﻿@{
+﻿@using RhymeBinder.Models.ViewModels
+@{
     ViewData["Title"] = "ListTexts";
 }
 
@@ -14,7 +15,9 @@
     }
     string menuTextColorTag = $"color: {Model.MenuTitleColor};";
     string styleTags = binderColorTag + menuTextColorTag;
-
+    List<DisplayTextGroup> drawerTextGroups = Model.Groups.Where(x => x.TextGroupId != -1)
+                                                          .OrderBy(x => x.GroupTitle)
+                                                          .ToList();
 }
 
 @Html.Partial("_Alert")
@@ -159,6 +162,9 @@
            
                         <a class="menu-bar-button" onclick="clear_search()">Clear</a>
                 </div>
+                    <div class="menu-bar-item">
+                        <a href="#" class="menu-bar-button" data-drawer-trigger aria-controls="GroupDrawer" aria-expanded="false">List of Groups</a>
+                    </div>
             </div>
             @if (Model.View.GroupSequence == true)
             {
@@ -250,7 +256,7 @@
                                 }
                         </td>
                         <td style="text-align: center" name="wordcount_col">@text.WordCount.ToString("N0")</td>
-                        <td style="text-align: center" name="charcount_col">@text.CharacterCount.ToString("N0");</td>
+                        <td style="text-align: center" name="charcount_col">@text.CharacterCount.ToString("N0")</td>
                     </tr>
                     { index++; }
                 }
@@ -378,8 +384,23 @@
         </div>
     </div>
 
+    @* Group Select Drawer *@
+    <section class="drawer drawer--right" id="GroupDrawer" data-drawer-target>
+        <div class="drawer__wrapper">
+            <div class="drawer__header">
+                <div class="drawer__title">Groups</div>
+                <button class="drawer__close" data-drawer-close aria-label="Close Drawer"></button>
+            </div>
+            <div class="drawer__content">
+                @foreach (var group in drawerTextGroups)
+                {
+                    <a class="link-item" onclick="selected_action_form_submit('GroupFilter', @group.SavedViewId)">@group.GroupTitle</a>
+                }
+            </div>
+        </div>
+    </section>
 
-
+    <script language="Javascript" src="~/js/drawers.js"></script>
     <script language="Javascript">
     window.onload = on_start_get_form_sub_button('bttn_sub');
     window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');

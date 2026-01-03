@@ -116,6 +116,7 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ListTextsOnSessionStart");
             }
         }
+        [HttpGet]
         public IActionResult ViewText(int textHeaderID)
         {
             // Check for alerts
@@ -135,6 +136,22 @@ namespace RhymeBinder.Controllers
 
             return View(textEdit);
         }
+        [HttpPost]
+        public IActionResult ViewText(TextEdit textEdit, string action, string value)
+        {
+            Status status = new Status();
+
+            switch (action) 
+            {
+                case "InsertNewTextInSequence":
+                    status = _modelHelper.TextHelper.AddNewTextAtPositionInSequence(textEdit, value);
+                    SetAlertCookieGenericSaveStatus(status.success);
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                default:
+                    return Redirect($"/RhymeBinder/ViewText?textHeaderID={textEdit.TextHeaderId}");
+            }
+        }
+
         [HttpGet]
         public IActionResult EditText(int textHeaderID)
         {
@@ -197,6 +214,19 @@ namespace RhymeBinder.Controllers
                 case "Timeout":
                     SetAlertCookie("Editing timed out", "INFO");
                     return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
+                case "InsertNewTextInSequence":
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
+                    if (status.success)
+                    {
+                        status = _modelHelper.TextHelper.AddNewTextAtPositionInSequence(textEdit, value);
+                    }
+                    SetAlertCookieGenericSaveStatus(status.success);
+
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                case "OpenText":
+                    status = _modelHelper.TextHelper.SaveEditedText(textEdit);
+                    SetAlertCookieGenericSaveStatus(status.success);
+                    return Redirect($"/RhymeBinder/EditText?textHeaderID={value}");
                 default:
                     SetAlertCookieGenericSaveStatus(status.success);
                     return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
@@ -677,7 +707,7 @@ namespace RhymeBinder.Controllers
             {
                 return RedirectToAction("SetupNewUser");
             };
-            return RedirectToAction("ListTextsOnSessionStart");
+            return RedirectToAction("ListBinders");
         }
         public IActionResult Manage()
         {
@@ -692,6 +722,32 @@ namespace RhymeBinder.Controllers
         {
             status.userId = GetUserId();
             return View(status);
+        }
+        [HttpPost]
+        public JsonResult SaveUserFontSize(int userId, int fontSize)
+        {
+            try
+            {
+                _modelHelper.UserHelper.SaveUserFontSize(userId, fontSize);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpPost]
+        public JsonResult SaveUserWindowWidth(int userId, int widthLevel)
+        {
+            try
+            {
+                _modelHelper.UserHelper.SaveUserWindowWidth(userId, widthLevel);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
         public int GetUserId()
         {

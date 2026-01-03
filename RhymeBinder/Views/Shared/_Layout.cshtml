@@ -13,7 +13,7 @@
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RhymeBinder @envTag</title>
+    <title>@ViewData["Title"] - BinderCore @envTag</title>
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />*@
     <link rel="stylesheet" href="~/css/main.css" />
@@ -22,7 +22,7 @@
     <header style="background-color: @(isProduction ? "transparent" : "crimson");">
         <nav class="navbar">
            
-                    <div class="navbar-item-brand">RhymeBinder @envTag</div>
+                    <div class="navbar-item-brand">BinderCore @envTag</div>
                     <ul class="navbar-links">
 
                         <li class="navbar-item">
@@ -48,15 +48,19 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="site-footer">
-        <div class="container">
-            &copy; 2021-2025 - RhymeBinder - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="site-footer-copyright">
+            &copy; 2021-2025 - BinderCore/RhymeBinder
+        </div>
+        <div class="site-footer-additional">
+            @RenderSection("Footer", required: false)
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
+
 </html>

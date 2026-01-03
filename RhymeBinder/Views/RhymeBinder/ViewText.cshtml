@@ -11,21 +11,38 @@
     }
     string menuTextColorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextColorTag;
+    string titleShortened = Model.Title.Length > 40 ? $"{Model.Title.Substring(0, 40)}..." : Model.Title;
+    string fontSize = $"{Model.EditViewFontSize}px";
+
 }
 
 @Html.Partial("_Alert")
 
 
-<div class="editor-view-wrapper">
-    
+
+<form class="editor-view-wrapper" action="ViewText" method="post" id="edit">
+    <input type="hidden" id="userId" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="BinderId" value="@Model.BinderId" />
+    <input type="hidden" name="TextHeaderId" value="@Model.TextHeaderId" />
+    <input type="hidden" name="SequenceGroupId" id="SequenceGroupId" value="@Model.SequenceGroupId" />
+    <input type="hidden" id="ViewWidth" name="EditViewExpandLevel" value=@Model.EditViewExpandLevel />
+    <input type="hidden" name="value" value="-1" id="record_id" />
+    <input type="submit" hidden name="action" value="" id="bttn_sub" />
+
     <div class="menu-bar">
-
-
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags">
-                Viewing: @Model.DisplayTitle
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags">@Model.BinderName</div>
+            <div class="menu-bar-item">
+                <span class="menu-bar-button" id="fontDecrease" style="margin-left: 0px !important" onclick="adjustFontSize('decrease')"> - </span>
+                <span class="mobile-menu-bar-font" > Font Size </span>
+                <span class="menu-bar-button" id="fontIncrease" style="margin-left: 0px !important" onclick="adjustFontSize('increase')"> + </span>
             </div>
-          </div>
+            <div class="menu-bar-item menu-bar-item-mobileHide">
+                <span class="menu-bar-button" id="widthDecrease" style="margin-left: 0px !important" onclick="adjustWidth('decrease')"> - </span>
+                <span> Width </span>
+                <span class="menu-bar-button" id="widthIncrease" style="margin-left: 0px !important" onclick="adjustWidth('increase')"> + </span>
+            </div>
+        </div>
 
         <div class="menu-bar-escape mobile-menu-bar-escape">
             <div class="menu-bar-item-right-final">
@@ -50,11 +67,11 @@
     </div>
 
     <div class="title-bar">
-        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field" readonly>@Model.Title</textarea>
+        <textarea name="TextHeader.Title" class="title-box" id="title_edit_field" style="font-size: @fontSize" readonly>@Model.Title</textarea>
     </div>
 
     <div class="editor-container">
-        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" readonly>@Model.TextBody</textarea>
+        <textarea name="Text.TextBody" class="editor-box" id="body_edit_field" style="font-size: @fontSize" readonly>@Model.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
        
@@ -63,20 +80,77 @@
        
     </div>
 
+    <div class="left-sidebar" id="leftSidebar">
+        @if (Model.MemberOfGroups.Count > 0)
+        {
+            <div class="left-sidebar-item-heading">Member of Groups:</div>
+            @foreach (var group in Model.MemberOfGroups)
+            {
+                <div class="left-sidebar-item-sub-heading">@group.GroupTitle</div>
+                if (group.IsSequenced)
+                {
+                    <div class="left-sidebar-items-container">
+                        <div class="left-sidebar-previous-in-group">
+                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.PreviousInSequenceTextHeaderId">@group.PreviousInSequenceTextHeaderTitle</a>
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPrior')">Insert New ◄</div>
+                        </div>
+                        <div class="left-sidebar-next-in-group">
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPost')">► Insert New</div>
+                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.NextInSequenceTextHeaderId">@group.NextInSequenceTextHeaderTitle</a>
+                        </div>
+                    </div>
 
+                    <div class="dialog-modal" id="insertNewPrior">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
 
-    <div class="left-sidebar">
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence before this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPrior')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'pre')">Yes</a>
+                        </div>
+                    </div>
+
+                    <div class="dialog-modal" id="insertNewPost">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence after this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPost')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'post')">Yes</a>
+                        </div>
+                    </div>
+                }
+            }
+        }
+
+        <div class="sidebar-horizontal-spacer"></div>
+
+        <div class="left-sidebar-item-heading">Visioning:</div>
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
         <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
         <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
         @if (Model.PreviousTexts.Count() > 0)
         {
-            
+            <div></div>
             <div class="left-sidebar-item-heading" style="text-indent: 1em">Previous visions:</div>
             foreach (var prev in Model.PreviousTexts)
             {
 
-                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: @prev.Title</div>
+                <div class="left-sidebar-item-heading">No. @prev.VisionNumber: <a href="#" data-drawer-trigger aria-controls="@prev.VisionNumber" aria-expanded="false">@prev.Title</a></div>
                 <div class="left-sidebar-item">Status: @prev.Status</div>
                 <div class="left-sidebar-item">Created @prev.Created.Value.ToString("d") by @prev.CreatedBy</div>
                 <div class="left-sidebar-item">Last Edited @prev.LastModified.Value.ToString("d") by @prev.LastModifiedBy</div>
@@ -84,29 +158,13 @@
         }
     </div>
 
-
-    <div class="right-sidebar">
-        @if (Model.Groups.Count > 0)
-        {
-            <div class="right-sidebar-item-heading">Member of Groups:</div>
-            @foreach(var group in Model.Groups)
-            {
-                @if(group.Selected == true)
-                {
-                    <div class="right-sidebar-item">@group.GroupTitle</div>
-                }
-            }
-        }
+    <div class="right-sidebar" id="rightSidebar">
         <div class="right-sidebar-item-heading">Notes:</div>
-            <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
-
+        <textarea name="Note" id="note_edit_field" class="editor-box" style="font-size: @fontSize" readonly>@Model.Note</textarea>
     </div>
 
 
-
-
-
-</div>
+</form>
 
 @* Populate Drawers *@
 @foreach (var prev in Model.PreviousTexts)
@@ -128,9 +186,30 @@
 
 <div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
 
+@section Footer {
+    <div class="site-footer-additional-statusbox">
+        <div class="site-footer-additional-statusbox-status">Word Count: </div>
+        <div id="word_count" class="site-footer-additional-statusbox-title countstatus-width">0</div>
+    </div>
+    <div class="site-footer-additional-statusbox titlestatus-yellow">
+        <div class="site-footer-additional-statusbox-status">VIEW: </div>
+        <div class="site-footer-additional-statusbox-title titlestatus-width">@titleShortened</div>
+    </div>
+}
+
 
 <br />
 
+
+<script language="Javascript" src="~/js/textView.js"></script>
+<script language="Javascript">
+    window.onload = function(){
+        on_start_get_form_sub_button('bttn_sub');
+        initialize_word_count();
+        toggleFontSizeButtons(@Model.EditViewFontSize);
+        setWindowWidth(@Model.EditViewExpandLevel);
+    }
+</script>
 
 
 

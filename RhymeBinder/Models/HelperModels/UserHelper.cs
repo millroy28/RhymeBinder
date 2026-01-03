@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using NuGet.Protocol;
 using RhymeBinder.Models.DBModels;
+using RhymeBinder.Models.Enums;
 using RhymeBinder.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -147,7 +149,65 @@ namespace RhymeBinder.Models.HelperModels
 
             return status;
         }
-      
+        public Status SaveUserFontSize(int userId, int fontSize)
+        {
+            Status status = new();
+            if(fontSize > 40 || fontSize < 8)
+            {
+                status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.WARN;
+                status.message = "Minimum or Maximum Allowable Font Size Reached";
+                return status;
+            }
+            try
+            {
+                var currentUser = _context.SimpleUsers.Single(x => x.UserId == userId);
+                currentUser.EditViewFontSize = fontSize;
+                _context.SaveChanges();
+
+                status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            }
+            catch
+            {
+                status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save User's font preference";
+                return status;
+            }
+
+            return status;
+        }
+
+        public Status SaveUserWindowWidth(int userId, int widthLevel)
+        {
+            Status status = new();
+            if(!Enum.IsDefined(typeof(EditWindowWidthLevel), widthLevel)){
+                status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save User's width preference";
+                return status;
+            }
+            try
+            {
+                var currentUser = _context.SimpleUsers.Single(x => x.UserId == userId);
+                currentUser.EditViewExpandLevel = widthLevel;
+                _context.SaveChanges();
+
+                status.success = true;
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            }
+            catch
+            {
+                status.success = false;
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                status.message = "Failed to save User's font preference";
+                return status;
+            }
+
+            return status;
+        }
+
         public DisplaySimpleUser GetCurrentDisplaySimpleUser(int userId)
         {
             SimpleUser thisUser = GetCurrentSimpleUser(userId);

@@ -15,6 +15,8 @@
     }
     string menuTextcolorTag = $"color: {Model.DisplayTitleColor};";
     string styleTags = binderColorTag + menuTextcolorTag;
+    string titleShortened = Model.Title.Length > 52 ? $"{ Model.Title.Substring(0, 52)}..." : Model.Title;
+    string fontSize = $"{Model.EditViewFontSize}px";
 }
 @Html.Partial("_Alert")
 
@@ -23,9 +25,8 @@
     <input type="hidden" name="TextHeaderId" value="@Model.TextHeaderId" />
     <input type="hidden" name="TextId" value="@Model.TextId" />
     <input type="hidden" name="TextNoteId" value="@Model.TextNoteId" />    
-    <input type="hidden" name="BinderId" value="@Model.BinderId" />   
- 
-    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="BinderId" value="@Model.BinderId" />    
+    <input type="hidden" name="UserId" id="userId" value="@Model.UserId" />
     <input type="hidden" name="BodyCursorPosition" id="body_cursor_position" value="@Model.BodyCursorPosition" />
     <input type="hidden" name="BodyScrollPosition" id="body_scroll_position" value="@Model.BodyScrollPosition" />
     <input type="hidden" name="NoteCursorPosition" id="note_cursor_position" value="@Model.NoteCursorPosition" />
@@ -34,15 +35,24 @@
     <input type="hidden" name="ActiveElement" id="form_focus" value="@Model.ActiveElement" />
     <input type="hidden" name="ShowLineCount" id="show_line_count" value="@Model.ShowLineCount" />
     <input type="hidden" name="ShowParagraphCount" id="show_paragraph_count" value="@Model.ShowParagraphCount" />
+    <input type="hidden" name="SequenceGroupId" id="SequenceGroupId" value="@Model.SequenceGroupId" />
+    <input type="hidden" id="ViewWidth" name="EditViewExpandLevel" value=@Model.EditViewExpandLevel />
     <input type="submit" hidden name="action" value="" id="bttn_sub" />
-
     <input type="hidden" name="value" value="-1" id="record_id" />
 
    
     <div class="menu-bar">
         <div class="menu-bar-main mobile-menu-bar-main">
-            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags" >
-                Editing: @Model.DisplayTitle
+            <div class="menu-bar-title menu-bar-title-mobile" style="@styleTags" >@Model.BinderName</div>
+            <div class="menu-bar-item">
+                <span class="menu-bar-button" id="fontDecrease" style="margin-left: 0px !important" onclick="adjustFontSize('decrease')"> - </span>
+                <span class="mobile-menu-bar-font"> Font Size </span>
+                <span class="menu-bar-button" id="fontIncrease" style="margin-left: 0px !important" onclick="adjustFontSize('increase')"> + </span>
+            </div>
+            <div class="menu-bar-item menu-bar-item-mobileHide">
+                <span class="menu-bar-button" id="widthDecrease" style="margin-left: 0px !important" onclick="adjustWidth('decrease')"> - </span>
+                <span> Width </span>
+                <span class="menu-bar-button" id="widthIncrease" style="margin-left: 0px !important" onclick="adjustWidth('increase')"> + </span>
             </div>
             <div class="menu-bar-item menu-bar-item-mobileHide">
                 Status:
@@ -63,27 +73,14 @@
                 </select>
             </div>
 
-            @if(Model.Groups.Count() > 0)
+            @if(Model.BinderGroups.Count() > 0)
             {
                 <div class="menu-bar-dropdown menu-bar-dropdown-mobile">
                     <div class="button  menu-bar-button" onclick="open_group_list_modal_with_id('groups','EditText')">
                         Groups
                     </div>
-
-
-
-
-
-@*                    <div class="menu-bar-dropdown-content">
-                        <a class="menu-bar-dropdown-item" onclick="">Add to Group... </a> 
-                            @foreach (var group in Model.AvailableGroups)
-                            {
-                               <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('AddGroup', @group.TextGroupId)">  + @group.GroupTitle</a>
-                            }
-                    </div>*@
                 </div>
             }
-
 
             <div class="menu-bar-dropdown menu-bar-dropdown-mobile">
                 <div class="button menu-bar-button-dropdown">
@@ -93,7 +90,6 @@
                     <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_line_count', this.id, 'line_count')" id="toggle_line_count">? Line Count</a>
                     <a class="menu-bar-dropdown-item" onclick="toggle_hide_element('show_paragraph_count', this.id, 'paragraph_count')" id="toggle_paragraph_count">? Stanza Count</a>
                 </div>
-
             </div>
         </div>
 
@@ -106,7 +102,7 @@
                 <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-save" value="Save" id="save" onclick="set_form_submitting_true()" />
             </div>
             <div class="menu-bar-item-right-final">
-                <input type="submit" name="action" class="button menu-bar-button mobile-menu-bar-button-revision" value="Revision" id="revision" onclick="set_form_submitting_true()" />
+                <a class="button menu-bar-button mobile-menu-bar-button-revision" onclick="open_modal_with_Id('createNewRevision')">Revision</a>
             </div>
         </div>
 
@@ -115,11 +111,11 @@
 
 
     <div class="title-bar">
-        <textarea name="Title" class="title-box" id="title_edit_field" required>@Model.Title</textarea>
+        <textarea name="Title" class="title-box" id="title_edit_field" style="font-size: @fontSize" required>@Model.Title</textarea>
     </div>
 
     <div class="editor-container">
-        <textarea name="TextBody" class="editor-box" id="body_edit_field" onscroll="sync_scroll()">@Model.TextBody</textarea>
+        <textarea name="TextBody" class="editor-box" id="body_edit_field" style="font-size: @fontSize" onscroll="sync_scroll()" onchange="update_word_count()">@Model.TextBody</textarea>
     </div>
     <div class="ruler-container-a">
         <textarea class="ruler-box ruler-box-b" id="paragraph_count" name="paragraph_count" readonly></textarea>
@@ -129,7 +125,66 @@
     </div>
 
 
-    <div class="left-sidebar">
+    <div class="left-sidebar" id="leftSidebar">
+        @if (Model.MemberOfGroups.Count > 0)
+        {
+            <div class="left-sidebar-item-heading">Member of Groups:</div>
+            @foreach (var group in Model.MemberOfGroups)
+            {
+                <div class="left-sidebar-item-sub-heading">@group.GroupTitle</div>
+                if (group.IsSequenced)
+                {
+                    <div class="left-sidebar-items-container">
+                        <div class="left-sidebar-previous-in-group">
+                            <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.PreviousInSequenceTextHeaderId)">@group.PreviousInSequenceTextHeaderTitle</div>
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPrior')">Insert New ◄</div>
+                        </div>
+                        <div class="left-sidebar-next-in-group">
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPost')">► Insert New</div>
+                            <div class="left-sidebar-item" onclick="selected_action_form_submit('OpenText', @group.NextInSequenceTextHeaderId)">@group.NextInSequenceTextHeaderTitle</div>
+                        </div>
+                    </div>
+
+                    <div class="dialog-modal" id="insertNewPrior">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence before this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPrior')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'pre')">Yes</a>
+                        </div>
+                    </div>
+
+                    <div class="dialog-modal" id="insertNewPost">
+                        <div class="list-modal-header">
+                            Insert New Text Into Sequence?
+                        </div>
+
+                        <div class="dialog-modal-content">
+                            <div class="dialog-modal-content-item">
+                                Would you like to insert a new text in sequence after this text?
+                            </div>
+                        </div>
+
+                        <div class="dialog-modal-footer">
+                            <a class="button menu-bar-button" onclick="close_modal_with_id('insertNewPost')">Cancel</a>
+                            <a class="button menu-bar-button" onclick="insert_new_text_in_sequence(@group.GroupId, 'post')">Yes</a>
+                        </div>
+                    </div>
+                }
+            }
+        }
+
+        <div class="sidebar-horizontal-spacer"></div>
+
+        <div class="left-sidebar-item-heading">Visioning:</div>
         <div class="left-sidebar-item">Vision No. @Model.VisionNumber</div>
         <div class="left-sidebar-item">Created @Model.Created.Value.ToString("d") by @Model.CreatedByUserName</div>
         <div class="left-sidebar-item">Last Edited @Model.LastModified.Value.ToString("d") by @Model.LastModifiedByUserName</div>
@@ -149,24 +204,27 @@
     </div>
 
 
-    <div class="right-sidebar">
-        @if (Model.Groups.Count > 0)
-        {
-            <div class="right-sidebar-item-heading">Member of Groups:</div>
-            @foreach(var group in Model.Groups)
-            {
-                <div class="right-sidebar-item">
-                    @if(group.Selected == true){
-                        @group.GroupTitle
-                    }
-                </div>
-            }
-        }
+    <div class="right-sidebar" id="rightSidebar">
         <div class="right-sidebar-item-heading">Notes:</div>
-            <textarea name="Note" id="note_edit_field" class="editor-box">@Model.Note</textarea>
-
+        <textarea name="Note" id="note_edit_field" style="font-size: @fontSize" class="editor-box">@Model.Note</textarea>
     </div>
 
+    <div class="dialog-modal" id="createNewRevision">
+        <div class="list-modal-header">
+            Create New Revision?
+        </div>
+
+        <div class="dialog-modal-content">
+            <div class="dialog-modal-content-item">
+                Would you like create a revision of this text?
+            </div>
+        </div>
+
+        <div class="dialog-modal-footer">
+            <a class="button menu-bar-button" onclick="close_modal_with_id('createNewRevision')">Cancel</a>
+            <input type="submit" name="action" class="button menu-bar-button" value="Revision" id="revision" onclick="set_form_submitting_true()" />
+        </div>
+    </div>
 
     <div class="list-modal" id="groups"  >
         <div class="list-modal-header">
@@ -174,9 +232,7 @@
         </div>
         
         <div class="list-modal-content">
-
-
-                @foreach(var group in Model.Groups)
+                @foreach(var group in Model.BinderGroups)
                 {
                     if (group.TextGroupId > 0)
                         {
@@ -188,7 +244,7 @@
                             string groupSelectedTextCountName = $"Group{group.TextGroupId}SelectedTextCount";
 
                             <div class = "list-modal-content-item" name = @groupIdCheckboxName>
-                            <input type="hidden" name="Groups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
+                            <input type="hidden" name="BinderGroups[@groupIndex].TextGroupId" value="@group.TextGroupId" />
                             @if (group.Locked)
                             {
                                 <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true" disabled/>
@@ -197,15 +253,13 @@
                             {
                                 <input type="checkbox" id=@groupIdCheckboxName name="GroupCheckbox" value="true"/>
                             }
-                            <input type="hidden" name="Groups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
+                            <input type="hidden" name="BinderGroups[@groupIndex].Selected" id=@groupIdSelectedValueName value="@group.Selected.ToString()"/>
                             <div id=@groupSelectedTextCountName style="font-style:italic; font-size:smaller; padding-left:5px; padding-right:5px;"></div>
                             <div>@group.GroupTitle</div>
                             </div>
                             { groupIndex++; }
                     }
-                }
-             
-
+                }          
         </div>
         
         <div class="list-modal-footer">
@@ -215,15 +269,17 @@
     </div>
 
 
+
 </form>
+
 
 @* Populate Drawers *@
 @foreach (var prev in Model.PreviousTexts)
 {
     <section class="drawer drawer--left" id="@prev.VisionNumber" data-drawer-target>
         <div class="drawer__wrapper">
-            <div class="drawer__header">
-                <div class="drawer__title">
+            <div class="drawer__header drawer__editor-view-text">
+                <div class="drawer__title drawer__editor-view-text">
                     @prev.Title (Vision No.: @prev.VisionNumber)
                 </div>
                 <button class="drawer__close" data-drawer-close aria-label="Close Drawer"></button>
@@ -235,14 +291,41 @@
     </section>
 }
 
+
 <div id="textWidthSample" class="text-sample" z-axis="9998" hidden>X</div>
+
+@section Footer {
+    <div id="save_status" class="site-footer-additional-statusbox savedstatus-safe">
+        <div id="save_status_text" class="site-footer-additional-statusbox-status savedstatus-width"></div>
+    </div>
+
+    <div class="site-footer-additional-statusbox site-footer-additional-statusbox-mobile ">
+        <div class="site-footer-additional-statusbox-status">Word Count: </div>
+        <div id="word_count" class="site-footer-additional-statusbox-title countstatus-width"></div>
+    </div>
+
+    <div class="site-footer-additional-statusbox site-footer-additional-statusbox-mobile  titlestatus-yellow">
+        <div class="site-footer-additional-statusbox-status">EDIT: </div>
+        <div class="site-footer-additional-statusbox-title titlestatus-width">@titleShortened</div>
+    </div>
+}
+
 
 
 <script language="Javascript" src="~/js/autosave.js"></script>
 <script language="Javascript" src="~/js/site.js"></script>
 <script language="Javascript" src="~/js/editor.js"></script>
+<script language="Javascript" src="~/js/drawers.js"></script>
+<script language="Javascript" src="~/js/textView.js"></script>
     <script language="Javascript">
-    window.onload = on_start_get_form_sub_button('bttn_sub');
+    window.onload = function(){
+        on_start_get_form_sub_button('bttn_sub');
+        initialize_word_count();
+        toggleFontSizeButtons(@Model.EditViewFontSize);
+        setWindowWidth(@Model.EditViewExpandLevel);
+        run_these_functions_on_page_load();
+    }
+
 </script>
 
 <br />

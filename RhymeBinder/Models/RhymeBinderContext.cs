@@ -20,7 +20,7 @@ namespace RhymeBinder.Models
         }
 
 
-
+        public virtual DbSet<AdjacentHeadersInSequence> AdjacentHeadersInSequence { get; set; }
         public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
         public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
@@ -62,6 +62,8 @@ namespace RhymeBinder.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AdjacentHeadersInSequence>().HasNoKey().ToView("AdjacentHeadersInSequence");
+
             modelBuilder.Entity<AspNetRole>(entity =>
             {
                 entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")

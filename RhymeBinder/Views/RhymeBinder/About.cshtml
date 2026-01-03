@@ -5,15 +5,16 @@
 
 <div class="sequence-view-wrapper" >
 
-       @{
-            RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
+    @{
+        RhymeBinder.Models.ViewModels.MenuBar menuBar = new()
             {
-                Title = "About RhymeBinder:"
+                Title = "About BinderCore:"
             };
-            Html.RenderPartial("_MenuBar", menuBar);
-        }
+        Html.RenderPartial("_MenuBar", menuBar);
+    }
 
     <div class="sequence-left-sidebar" id="left-sidebar">
+        <a href="#section-13" class="sequence-sidebar-link">01/02/2026  1.17.290</a>
         <a href="#section-12" class="sequence-sidebar-link">05/05/2025  1.16.269</a>
         <a href="#section-11" class="sequence-sidebar-link">04/30/2025  1.15.263</a>
         <a href="#section-10" class="sequence-sidebar-link">02/24/2025  1.14.235</a>
@@ -30,6 +31,37 @@
     </div>
 
     <div class="sequence-block-body" id="edit_area">
+
+        <div class="sequence-title" style="border-left-style: none" id="section-12">##/##/202#  1.17.###</div>
+        <hr style="border-top: 1px dashed dimgray;" />
+
+        <div class="sequence-text" style="border-left-style: none">
+- Bugs:
+    - Fixed Sort by Word Count and Character Count
+    - Fixed missing Word Count and Character Count when listing texts in a group
+    - Fixed errant semicolon
+    - Fixed error when adding texts to a group from a list of texts in a group 
+    - Fixed error when adding to a group while viewing from another group
+    - Fixed notes section being editable in view text
+    - Further tweaks to autosave behavior
+- Features:
+    - In View and Edit Text pages
+        - Users able to set preferred font size for editable text
+        - Users able to set preferred page width, hiding or showing sidebars
+        - Users able to navigate between texts in sequenced group
+        - Users able to insert new texts within sequenced group
+- Redesign:
+    - Removed text title from menubar 
+    - Added a status bar for increased visibility of edit status
+    - Added list display to navigate to available groups inside of a binder without having to scroll through and find a text in that group
+    - Removed editing multiple texts in sequence
+    - Added links to edit individual texts from viewing texts in sequence
+- Misc Changes:
+    - Directs to List of Binders page on load
+    - List of Binders now alphabetical instead of by last accessed
+    - Trying out name BinderCore
+        </div>
+        <hr style="border-top: 1px solid dimgray;" />
 
         <div class="sequence-title" style="border-left-style: none" id="section-12">05/05/2025  1.16.269</div>
         <hr style="border-top: 1px dashed dimgray;" />
@@ -221,3 +253,4 @@
     </div>
 
 </div>
+
