@@ -10,14 +10,14 @@
 <p>Here you may restore what has been cast aside</p>
 <table class="table table-responsive">
     <tr>
-        <th><a href="/RhymeBinder/ChangeListDisplay?change=title">Title</a></th>
+        <th><a href="/BinderCore/ChangeListDisplay?change=title">Title</a></th>
     </tr>
 
     @foreach (var text in Model)
     {
         <tr>
-            <td><a href="/RhymeBinder/ReviewScrappedText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
-            <td><a href="/RhymeBinder/RestoreText?textHeaderID=@text.TextHeaderId">Restore</a></td>
+            <td><a href="/BinderCore/ReviewScrappedText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
+            <td><a href="/BinderCore/RestoreText?textHeaderID=@text.TextHeaderId">Restore</a></td>
 
         </tr>
 

@@ -1590,6 +1590,14 @@ namespace RhymeBinder.Models.HelperModels
                 groupIdsToAdd = textEdit.BinderGroups.Where(x => x.Selected != null && x.Selected == true).Select(x => x.TextGroupId).ToList();
             }
 
+            if(groupIdsToRemove.Count == 0 && groupIdsToAdd.Count == 0)
+            {
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                status.message = "Changes saved!";
+                status.success = true;
+                return status;
+            }
+
             //removals
             if (groupIdsToRemove.Count > 0)
             {

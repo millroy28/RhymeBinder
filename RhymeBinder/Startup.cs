@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +11,7 @@ using RhymeBinder.Data;
 using RhymeBinder.Models;
 using RhymeBinder.Models.HelperModels;
 using System;
+using System.Threading.RateLimiting;
 
 
 namespace RhymeBinder
@@ -54,6 +57,27 @@ namespace RhymeBinder
                 options.LogoutPath = "/Identity/Account/Logout";
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(240);
             });
+
+            services.AddRateLimiter(options =>
+            {
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                {
+                    // Only apply rate limiting to login POST requests
+                    if (context.Request.Path.StartsWithSegments("/Identity/Account/Login") &&
+                        context.Request.Method == "POST")
+                    {
+                        return RateLimitPartition.GetFixedWindowLimiter(
+                            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                            _ => new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = 5,
+                                Window = TimeSpan.FromSeconds(60)
+                            });
+                    }
+
+                    return RateLimitPartition.GetNoLimiter<string>("unlimited");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,7 +102,7 @@ namespace RhymeBinder
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -86,7 +110,7 @@ namespace RhymeBinder
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=RhymeBinder}/{action=Index}/{id?}");
+                    pattern: "{controller=BinderCore}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

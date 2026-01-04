@@ -94,6 +94,8 @@ SET  [UserName] = ImportSimpleUsers.UserName
     ,[DefaultShowLineCount] = ImportSimpleUsers.DefaultShowLineCount
     ,[DefaultShowParagraphCount] = ImportSimpleUsers.DefaultShowParagraphCount
     ,[TimeZone] = ImportSimpleUsers.TimeZone
+	,EditViewExpandLevel = ImportSimpleUsers.EditViewExpandLevel
+	,EditViewFontSize = ImportSimpleUsers.EditViewFontSize
 
 FROM SimpleUsers
 
@@ -110,7 +112,9 @@ INSERT INTO [dbo].[SimpleUsers]
            ,[DefaultRecordsPerPage]
            ,[DefaultShowLineCount]
            ,[DefaultShowParagraphCount]
-           ,[TimeZone])
+           ,[TimeZone]
+		   ,[EditViewExpandLevel]
+		   ,[EditViewFontSize])
 
 SELECT 
 		    UserId
@@ -120,6 +124,8 @@ SELECT
            ,[DefaultShowLineCount]
            ,[DefaultShowParagraphCount]
            ,[TimeZone]
+		   ,[EditViewExpandLevel]
+		   ,[EditViewFontSize]
 FROM [AZURE SQL DATABASE].Rhymebinder.dbo.SimpleUsers ImportSimpleUsers
 WHERE NOT EXISTS (SELECT 1 FROM SimpleUsers WHERE SimpleUsers.UserID = ImportSimpleUsers.UserID)
 
