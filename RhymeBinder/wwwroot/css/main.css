@@ -180,6 +180,7 @@
         
 /*        padding: 2px;
         margin: 10px;*/
+        overflow-x: hidden;
         background-color: #f4f5ef;
     }
 
@@ -229,7 +230,7 @@
             top: 2%;
             width: 325px;
             height: 55px;
-            overflow: auto;
+            overflow: hidden;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border: 3px solid;
             border-radius: 10px;
@@ -1818,6 +1819,7 @@ text-decoration-line: underline;
         margin: 10px;*/
         background-color: #f4f5ef;
         height: 100vh;
+        overflow-x: hidden;
     }
 
     .main {
@@ -1869,7 +1871,7 @@ text-decoration-line: underline;
         top: 2%;
         width: 325px;
         height: 55px;
-        overflow: auto;
+        overflow: hidden;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border: 3px solid;
         border-radius: 10px;
