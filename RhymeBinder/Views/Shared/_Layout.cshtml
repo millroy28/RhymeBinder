@@ -26,16 +26,16 @@
                     <ul class="navbar-links">
 
                         <li class="navbar-item">
-                            <a asp-area="" asp-controller="RhymeBinder" asp-action="ListBinders">BINDERS</a>
+                            <a asp-area="" asp-controller="BinderCore" asp-action="ListBinders">BINDERS</a>
                         </li>
                         <li class="navbar-item">
-                            <a asp-area="" asp-controller="RhymeBinder" asp-action="Manage">MANAGE</a>
+                        <a asp-area="" asp-controller="BinderCore" asp-action="Manage">MANAGE</a>
                         </li>
                         <li class="navbar-item">
-                            <a asp-area="" asp-controller="RhymeBinder" asp-action="EditUser">SETTINGS</a>
+                        <a asp-area="" asp-controller="BinderCore" asp-action="EditUser">SETTINGS</a>
                         </li>
                         <li class="navbar-item">
-                            <a asp-area="" asp-controller="RhymeBinder" asp-action="About">ABOUT</a>
+                        <a asp-area="" asp-controller="BinderCore" asp-action="About">ABOUT</a>
                         </li>
                         <partial name="_LoginPartial" />
                     </ul>
@@ -50,7 +50,7 @@
     </div>
     <footer class="site-footer">
         <div class="site-footer-copyright">
-            &copy; 2021-@DateTime.Now.Year - BinderCore/RhymeBinder
+            &copy; 2021-@DateTime.Now.Year - RhymeBinder/BinderCore
         </div>
         <div class="site-footer-additional">
             @RenderSection("Footer", required: false)

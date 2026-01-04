@@ -20,14 +20,14 @@
                         Actions ▼
                     </div>
                     <div class="menu-bar-dropdown-content">
-                        <a class="menu-bar-dropdown-item" href="/RhymeBinder/CreateGroup?binderID=@Model.First().BinderId">Create Group</a>
+                        <a class="menu-bar-dropdown-item" href="/BinderCore/CreateGroup?binderID=@Model.First().BinderId">Create Group</a>
                     </div>
                 </div>
             </div>
 
             <div class="menu-bar-escape mobile-menu-bar-escape">
                 <div class="menu-bar-item">
-                    <a class="menu-bar-button" href="/RhymeBinder/ListTextsOnSessionStart?binderID=@Model.First().BinderId">Return to Binder</a>
+                    <a class="menu-bar-button" href="/BinderCore/ListTextsOnSessionStart?binderID=@Model.First().BinderId">Return to Binder</a>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
                 @foreach (var group in Model)
                 {
                     <tr>
-                        <td align="right"><a class="link-item" href="/RhymeBinder/EditGroup?groupID=@group.TextGroupId">@group.GroupTitle</a></td>
+                        <td align="right"><a class="link-item" href="/BinderCore/EditGroup?groupID=@group.TextGroupId">@group.GroupTitle</a></td>
                         <td></td>
                         <td align="center">@group.HeaderCount</td>
                         @if(group.Locked == true){<td align="center">Locked</td>} else {<td></td>}

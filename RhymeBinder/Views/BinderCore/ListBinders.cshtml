@@ -18,7 +18,7 @@
                     Actions ▼
                 </div>
                 <div class="menu-bar-dropdown-content">
-                    <a class="menu-bar-dropdown-item" href="/RhymeBinder/CreateBinder">New Binder</a>
+                    <a class="menu-bar-dropdown-item" href="/BinderCore/CreateBinder">New Binder</a>
                  </div>
             </div>
             <div class="menu-bar-dropdown">
@@ -64,12 +64,12 @@
                     {
                         @if (binder.Selected == true)
                             {
-                                <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
+                                <td><a href="/BinderCore/EditBinder?binderID=@binder.BinderId">Manage </a>
                                     ► 
                                 </td>
                             }
                             else{
-                                <td><a href="/RhymeBinder/EditBinder?binderID=@binder.BinderId">Manage </a>
+                                <td><a href="/BinderCore/EditBinder?binderID=@binder.BinderId">Manage </a>
 
                                 </td>
                         }
@@ -80,7 +80,7 @@
                         <td></td>
                     }
                     <td></td>
-                        <td><a class="link-item" href="/RhymeBinder/OpenBinder?binderID=@binder.BinderId">@binderName</a></td>
+                        <td><a class="link-item" href="/BinderCore/OpenBinder?binderID=@binder.BinderId">@binderName</a></td>
                         <td name="text_count_col" align="center">@binder.PageCount.ToString("N0")</td>
                         <td name="group_count_col" align="center">@binder.GroupCount.ToString("N0")</td>
                         <td align="center">@binder.WordCount.ToString("N0")</td>
@@ -119,8 +119,8 @@
 
                     <div class="shelf-view-binder" style="@stylesTags">
                         <div class="shelf-view-binder-card">
-                            <div class="shelf-view-binder-card-title" onclick="window.location.href='/RhymeBinder/OpenBinder?binderID=@binder.BinderId'">@binderName</div>
-                            <div class="shelf-view-binder-edit" onclick="window.location.href='/RhymeBinder/EditBinder?binderID=@binder.BinderId'">Edit</div>
+                            <div class="shelf-view-binder-card-title" onclick="window.location.href='/BinderCore/OpenBinder?binderID=@binder.BinderId'">@binderName</div>
+                            <div class="shelf-view-binder-edit" onclick="window.location.href='/BinderCore/EditBinder?binderID=@binder.BinderId'">Edit</div>
                         </div>
                     </div>
                     <div class="shelf-view-binder-hover">

@@ -110,7 +110,7 @@ namespace RhymeBinder
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=RhymeBinder}/{action=Index}/{id?}");
+                    pattern: "{controller=BinderCore}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

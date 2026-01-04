@@ -19,10 +19,10 @@ using System.Security.Claims;
 namespace RhymeBinder.Controllers
 {
     [Authorize]
-    public class RhymeBinderController : Controller
+    public class BinderCoreController : Controller
     {
         public ModelHelper _modelHelper;
-        public RhymeBinderController(ModelHelper modelHelper)
+        public BinderCoreController(ModelHelper modelHelper)
         {
             _modelHelper = modelHelper;
         }
@@ -108,7 +108,7 @@ namespace RhymeBinder.Controllers
 
             if (status.success)
             {
-                return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                return Redirect($"/BinderCore/EditText?textHeaderID={status.recordId}");
             }
             else
             {
@@ -146,9 +146,9 @@ namespace RhymeBinder.Controllers
                 case "InsertNewTextInSequence":
                     status = _modelHelper.TextHelper.AddNewTextAtPositionInSequence(textEdit, value);
                     SetAlertCookieGenericSaveStatus(status.success);
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                    return Redirect($"/BinderCore/EditText?textHeaderID={status.recordId}");
                 default:
-                    return Redirect($"/RhymeBinder/ViewText?textHeaderID={textEdit.TextHeaderId}");
+                    return Redirect($"/BinderCore/ViewText?textHeaderID={textEdit.TextHeaderId}");
             }
         }
 
@@ -165,7 +165,7 @@ namespace RhymeBinder.Controllers
             if(!_modelHelper.TextHelper.UserAuthorized(userId, textHeaderID, SharedObjectTypeEnum.TextHeader, SharedObjectActionEnum.EDIT))
             {
                 SetAlertCookie("You do not have permission to edit this text", "WARN");
-                return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
+                return Redirect($"/BinderCore/ViewText?textHeaderID={textHeaderID}");
             }
 
             TextEdit textEdit = _modelHelper.TextHelper.GetTextHeaderBodyUserRecord(userId, textHeaderID);
@@ -173,7 +173,7 @@ namespace RhymeBinder.Controllers
             if ((bool)textEdit.Locked == true || textEdit.BinderReadOnly)
             {
                 SetAlertCookie("Text Locked from Editing", "WARN");
-                return Redirect($"/RhymeBinder/ViewText?textHeaderID={textHeaderID}");
+                return Redirect($"/BinderCore/ViewText?textHeaderID={textHeaderID}");
             }
 
             return View(textEdit);
@@ -189,11 +189,11 @@ namespace RhymeBinder.Controllers
                 case "Return":
                     status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     SetAlertCookieGenericSaveStatus(status.success);
-                    return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
+                    return Redirect($"/BinderCore/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 case "Save":
                     status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     SetAlertCookieGenericSaveStatus(status.success);
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                    return Redirect($"/BinderCore/EditText?textHeaderID={textEdit.TextHeaderId}");
                 case "Revision":
                     status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     if (status.success)
@@ -203,17 +203,17 @@ namespace RhymeBinder.Controllers
                     if (status.success)
                     {
                         SetAlertCookieGenericSaveStatus(status.success);
-                        return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                        return Redirect($"/BinderCore/EditText?textHeaderID={status.recordId}");
                     }
                     else
                     {
                         SetAlertCookie("Failed to add revision to text", "FAIL"); 
-                        return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                        return Redirect($"/BinderCore/EditText?textHeaderID={status.recordId}");
                     };
                     
                 case "Timeout":
                     SetAlertCookie("Editing timed out", "INFO");
-                    return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
+                    return Redirect($"/BinderCore/ListTextsOnSessionStart?binderId={textEdit.BinderId}");
                 case "InsertNewTextInSequence":
                     status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     if (status.success)
@@ -222,14 +222,14 @@ namespace RhymeBinder.Controllers
                     }
                     SetAlertCookieGenericSaveStatus(status.success);
 
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={status.recordId}");
+                    return Redirect($"/BinderCore/EditText?textHeaderID={status.recordId}");
                 case "OpenText":
                     status = _modelHelper.TextHelper.SaveEditedText(textEdit);
                     SetAlertCookieGenericSaveStatus(status.success);
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={value}");
+                    return Redirect($"/BinderCore/EditText?textHeaderID={value}");
                 default:
                     SetAlertCookieGenericSaveStatus(status.success);
-                    return Redirect($"/RhymeBinder/EditText?textHeaderID={textEdit.TextHeaderId}");
+                    return Redirect($"/BinderCore/EditText?textHeaderID={textEdit.TextHeaderId}");
             }
 
         }
@@ -259,7 +259,7 @@ namespace RhymeBinder.Controllers
                 };
                 return RedirectToAction("ErrorPage", status);
             };
-            return Redirect($"/RhymeBinder/ListTexts?viewID={savedViewId}");
+            return Redirect($"/BinderCore/ListTexts?viewID={savedViewId}");
         }
         [HttpGet]
         public IActionResult ListTexts(int viewId, int? page, string searchValue)
@@ -298,7 +298,7 @@ namespace RhymeBinder.Controllers
             switch (action)
             {
                 case "NewText":
-                    return Redirect($"/RhymeBinder/StartNewText?binderId={savedView.View.BinderId}&groupId={value}");
+                    return Redirect($"/BinderCore/StartNewText?binderId={savedView.View.BinderId}&groupId={value}");
 
                 case "LastView":
                     // Update current saved view with changed form values
@@ -333,7 +333,7 @@ namespace RhymeBinder.Controllers
                     {
                         SetAlertCookieGenericSaveStatus(status.success);
                     };
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    return Redirect($"/BinderCore/ListTexts?viewID={savedView.View.SavedViewId}");
 
                 case "UpdateGroupSequence":
                     status = _modelHelper.GroupHelper.UpdateGroupSequence(savedView);
@@ -369,23 +369,23 @@ namespace RhymeBinder.Controllers
                     break;
 
                 case "ManageGroups":
-                    return Redirect($"/RhymeBinder/ListGroups?binderId={savedView.View.BinderId}");
+                    return Redirect($"/BinderCore/ListGroups?binderId={savedView.View.BinderId}");
 
                 case "CreateGroup":
-                    return Redirect($"/RhymeBinder/CreateGroup?binderID={savedView.View.BinderId}");
+                    return Redirect($"/BinderCore/CreateGroup?binderID={savedView.View.BinderId}");
 
                 case "ChangePage":
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page={value}");
+                    return Redirect($"/BinderCore/ListTexts?viewID={savedView.View.SavedViewId}&page={value}");
 
                 case "Search":
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page=1&searchValue={value}");
+                    return Redirect($"/BinderCore/ListTexts?viewID={savedView.View.SavedViewId}&page=1&searchValue={value}");
 
                 default:
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}");
+                    return Redirect($"/BinderCore/ListTexts?viewID={savedView.View.SavedViewId}");
             }
 
             // For most switch cases we redirect back to the same list of texts...
-            return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}&page={savedView.Page}");
+            return Redirect($"/BinderCore/ListTexts?viewID={status.recordId}&page={savedView.Page}");
         }
         public IActionResult ViewTextsInSequence(int groupId)
         {
@@ -430,7 +430,7 @@ namespace RhymeBinder.Controllers
             if (sequencedTexts.BinderReadOnly)
             {
                 SetAlertCookie("Text Locked from Editing", "WARN");
-                return Redirect($"/RhymeBinder/ViewTextsInSequence?groupId={groupId}");
+                return Redirect($"/BinderCore/ViewTextsInSequence?groupId={groupId}");
             }
 
             return View(sequencedTexts);
@@ -446,7 +446,7 @@ namespace RhymeBinder.Controllers
             SetCookieValue($"Sequence_{editedTexts.GroupId}_ActiveElement", editedTexts.ActiveElementId);
             SetCookieValue($"Sequence_{editedTexts.GroupId}_CursorPosition", editedTexts.CursorPosition);
 
-            return Redirect($"/RhymeBinder/EditTextsInSequence?groupId={editedTexts.GroupId}");
+            return Redirect($"/BinderCore/EditTextsInSequence?groupId={editedTexts.GroupId}");
         }
 
         #endregion
@@ -474,7 +474,7 @@ namespace RhymeBinder.Controllers
             if (displayTextGroups[0].TextGroupId == -1)
             {
                 SetAlertCookie("Failed to retrieve list of groups", "FAIL");
-                return Redirect($"/RhymeBinder/ListTextsOnSessionStart?binderId={binderId}");
+                return Redirect($"/BinderCore/ListTextsOnSessionStart?binderId={binderId}");
             }
             return View(displayTextGroups);
         }
@@ -528,7 +528,7 @@ namespace RhymeBinder.Controllers
             }
 
             SetAlertCookieGenericSaveStatus(status.success);
-            return Redirect($"/Rhymebinder/ListGroups?binderId={editedGroup.BinderId}");
+            return Redirect($"/BinderCore/ListGroups?binderId={editedGroup.BinderId}");
         }
 
         [HttpGet]
@@ -558,7 +558,7 @@ namespace RhymeBinder.Controllers
             status = _modelHelper.GroupHelper.CreateNewTextGroup(userId, newGroup);
             SetAlertCookieGenericSaveStatus(status.success);
 
-            return Redirect($"/Rhymebinder/ListGroups?binderId={newGroup.BinderId}");
+            return Redirect($"/BinderCore/ListGroups?binderId={newGroup.BinderId}");
         } 
         #endregion
 
@@ -574,14 +574,14 @@ namespace RhymeBinder.Controllers
             if (!status.success)
             {
                 SetAlertCookie("Failed to create new binder", "FAIL");
-                return Redirect($"/RhymeBinder/ListTextsOnSessionStart");
+                return Redirect($"/BinderCore/ListTextsOnSessionStart");
             }
             else
             {
                 SetAlertCookieGenericSaveStatus(status.success);
             }
 
-            return Redirect($"/RhymeBinder/EditBinder?binderID={status.recordId}");
+            return Redirect($"/BinderCore/EditBinder?binderID={status.recordId}");
         }
         [HttpGet]
         public IActionResult ListBinders()
@@ -596,7 +596,7 @@ namespace RhymeBinder.Controllers
             if (binders[0].BinderId == -1)
             {
                 SetAlertCookie("Failed to retrieve binders", "FAIL");
-                return Redirect($"/RhymeBinder/ListTextsOnSessionStart");
+                return Redirect($"/BinderCore/ListTextsOnSessionStart");
             }
             return View(binders);
         }
@@ -620,7 +620,7 @@ namespace RhymeBinder.Controllers
             if (binder.BinderId == -1)
             {
                 SetAlertCookie("Failed to retrieve binder", "FAIL");
-                return Redirect($"/RhymeBinder/ListTextsOnSessionStart");
+                return Redirect($"/BinderCore/ListTextsOnSessionStart");
             }
             return View(binder);
         }

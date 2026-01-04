@@ -46,7 +46,7 @@
 
         <div class="menu-bar-escape mobile-menu-bar-escape">
             <div class="menu-bar-item-right-final">
-                <a class="button menu-bar-button mobile-menu-bar-button-return" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
+                <a class="button menu-bar-button mobile-menu-bar-button-return" href="/BinderCore/ListTextsOnSessionStart?binderId=@Model.BinderId">Return</a>
             </div>
             @if(@Model.Locked == false)
             {
@@ -57,7 +57,7 @@
                     }
                     else
                     {
-                        <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/RhymeBinder/EditText?textHeaderID=@Model.TextHeaderId">Edit</a>
+                        <a class="button menu-bar-button mobile-menu-bar-button-edit" href="/BinderCore/EditText?textHeaderID=@Model.TextHeaderId">Edit</a>
                     }
                 </div>               
             }
@@ -91,16 +91,16 @@
                 {
                     <div class="left-sidebar-items-container">
                         <div class="left-sidebar-previous-in-group">
-                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.PreviousInSequenceTextHeaderId">@group.PreviousInSequenceTextHeaderTitle</a>
-                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPrior')">Insert New ◄</div>
+                            <a class="left-sidebar-item" href="../BinderCore/ViewText?textHeaderID=@group.PreviousInSequenceTextHeaderId">@group.PreviousInSequenceTextHeaderTitle</a>
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPrior_@group.GroupId')">Insert New ◄</div>
                         </div>
                         <div class="left-sidebar-next-in-group">
-                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPost')">► Insert New</div>
-                            <a class="left-sidebar-item" href="../RhymeBinder/ViewText?textHeaderID=@group.NextInSequenceTextHeaderId">@group.NextInSequenceTextHeaderTitle</a>
+                            <div class="left-sidebar-item" onclick="open_modal_with_Id('insertNewPost_@group.GroupId')">► Insert New</div>
+                            <a class="left-sidebar-item" href="../BinderCore/ViewText?textHeaderID=@group.NextInSequenceTextHeaderId">@group.NextInSequenceTextHeaderTitle</a>
                         </div>
                     </div>
 
-                    <div class="dialog-modal" id="insertNewPrior">
+                    <div class="dialog-modal" id="insertNewPrior_@group.GroupId">
                         <div class="list-modal-header">
                             Insert New Text Into Sequence?
                         </div>
@@ -117,7 +117,7 @@
                         </div>
                     </div>
 
-                    <div class="dialog-modal" id="insertNewPost">
+                    <div class="dialog-modal" id="insertNewPost_@group.GroupId">
                         <div class="list-modal-header">
                             Insert New Text Into Sequence?
                         </div>

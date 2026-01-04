@@ -45,6 +45,8 @@ function adjustFontSize(direction) {
     var titleBox = document.getElementById("title_edit_field");
     var editorBox = document.getElementById("body_edit_field");
     var notesBox = document.getElementById("note_edit_field");
+    var paragraphRuler = document.getElementById("paragraph_count");
+    var lineRuler = document.getElementById("line_count");
 
     var currentFontSizeString = titleBox.style.fontSize;
 
@@ -63,6 +65,13 @@ function adjustFontSize(direction) {
     titleBox.style.fontSize = newFontSizeString;
     editorBox.style.fontSize = newFontSizeString;
     notesBox.style.fontSize = newFontSizeString;
+
+    if (paragraphRuler) {
+        paragraphRuler.style.fontSize = newFontSizeString;
+    }
+    if (lineRuler) {
+        lineRuler.style.fontSize = newFontSizeString;
+    }
 
     toggleFontSizeButtons(currentFontSizeInt);
 
@@ -94,7 +103,7 @@ function toggleFontSizeButtons(fontSize) {
 
 function saveFontSizePreference(userId, fontSize) {
     $.ajax({
-        url: '/RhymeBinder/SaveUserFontSize',
+        url: '/BinderCore/SaveUserFontSize',
         type: 'POST',
         data: {
             userId: userId,
@@ -182,7 +191,7 @@ function toggleWidthButtons(widthSize) {
 }
 function saveUserWindowWidthPreference(userId, widthLevel) {
     $.ajax({
-        url: '/RhymeBinder/SaveUserWindowWidth',
+        url: '/BinderCore/SaveUserWindowWidth',
         type: 'POST',
         data: {
             userId: userId,

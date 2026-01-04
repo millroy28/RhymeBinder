@@ -170,7 +170,7 @@
             {
                 <div class="menu-bar-escape">
                     <div class="menu-bar-item-right-final">
-                        <a class="menu-bar-button" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.Binder.BinderId">Return to Binder</a>
+                        <a class="menu-bar-button" href="/BinderCore/ListTextsOnSessionStart?binderId=@Model.Binder.BinderId">Return to Binder</a>
                     </div>                
                 </div>
             }
@@ -210,7 +210,7 @@
 
                         <td style="text-align: right"></td>
                         <td></td>
-                        <td><a class="menu-bar-button" href="/RhymeBinder/ViewTextsInSequence?groupId=@Model.View.SetValue">View All "@Model.View.ViewName" Texts in Sequence</a></td>
+                        <td><a class="menu-bar-button" href="/BinderCore/ViewTextsInSequence?groupId=@Model.View.SetValue">View All "@Model.View.ViewName" Texts in Sequence</a></td>
                         <td style="text-align: center" name="last_modified_col"></td>
                         <td style="text-align: center" name="last_modified_by_col"></td>
                         <td style="text-align: center" name="created_col"></td>
@@ -242,7 +242,7 @@
                         {
                             <td></td>
                         }
-                        <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
+                        <td><a class="link-item"  href="/BinderCore/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
                         <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
                         <td style="text-align: center" name="last_modified_by_col">@text.ModifyByName</td>
                         <td style="text-align: center" name="created_col">@text.Created</td>
