@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Linq;
-using System;
 using RhymeBinder.Models.DBModels;
-using RhymeBinder.Models.ViewModels;
-using System.Collections.Generic;
 using RhymeBinder.Models.Enums;
+using RhymeBinder.Models.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace RhymeBinder.Models.HelperModels
 {
@@ -130,7 +131,7 @@ namespace RhymeBinder.Models.HelperModels
                 try
                 {
                     // If no binders are returned as selected, set the most recently accessed one to true
-                    Binder mostRecentlyAccessedBinder = _context.Binders.OrderByDescending(x => x.LastAccessed).Where(x => x.UserId == userId).First();
+                    DBModels.Binder mostRecentlyAccessedBinder = _context.Binders.OrderByDescending(x => x.LastAccessed).Where(x => x.UserId == userId).First();
                     mostRecentlyAccessedBinder.Selected = true;
                     _context.Entry(mostRecentlyAccessedBinder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;  //remember to copy paste this honkin thing
                     _context.Update(mostRecentlyAccessedBinder);
@@ -390,7 +391,7 @@ namespace RhymeBinder.Models.HelperModels
             DisplayBinder displayBinder = new DisplayBinder();
             try
             {
-                Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
+                DBModels.Binder binder = _context.Binders.Single(x => x.BinderId == binderId);
 
 
                 int textCount = _context.TextHeaders.Where(x => x.Top == true
@@ -399,6 +400,13 @@ namespace RhymeBinder.Models.HelperModels
 
                 int groupCount = _context.TextGroups.Where(x => x.Hidden == false
                                                              && x.BinderId == binderId).Count();
+
+                List<BinderTextMetadataHeader> binderTextMetadataHeaders = _context.BinderTextMetadataHeaders.Where(x => x.BinderId == binderId).ToList();
+                foreach(var header in binderTextMetadataHeaders)
+                {
+                    header.BinderTextMetadataValues = _context.BinderTextMetadataValues.Where(x => x.BinderTextMetadataHeaderId == header.BinderTextMetadataHeaderId).ToList();
+                }
+                
 
                 displayBinder.BinderId = binder.BinderId;
                 displayBinder.UserId = binder.UserId;
@@ -417,6 +425,7 @@ namespace RhymeBinder.Models.HelperModels
                 displayBinder.TextHeaderTitleDefaultFormat = binder.TextHeaderTitleDefaultFormat;
                 displayBinder.NewTextDefaultShowParagraphCount = binder.NewTextDefaultShowParagraphCount;
                 displayBinder.NewTextDefaultShowLineCount = binder.NewTextDefaultShowLineCount;
+                displayBinder.BinderTextMetadataHeaders = binderTextMetadataHeaders;
             }
             catch
             {
@@ -429,7 +438,7 @@ namespace RhymeBinder.Models.HelperModels
             List<DisplayBinder> displayBinders = new List<DisplayBinder>();
             try
             {
-                List<Binder> binders = _context.Binders.Where(x => x.UserId == userId && x.Hidden == false).OrderBy(x => x.Name).ToList();
+                List<DBModels.Binder> binders = _context.Binders.Where(x => x.UserId == userId && x.Hidden == false).OrderBy(x => x.Name).ToList();
 
                 List<TextHeader> textHeaders = _context.TextHeaders.Where(x => x.CreatedBy == userId
                                                                             && x.Top == true
@@ -474,6 +483,11 @@ namespace RhymeBinder.Models.HelperModels
                                   where header.BinderId == binder.BinderId
                                   select textGroup.TextGroupId).Distinct().Count();
 
+                    List<BinderTextMetadataHeader> binderTextMetadataHeaders = _context.BinderTextMetadataHeaders.Where(x => x.BinderId == binder.BinderId).ToList();
+                    foreach (var header in binderTextMetadataHeaders)
+                    {
+                        header.BinderTextMetadataValues = _context.BinderTextMetadataValues.Where(x => x.BinderTextMetadataHeaderId == header.BinderTextMetadataHeaderId).ToList();
+                    }
 
                     displayBinders.Add(new DisplayBinder
                     {
@@ -500,7 +514,8 @@ namespace RhymeBinder.Models.HelperModels
                         LastAccessed = binder.LastAccessed,
                         LastAccessedByName = GetUserName(binder.LastAccessedBy),
                         LastWorkedIn = binder.LastWorkedIn,
-                        WorkedInName = GetUserName(binder.LastWorkedInBy)
+                        WorkedInName = GetUserName(binder.LastWorkedInBy),
+                        BinderTextMetadataHeaders = binderTextMetadataHeaders
                     });
 
                 }
@@ -511,11 +526,11 @@ namespace RhymeBinder.Models.HelperModels
             }
             return displayBinders;
         }
-        public List<Binder> GetBinders(int userId, string set)
+        public List<DBModels.Binder> GetBinders(int userId, string set)
         {
 
 
-            List<Binder> binders = new List<Binder>();
+            List<DBModels.Binder> binders = new List<DBModels.Binder>();
 
             try
             {

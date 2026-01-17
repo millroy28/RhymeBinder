@@ -775,6 +775,12 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.Name)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+                
+                entity.Property(e => e.TextHeaderId)
+                    .HasColumnName("SortOrder");
+
+                entity.Property(e => e.TextHeaderId)
+                    .HasColumnName("SelectedValue");
 
                 // Optional: Configure relationships if you want navigation properties
                 entity.HasOne(e => e.TextHeader)

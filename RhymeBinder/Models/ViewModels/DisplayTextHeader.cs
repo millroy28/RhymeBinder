@@ -20,5 +20,6 @@ namespace RhymeBinder.Models.ViewModels
         public int? GroupSequence { get; set; }
         public new int WordCount { get; set; }
         public new int CharacterCount { get; set; }
+        public List<TextHeaderStamp> TextHeaderStamps { get; set; }
     }
 }

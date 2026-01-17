@@ -10,6 +10,7 @@ namespace RhymeBinder.Models.DBModels
             SavedViews = new HashSet<SavedView>();
             TextGroups = new HashSet<TextGroup>();
             TextHeaders = new HashSet<TextHeader>();
+            BinderTextMetadataHeaders = new HashSet<BinderTextMetadataHeader>();
         }
 
         public int BinderId { get; set; }
@@ -39,5 +40,6 @@ namespace RhymeBinder.Models.DBModels
         public virtual ICollection<SavedView> SavedViews { get; set; }
         public virtual ICollection<TextGroup> TextGroups { get; set; }
         public virtual ICollection<TextHeader> TextHeaders { get; set; }
+        public virtual ICollection<BinderTextMetadataHeader> BinderTextMetadataHeaders { get; set; }
     }
 }

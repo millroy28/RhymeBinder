@@ -52,6 +52,8 @@ namespace RhymeBinder.Models.DTOModels
         public string CurrentRevisionStatus { get; set; }
         public List<DisplayTextGroup> BinderGroups { get; set; } // For Modal
         public List<AdjacentHeadersInSequence> MemberOfGroups { get; set; } // For Sidebar Group Navigation
+        public List<TextHeaderStamp> TextHeaderStamps { get; set; }
+
 
         //  Display customization fields
         public int EditViewExpandLevel { get; set; }

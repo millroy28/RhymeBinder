@@ -454,14 +454,16 @@ namespace RhymeBinder.Models.HelperModels
             List<DisplayTextHeader> theseDisplayTextHeaders = new List<DisplayTextHeader>();
 
             //doing this manually cause I'm a dum-dum what can't get the cast/convert right
-
+  
             List<TextGroup> selectedGroups = new List<TextGroup>(); // groups associated with text
             List<TextGroup> allGroups = _context.TextGroups.Where(x => x.BinderId == savedView.BinderId).ToList();
 
             List<LnkTextHeadersTextGroup> links = _context.LnkTextHeadersTextGroups.Where(x => allGroups.Select(y => y.TextGroupId).Contains(x.TextGroupId)).ToList();
 
+            List<TextHeaderStamp> stamps = _context.TextHeaderStamps.Where(x => theseTextHeaders.Select(y => y.TextHeaderId).Contains(x.TextHeaderId)).ToList();
+
             foreach (TextHeader textHeader in theseTextHeaders)
-            {
+            {              
                 selectedGroups = (from LnkTextHeadersTextGroup lnkTextHeadersTextGroup in links
                                   join TextGroup textGroup in allGroups
                                     on lnkTextHeadersTextGroup.TextGroupId equals textGroup.TextGroupId
@@ -499,7 +501,8 @@ namespace RhymeBinder.Models.HelperModels
                     //RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
                     GroupSequence = groupSequence,
                     CharacterCount = textHeader.CharacterCount ?? 0,
-                    WordCount = textHeader.WordCount ?? 0
+                    WordCount = textHeader.WordCount ?? 0,
+                    TextHeaderStamps = stamps.Where(x => x.TextHeaderId == textHeader.TextHeaderId).ToList()
                 });
             }
 
@@ -781,6 +784,9 @@ namespace RhymeBinder.Models.HelperModels
             //grab the note for the text
             TextNote thisTextNote = _context.TextNotes.Single(x => x.TextNoteId == thisTextHeader.TextNoteId);
 
+            // grab any stamps for this text
+            List<TextHeaderStamp> textHeaderStamps = _context.TextHeaderStamps.Where(x => x.TextHeaderId == thisTextHeader.TextHeaderId).ToList();
+
                 //  HERE is where you would do some getting for customized fields 
             //grab up the revision statuses for display in the dropdown list
             //List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
@@ -919,6 +925,7 @@ namespace RhymeBinder.Models.HelperModels
                 MemberOfGroups = memberOfGroups,
                 //MemberOfGroups = memberOfGroups,
                 //AvailableGroups = availableGroups,
+                TextHeaderStamps = textHeaderStamps,
 
                 EditViewExpandLevel = currentUser.EditViewExpandLevel,
                 EditViewFontSize = currentUser.EditViewFontSize,
