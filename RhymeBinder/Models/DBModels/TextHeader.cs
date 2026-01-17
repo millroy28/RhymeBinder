@@ -54,6 +54,7 @@ namespace RhymeBinder.Models.DBModels
         public virtual ICollection<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual ICollection<GroupHistory> GroupHistories { get; set; }
         public virtual ICollection<TextHeader> InverseVersionOfNavigation { get; set; }
+        public virtual ICollection<LnkMetadataTextHeader> LnkMetadataTextHeaders { get; set; } = new List<LnkMetadataTextHeader>();
         public virtual ICollection<LnkTextHeadersTextGroup> LnkTextHeadersTextGroups { get; set; }
         public virtual ICollection<LnkTextSubmission> LnkTextSubmissions { get; set; }
         public virtual ICollection<Submission> Submissions { get; set; }

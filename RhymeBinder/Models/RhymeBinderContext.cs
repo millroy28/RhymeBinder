@@ -28,9 +28,12 @@ namespace RhymeBinder.Models
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual DbSet<Binder> Binders { get; set; }
+        public virtual DbSet<BinderTextMetadataHeader> BinderTextMetadataHeaders { get; set; }
+        public virtual DbSet<BinderTextMetadataValue> BinderTextMetadataValues { get; set; }
         public virtual DbSet<EditWindowProperty> EditWindowProperties { get; set; }
         public virtual DbSet<GroupAction> GroupActions { get; set; }
         public virtual DbSet<GroupHistory> GroupHistories { get; set; }
+        public virtual DbSet<LnkMetadataTextHeader> LnkMetadataTextHeaders { get; set; }
         public virtual DbSet<LnkTextHeadersTextGroup> LnkTextHeadersTextGroups { get; set; }
         public virtual DbSet<LnkTextSubmission> LnkTextSubmissions { get; set; }
         public virtual DbSet<Publication> Publications { get; set; }
@@ -47,6 +50,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<Text> Texts { get; set; }
         public virtual DbSet<TextGroup> TextGroups { get; set; }
         public virtual DbSet<TextHeader> TextHeaders { get; set; }
+        public virtual DbSet<TextHeaderStamp> TextHeaderStamps { get; set; }
         public virtual DbSet<TextNote> TextNotes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
         public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
@@ -206,6 +210,79 @@ namespace RhymeBinder.Models
                     .HasConstraintName("FK__Binders__UserID__65570293");
             });
 
+            modelBuilder.Entity<BinderTextMetadataHeader>(entity =>
+            {
+                entity.ToTable("BinderTextMetadataHeaders");
+
+                entity.HasKey(e => e.BinderTextMetadataHeaderId);
+
+                entity.Property(e => e.BinderTextMetadataHeaderId)
+                    .UseIdentityColumn();
+
+                entity.Property(e => e.BinderId)
+                    .IsRequired();
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Description)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedById)
+                    .IsRequired();
+
+                entity.Property(e => e.Created)
+                    .IsRequired();
+
+                // Foreign key relationships
+                entity.HasOne(e => e.Binder)
+                    .WithMany()
+                    .HasForeignKey(e => e.BinderId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_BinderTextMetadataHeaders_BinderId");
+
+                entity.HasOne(e => e.CreatedBy)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreatedById)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_BinderTextMetadataHeaders_CreatedById");
+
+                entity.HasOne(e => e.LastModifiedBy)
+                    .WithMany()
+                    .HasForeignKey(e => e.LastModifiedById)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_BinderTextMetadataHeaders_LastModifiedById");
+            });
+
+            modelBuilder.Entity<BinderTextMetadataValue>(entity =>
+            {
+                entity.ToTable("BinderTextMetadataValues");
+
+                entity.HasKey(e => e.BinderTextMetadataValueId);
+
+                entity.Property(e => e.BinderTextMetadataValueId)
+                    .UseIdentityColumn();
+
+                entity.Property(e => e.BinderTextMetadataHeaderId)
+                    .IsRequired();
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                // Foreign key relationship
+                entity.HasOne(e => e.BinderTextMetadataHeader)
+                    .WithMany()
+                    .HasForeignKey(e => e.BinderTextMetadataHeaderId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_BinderTextMetadataValues_BinderTextMetadataHeaderId");
+
+                entity.HasOne(e => e.BinderTextMetadataHeader)
+                    .WithMany(h => h.BinderTextMetadataValues)
+                    .HasForeignKey(e => e.BinderTextMetadataHeaderId);
+            });
+
             modelBuilder.Entity<EditWindowProperty>(entity =>
             {
                 entity.Property(e => e.EditWindowPropertyId).HasColumnName("EditWindowPropertyID");
@@ -278,6 +355,39 @@ namespace RhymeBinder.Models
                     .WithMany(p => p.GroupHistories)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__GroupHist__UserI__5F9E293D");
+            });
+
+            modelBuilder.Entity<LnkMetadataTextHeader>(entity =>
+            {
+                entity.ToTable("lnkMetadataTextHeaders");
+
+                entity.HasKey(e => e.LnkMetadataTextHeaderId);
+
+                entity.Property(e => e.LnkMetadataTextHeaderId)
+                    .UseIdentityColumn();
+
+                entity.Property(e => e.BinderTextMetadataValueId)
+                    .IsRequired();
+
+                entity.Property(e => e.TextHeaderId)
+                    .IsRequired();
+
+                // Foreign key relationships
+                entity.HasOne(e => e.BinderTextMetadataValue)
+                    .WithMany()
+                    .HasForeignKey(e => e.BinderTextMetadataValueId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_lnkMetadataTextHeaders_BinderTextMetadataValueId");
+
+                entity.HasOne(e => e.TextHeader)
+                    .WithMany()
+                    .HasForeignKey(e => e.TextHeaderId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_lnkMetadataTextHeaders_TextHeaderId");
+                entity.HasOne(d => d.TextHeader)
+                    .WithMany(p => p.LnkMetadataTextHeaders)
+                    .HasForeignKey(f => f.TextHeaderId)
+                    .HasConstraintName("FK_lnkMetadataTextHeaders_TextHeaderId");
             });
 
             modelBuilder.Entity<LnkTextHeadersTextGroup>(entity =>
@@ -647,6 +757,34 @@ namespace RhymeBinder.Models
                     .HasConstraintName("FK__TextHeade__Versi__52793849");
             });
 
+            modelBuilder.Entity<TextHeaderStamp>(entity =>
+            {
+                entity.ToTable("TextHeaderStamps");
+
+                // Views don't have primary keys, so we need to specify this is keyless
+                entity.HasNoKey();
+
+                // Map to the view
+                entity.ToView("TextHeaderStamps");
+
+                entity.Property(e => e.TextHeaderId)
+                    .HasColumnName("TextHeaderID");
+
+                entity.Property(e => e.BinderTextMetadataValueId);
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                // Optional: Configure relationships if you want navigation properties
+                entity.HasOne(e => e.TextHeader)
+                    .WithMany()
+                    .HasForeignKey(e => e.TextHeaderId);
+
+                entity.HasOne(e => e.BinderTextMetadataValue)
+                    .WithMany()
+                    .HasForeignKey(e => e.BinderTextMetadataValueId);
+            });
 
             modelBuilder.Entity<TextRecord>(entity =>
             {
