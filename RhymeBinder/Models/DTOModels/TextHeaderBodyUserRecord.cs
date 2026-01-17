@@ -69,7 +69,7 @@ namespace RhymeBinder.Models.DTOModels
         public int? ShowParagraphCount { get; set; }
 
         //  Revision Status Dropdown fields
-        public List<TextRevisionStatus> AllRevisionStatuses { get; set; }
+        //public List<TextRevisionStatus> AllRevisionStatuses { get; set; }
         //  Previous Texts for left sidebar slideout
         public List<SimpleTextHeaderAndText> PreviousTexts { get; set; }
 

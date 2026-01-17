@@ -53,7 +53,7 @@ namespace RhymeBinder.Models
         public virtual DbSet<TextHeaderStamp> TextHeaderStamps { get; set; }
         public virtual DbSet<TextNote> TextNotes { get; set; }
         public virtual DbSet<TextRecord> TextRecords { get; set; }
-        public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
+        //public virtual DbSet<TextRevisionStatus> TextRevisionStatuses { get; set; }
         public virtual DbSet<DBModels.TimeZone> TimeZones { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -709,7 +709,7 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.TextId).HasColumnName("TextID");
 
-                entity.Property(e => e.TextRevisionStatusId).HasColumnName("TextRevisionStatusID");
+                //entity.Property(e => e.TextRevisionStatusId).HasColumnName("TextRevisionStatusID");
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(1000)
@@ -746,10 +746,10 @@ namespace RhymeBinder.Models
                     .HasForeignKey(d => d.TextId)
                     .HasConstraintName("FK__TextHeade__TextI__4DB4832C");
 
-                entity.HasOne(d => d.TextRevisionStatus)
-                    .WithMany(p => p.TextHeaders)
-                    .HasForeignKey(d => d.TextRevisionStatusId)
-                    .HasConstraintName("FK__TextHeade__TextR__51851410");
+                //entity.HasOne(d => d.TextRevisionStatus)
+                //    .WithMany(p => p.TextHeaders)
+                //    .HasForeignKey(d => d.TextRevisionStatusId)
+                //    .HasConstraintName("FK__TextHeade__TextR__51851410");
 
                 entity.HasOne(d => d.VersionOfNavigation)
                     .WithMany(p => p.InverseVersionOfNavigation)
@@ -818,15 +818,15 @@ namespace RhymeBinder.Models
                     .HasConstraintName("FK__TextRecor__UserI__573DED66");
             });
 
-            modelBuilder.Entity<TextRevisionStatus>(entity =>
-            {
-                entity.Property(e => e.TextRevisionStatusId).HasColumnName("TextRevisionStatusID");
+            //modelBuilder.Entity<TextRevisionStatus>(entity =>
+            //{
+            //    entity.Property(e => e.TextRevisionStatusId).HasColumnName("TextRevisionStatusID");
 
-                entity.Property(e => e.TextRevisionStatus1)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("TextRevisionStatus");
-            });
+            //    entity.Property(e => e.TextRevisionStatus1)
+            //        .HasMaxLength(100)
+            //        .IsUnicode(false)
+            //        .HasColumnName("TextRevisionStatus");
+            //});
 
 
 

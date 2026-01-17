@@ -555,7 +555,7 @@ namespace RhymeBinder.Models.HelperModels
             textHeaders.ForEach(x => x.TextNote = null);
             textHeaders.ForEach(x => x.LnkTextHeadersTextGroups = null);
             textHeaders.ForEach(x => x.LnkTextSubmissions = null);
-            textHeaders.ForEach(x => x.TextRevisionStatus = null);
+            //textHeaders.ForEach(x => x.TextRevisionStatus = null);
             textHeaders.ForEach(x => x.LastModifiedByNavigation = null);
             textHeaders.ForEach(x => x.CreatedByNavigation = null);
             textHeaders.ForEach(x => x.LastReadByNavigation = null);

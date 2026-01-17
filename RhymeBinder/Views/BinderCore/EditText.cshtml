@@ -57,21 +57,7 @@
             <div class="menu-bar-item menu-bar-item-mobileHide">
                 Status:
             </div>
-            <div class="menu-bar-item">
-                <select name="TextRevisionStatusId" id="revision_status">
-                    @foreach (var revisionStatus in Model.AllRevisionStatuses)
-                    {
-                        if (revisionStatus.TextRevisionStatusId == @Model.TextRevisionStatusId)
-                        {
-                            <option value="@revisionStatus.TextRevisionStatusId" selected>@revisionStatus.TextRevisionStatus1</option>
-                        }
-                        else
-                        {
-                            <option value="@revisionStatus.TextRevisionStatusId">@revisionStatus.TextRevisionStatus1</option>
-                        }
-                    }
-                </select>
-            </div>
+
 
             @if(Model.BinderGroups.Count() > 0)
             {

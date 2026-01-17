@@ -109,7 +109,7 @@ namespace RhymeBinder.Models.HelperModels
                 Deleted = false,
                 Locked = false,
                 Top = true,
-                TextRevisionStatusId = 1,
+                //TextRevisionStatusId = 1,
                 LastRead = userLocalNow,
                 LastReadBy = userId,
                 TextId = newTextId,
@@ -155,7 +155,7 @@ namespace RhymeBinder.Models.HelperModels
                 Deleted = false,
                 Locked = false,
                 Top = true,
-                TextRevisionStatusId = parentHeader.TextRevisionStatusId,
+                //TextRevisionStatusId = parentHeader.TextRevisionStatusId,
                 LastRead = userLocalNow,
                 LastReadBy = userId,
                 TextId = parentHeader.TextId,
@@ -482,7 +482,7 @@ namespace RhymeBinder.Models.HelperModels
                 {
                     TextHeaderId = textHeader.TextHeaderId,
                     TextId = textHeader.TextId,
-                    TextRevisionStatusId = textHeader.TextRevisionStatusId,
+                    //TextRevisionStatusId = textHeader.TextRevisionStatusId,
                     TextNoteId = textHeader.TextNoteId,
                     LastModifiedBy = textHeader.LastModifiedBy,
                     LastReadBy = textHeader.LastReadBy,
@@ -496,7 +496,7 @@ namespace RhymeBinder.Models.HelperModels
                     CreatedByName = GetUserName(textHeader.CreatedBy),
                     ModifyByName = GetUserName(textHeader.LastModifiedBy),
                     ReadByName = GetUserName(textHeader.LastReadBy),
-                    RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
+                    //RevisionStatus = _context.TextRevisionStatuses.Single(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).TextRevisionStatus1,
                     GroupSequence = groupSequence,
                     CharacterCount = textHeader.CharacterCount ?? 0,
                     WordCount = textHeader.WordCount ?? 0
@@ -569,9 +569,9 @@ namespace RhymeBinder.Models.HelperModels
                 case "Vision Number":
                     theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.VisionNumber).ToList();
                     break;
-                case "Revision":
-                    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
-                    break;
+                //case "Revision":
+                //    theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.TextRevisionStatusId).ToList();
+                //    break;
                 case "Sequence":
                     theseDisplayTextHeaders = theseDisplayTextHeaders.OrderBy(x => x.GroupSequence).ToList();
                     break;
@@ -783,10 +783,10 @@ namespace RhymeBinder.Models.HelperModels
 
                 //  HERE is where you would do some getting for customized fields 
             //grab up the revision statuses for display in the dropdown list
-            List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
+            //List<TextRevisionStatus> revisionStatuses = _context.TextRevisionStatuses.ToList();
 
             //grab the current revision status in a readable format for display
-            string currentRevisionStatus = revisionStatuses.Single(x => x.TextRevisionStatusId == thisTextHeader.TextRevisionStatusId).TextRevisionStatus1;
+            //string currentRevisionStatus = revisionStatuses.Single(x => x.TextRevisionStatusId == thisTextHeader.TextRevisionStatusId).TextRevisionStatus1;
 
             //grab the SimpleUser object for current user
             SimpleUser currentUser = GetCurrentSimpleUser(userId);
@@ -856,7 +856,7 @@ namespace RhymeBinder.Models.HelperModels
                             CreatedBy = textHeader.VisionCreatedBy != null ? GetUserName(textHeader.VisionCreatedBy) : GetUserName(textHeader.CreatedBy),
                             LastModified = textHeader.LastModified,
                             LastModifiedBy = GetUserName(textHeader.LastModifiedBy),
-                            Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
+                            //Status = _context.TextRevisionStatuses.Where(x => x.TextRevisionStatusId == textHeader.TextRevisionStatusId).First().TextRevisionStatus1,
                             Title = textHeader.Title,
                             VisionNumber = textHeader.VisionNumber,
                             TextBody = _context.Texts.Where(x => x.TextId == textHeader.TextId).First().TextBody
@@ -899,7 +899,7 @@ namespace RhymeBinder.Models.HelperModels
                 LastModifiedBy = thisTextHeader.LastModifiedBy,
                 LastRead = thisTextHeader.LastRead,
                 LastReadBy = thisTextHeader.LastReadBy,
-                TextRevisionStatusId = thisTextHeader.TextRevisionStatusId,
+                //TextRevisionStatusId = thisTextHeader.TextRevisionStatusId,
                 VisionNumber = thisTextHeader.VisionNumber,
                 VisionCreated = thisTextHeader.VisionCreated,
                 VisionCreatedBy = thisTextHeader.VisionCreatedBy,
@@ -914,7 +914,7 @@ namespace RhymeBinder.Models.HelperModels
                 DisplayTitle = thisTextHeader.Title.Length > 20 ? thisTextHeader.Title.Substring(0, 20) + "..." : thisTextHeader.Title,
                 CreatedByUserName = createdUser.UserName,
                 LastModifiedByUserName = lastModifiedUser.UserName,
-                CurrentRevisionStatus = currentRevisionStatus,
+                //CurrentRevisionStatus = currentRevisionStatus,
                 BinderGroups = displayTextGroups,
                 MemberOfGroups = memberOfGroups,
                 //MemberOfGroups = memberOfGroups,
@@ -933,7 +933,7 @@ namespace RhymeBinder.Models.HelperModels
                 ShowLineCount = thisEditWindowProperty.ShowLineCount,
                 ShowParagraphCount = thisEditWindowProperty.ShowParagraphCount,
 
-                AllRevisionStatuses = revisionStatuses,
+                //AllRevisionStatuses = revisionStatuses,
                 PreviousTexts = previousTextsAndHeaders,
 
             };
@@ -1012,7 +1012,7 @@ namespace RhymeBinder.Models.HelperModels
                                LastModifiedBy = joinTextHeader.LastModifiedBy,
                                LastRead = joinTextHeader.LastRead,
                                LastReadBy = joinTextHeader.LastReadBy,
-                               TextRevisionStatusId = joinTextHeader.TextRevisionStatusId,
+                               //TextRevisionStatusId = joinTextHeader.TextRevisionStatusId,
                                VisionNumber = joinTextHeader.VisionNumber,
                                VersionOf = joinTextHeader.VersionOf,
                                Deleted = joinTextHeader.Deleted,
@@ -1104,7 +1104,7 @@ namespace RhymeBinder.Models.HelperModels
             origHeader.Title = textEdit.Title;
             origHeader.LastModified = GetUserLocalTime(textEdit.UserId);
             origHeader.LastModifiedBy = textEdit.UserId;
-            origHeader.TextRevisionStatusId = textEdit.TextRevisionStatusId;
+            //origHeader.TextRevisionStatusId = textEdit.TextRevisionStatusId;
 
             origHeader.CharacterCount = textEdit.TextBody?.Length ?? 0;
             origHeader.WordCount = GetWordCount(textEdit.TextBody);

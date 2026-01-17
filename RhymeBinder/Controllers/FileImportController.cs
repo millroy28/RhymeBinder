@@ -135,7 +135,7 @@ namespace RhymeBinder.Controllers
                     LastModifiedBy = userId,
                     LastRead = DateTime.Now,
                     LastReadBy = userId,
-                    TextRevisionStatusId = 1,
+                    //TextRevisionStatusId = 1,
                     VisionNumber = 1,
                     VersionOf = null,
                     Deleted = false,

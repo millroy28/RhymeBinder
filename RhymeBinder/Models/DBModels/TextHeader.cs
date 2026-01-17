@@ -29,7 +29,8 @@ namespace RhymeBinder.Models.DBModels
         public int? LastModifiedBy { get; set; }
         public DateTime? LastRead { get; set; }
         public int? LastReadBy { get; set; }
-        public int? TextRevisionStatusId { get; set; }
+        //removing
+        //public int? TextRevisionStatusId { get; set; }
         public int? VisionNumber { get; set; }
         public int? VersionOf { get; set; }
         public DateTime? VisionCreated { get; set; }
@@ -48,7 +49,7 @@ namespace RhymeBinder.Models.DBModels
         public virtual SimpleUser LastReadByNavigation { get; set; }
         public virtual SimpleUser VisionCreatedByNavigation { get; set; }
         public virtual Text Text { get; set; }
-        public virtual TextRevisionStatus TextRevisionStatus { get; set; }
+        //public virtual TextRevisionStatus TextRevisionStatus { get; set; }
         public virtual TextNote TextNote { get; set; }
         public virtual TextHeader VersionOfNavigation { get; set; }
         public virtual ICollection<EditWindowProperty> EditWindowProperties { get; set; }
