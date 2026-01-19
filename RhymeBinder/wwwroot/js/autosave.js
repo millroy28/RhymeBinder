@@ -8,8 +8,6 @@ var check_title_string;
 var original_body_string;
 var check_body_string;
 var is_content_different;
-var original_revision_status;
-var check_revision_status;
 var current_focus_element;
 var previous_focus_element;
 var current_body_cursor_position;
@@ -168,20 +166,17 @@ function get_current_cursor_position_and_form_focus() {
 function get_initial_content_values() {
     original_body_string = document.getElementById('body_edit_field').value;
     original_title_string = document.getElementById('title_edit_field').value;
-    original_revision_status = document.getElementById('revision_status').value;
     original_note_string = document.getElementById('note_edit_field').value;
 }
 
 function check_content_for_difference() {
     check_title_string = document.getElementById('title_edit_field').value;
     check_body_string = document.getElementById('body_edit_field').value;
-    check_revision_status = document.getElementById('revision_status').value;
     check_note_string = document.getElementById('note_edit_field').value;
 
 
     if (   (check_title_string != original_title_string)
         || (check_body_string != original_body_string)
-        || (check_revision_status != original_revision_status)
         || (check_note_string != original_note_string)
         ) {
 

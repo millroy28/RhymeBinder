@@ -15,9 +15,9 @@ namespace RhymeBinder.Models.DBModels
         public DateTime? LastModified { get; set; }
 
         // Navigation properties
-        public virtual Binder Binder { get; set; } = null!;
-        public virtual SimpleUser CreatedBy { get; set; } = null!;
-        public virtual SimpleUser? LastModifiedBy { get; set; }
+        //public virtual Binder Binder { get; set; } = null!;
+        //public virtual SimpleUser CreatedBy { get; set; } = null!;
+        //public virtual SimpleUser? LastModifiedBy { get; set; }
         public virtual ICollection<BinderTextMetadataValue> BinderTextMetadataValues { get; set; } = new List<BinderTextMetadataValue>();
         public virtual ICollection<LnkMetadataTextHeader> LnkMetadataTextHeaders { get; set; } = new List<LnkMetadataTextHeader>();
 

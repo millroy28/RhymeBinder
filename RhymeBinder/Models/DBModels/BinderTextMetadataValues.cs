@@ -10,6 +10,6 @@ namespace RhymeBinder.Models.DBModels
         public int? SortOrder { get; set; }
 
         // Navigation property
-        public virtual BinderTextMetadataHeader BinderTextMetadataHeader { get; set; } = null!;
+        //public virtual BinderTextMetadataHeader BinderTextMetadataHeader { get; set; } = null!;
     }
 }

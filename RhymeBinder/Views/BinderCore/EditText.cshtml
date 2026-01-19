@@ -191,6 +191,23 @@
 
 
     <div class="right-sidebar" id="rightSidebar">
+        @if(Model.TextHeaderStamps.Count > 0)
+        {
+            <div class="right-sidebar-item-heading">Stamps:</div>
+            @foreach(var stamp in Model.TextHeaderStamps)
+            {
+                
+                <div class="right-sidebar-item">
+                    <span>@stamp.HeaderName</span>
+                    <span>
+                        <select name="$stamp-{@stamp.LinkId}">
+                            
+                            <option value="${@stamp.ValueName}">@stamp.ValueName</option>
+                        </select>
+                    </span>
+                </div>
+            }
+        }
         <div class="right-sidebar-item-heading">Notes:</div>
         <textarea name="Note" id="note_edit_field" style="font-size: @fontSize" class="editor-box">@Model.Note</textarea>
     </div>

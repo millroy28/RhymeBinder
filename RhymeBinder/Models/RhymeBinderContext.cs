@@ -219,8 +219,8 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.BinderTextMetadataHeaderId)
                     .UseIdentityColumn();
 
-                entity.Property(e => e.BinderId)
-                    .IsRequired();
+                //entity.Property(e => e.BinderId)
+                //    .IsRequired();
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(500)
@@ -229,30 +229,30 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.Description)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedById)
-                    .IsRequired();
+                //entity.Property(e => e.CreatedById)
+                //    .IsRequired();
 
                 entity.Property(e => e.Created)
                     .IsRequired();
 
                 // Foreign key relationships
-                entity.HasOne(e => e.Binder)
-                    .WithMany()
-                    .HasForeignKey(e => e.BinderId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_BinderTextMetadataHeaders_BinderId");
+                //entity.HasOne(e => e.Binder)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.BinderId)
+                //    .OnDelete(DeleteBehavior.Restrict)
+                //    .HasConstraintName("FK_BinderTextMetadataHeaders_BinderId");
 
-                entity.HasOne(e => e.CreatedBy)
-                    .WithMany()
-                    .HasForeignKey(e => e.CreatedById)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_BinderTextMetadataHeaders_CreatedById");
+                //entity.HasOne(e => e.CreatedBy)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.CreatedById)
+                //    .OnDelete(DeleteBehavior.Restrict)
+                //    .HasConstraintName("FK_BinderTextMetadataHeaders_CreatedById");
 
-                entity.HasOne(e => e.LastModifiedBy)
-                    .WithMany()
-                    .HasForeignKey(e => e.LastModifiedById)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_BinderTextMetadataHeaders_LastModifiedById");
+                //entity.HasOne(e => e.LastModifiedBy)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.LastModifiedById)
+                //    .OnDelete(DeleteBehavior.Restrict)
+                //    .HasConstraintName("FK_BinderTextMetadataHeaders_LastModifiedById");
             });
 
             modelBuilder.Entity<BinderTextMetadataValue>(entity =>
@@ -271,16 +271,13 @@ namespace RhymeBinder.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                // Foreign key relationship
-                entity.HasOne(e => e.BinderTextMetadataHeader)
-                    .WithMany()
-                    .HasForeignKey(e => e.BinderTextMetadataHeaderId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_BinderTextMetadataValues_BinderTextMetadataHeaderId");
+                //// Foreign key relationship
+                //entity.HasOne(e => e.BinderTextMetadataHeader)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.BinderTextMetadataHeaderId)
+                //    .OnDelete(DeleteBehavior.Restrict)
+                //    .HasConstraintName("FK_BinderTextMetadataValues_BinderTextMetadataHeaderId");
 
-                entity.HasOne(e => e.BinderTextMetadataHeader)
-                    .WithMany(h => h.BinderTextMetadataValues)
-                    .HasForeignKey(e => e.BinderTextMetadataHeaderId);
             });
 
             modelBuilder.Entity<EditWindowProperty>(entity =>
@@ -372,22 +369,22 @@ namespace RhymeBinder.Models
                 entity.Property(e => e.TextHeaderId)
                     .IsRequired();
 
-                // Foreign key relationships
-                entity.HasOne(e => e.BinderTextMetadataValue)
-                    .WithMany()
-                    .HasForeignKey(e => e.BinderTextMetadataValueId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_lnkMetadataTextHeaders_BinderTextMetadataValueId");
+                //// Foreign key relationships
+                //entity.HasOne(e => e.BinderTextMetadataValue)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.BinderTextMetadataValueId)
+                //    .OnDelete(DeleteBehavior.Restrict)
+                //    .HasConstraintName("FK_lnkMetadataTextHeaders_BinderTextMetadataValueId");
 
-                entity.HasOne(e => e.TextHeader)
-                    .WithMany()
-                    .HasForeignKey(e => e.TextHeaderId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_lnkMetadataTextHeaders_TextHeaderId");
-                entity.HasOne(d => d.TextHeader)
-                    .WithMany(p => p.LnkMetadataTextHeaders)
-                    .HasForeignKey(f => f.TextHeaderId)
-                    .HasConstraintName("FK_lnkMetadataTextHeaders_TextHeaderId");
+                //entity.HasOne(e => e.TextHeader)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.TextHeaderId)
+                //    .OnDelete(DeleteBehavior.Restrict)
+                //    .HasConstraintName("FK_lnkMetadataTextHeaders_TextHeaderId");
+                //entity.HasOne(d => d.TextHeader)
+                //    .WithMany(p => p.LnkMetadataTextHeaders)
+                //    .HasForeignKey(f => f.TextHeaderId)
+                //    .HasConstraintName("FK_lnkMetadataTextHeaders_TextHeaderId");
             });
 
             modelBuilder.Entity<LnkTextHeadersTextGroup>(entity =>
@@ -772,24 +769,26 @@ namespace RhymeBinder.Models
 
                 entity.Property(e => e.BinderTextMetadataValueId);
 
-                entity.Property(e => e.Name)
-                    .HasMaxLength(100)
+                entity.Property(e => e.HeaderName)
                     .IsUnicode(false);
-                
-                entity.Property(e => e.TextHeaderId)
+
+                entity.Property(e => e.ValueName)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SortOrder)
                     .HasColumnName("SortOrder");
 
-                entity.Property(e => e.TextHeaderId)
+                entity.Property(e => e.SelectedValue)
                     .HasColumnName("SelectedValue");
 
-                // Optional: Configure relationships if you want navigation properties
-                entity.HasOne(e => e.TextHeader)
-                    .WithMany()
-                    .HasForeignKey(e => e.TextHeaderId);
+                //// Optional: Configure relationships if you want navigation properties
+                //entity.HasOne(e => e.TextHeader)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.TextHeaderId);
 
-                entity.HasOne(e => e.BinderTextMetadataValue)
-                    .WithMany()
-                    .HasForeignKey(e => e.BinderTextMetadataValueId);
+                //entity.HasOne(e => e.BinderTextMetadataValue)
+                //    .WithMany()
+                //    .HasForeignKey(e => e.BinderTextMetadataValueId);
             });
 
             modelBuilder.Entity<TextRecord>(entity =>

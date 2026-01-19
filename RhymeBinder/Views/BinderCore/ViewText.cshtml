@@ -159,6 +159,14 @@
     </div>
 
     <div class="right-sidebar" id="rightSidebar">
+        @if(Model.TextHeaderStamps.Count > 0)
+        {
+            <div class="right-sidebar-item-heading">Stamps:</div>
+            @foreach(var stamp in Model.TextHeaderStamps.Where(x => x.SelectedValue == true))
+            {
+                <div class="right-sidebar-item"><span style="font-weight: 800">@stamp.HeaderName - </span>@stamp.ValueName</div>                
+            }
+        }
         <div class="right-sidebar-item-heading">Notes:</div>
         <textarea name="Note" id="note_edit_field" class="editor-box" style="font-size: @fontSize" readonly>@Model.Note</textarea>
     </div>

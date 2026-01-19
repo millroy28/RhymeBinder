@@ -7,8 +7,8 @@
         public int TextHeaderId { get; set; }
 
         // Navigation properties
-        public virtual BinderTextMetadataValue BinderTextMetadataValue { get; set; } = null!;
-        public virtual TextHeader TextHeader { get; set; } = null!;
+        //public virtual BinderTextMetadataValue BinderTextMetadataValue { get; set; } = null!;
+        //public virtual TextHeader TextHeader { get; set; } = null!;
 
     }
 }
