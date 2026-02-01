@@ -54,10 +54,6 @@
                 <span> Width </span>
                 <span class="menu-bar-button" id="widthIncrease" style="margin-left: 0px !important" onclick="adjustWidth('increase')"> + </span>
             </div>
-            <div class="menu-bar-item menu-bar-item-mobileHide">
-                Status:
-            </div>
-
 
             @if(Model.BinderGroups.Count() > 0)
             {
@@ -194,15 +190,16 @@
         @if(Model.TextHeaderStamps.Count > 0)
         {
             <div class="right-sidebar-item-heading">Stamps:</div>
-            @foreach(var stamp in Model.TextHeaderStamps)
+            @foreach(var selectedStamp in Model.TextHeaderStamps.Where(x => x.SelectedValue == true))
             {
-                
                 <div class="right-sidebar-item">
-                    <span>@stamp.HeaderName</span>
+                    <span>@selectedStamp.HeaderName</span>
                     <span>
-                        <select name="$stamp-{@stamp.LinkId}">
-                            
-                            <option value="${@stamp.ValueName}">@stamp.ValueName</option>
+                        <select name="$stamp-{@selectedStamp.LinkId}">
+                            @foreach (var stamp in Model.TextHeaderStamps.Where(x => x.LinkId == selectedStamp.LinkId).OrderBy(x => x.SortOrder))
+                            {
+                                <option value="${@stamp.ValueName}" selected=@stamp.SelectedValue>@stamp.ValueName</option>
+                            }
                         </select>
                     </span>
                 </div>

@@ -403,3 +403,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/RhymeBinder/obj/project.assets.json
+/RhymeBinder/obj/RhymeBinder.csproj.nuget.dgspec.json
+/RhymeBinder/obj/RhymeBinder.csproj.nuget.g.props
