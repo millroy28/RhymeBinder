@@ -23,7 +23,7 @@
 <script type="module" src="~/dist/list-texts/assets/index-VAY_6Wi5.js"></script>
 
 
-@* <script language="Javascript" src="~/js/site.js"></script> *@
+<script language="Javascript" src="~/js/site.js"></script>
 
 @{
     var listTextsPayload = new
@@ -74,7 +74,7 @@
     <input type="hidden" name="View.CharacterCount" value="@Model.View.CharacterCount.ToString()" id="view_char_count" />
     <input type="hidden" name="View.User.UserId" value="@Model.View.User.UserId" id="view_userID" />
     <input type="hidden" name="View.BinderId" value="@Model.View.BinderId" />
-    <input type="hidden" name="Page" value="@Model.Page" id="page" />
+    @* <input type="hidden" name="Page" value="@Model.Page" id="page" /> *@
     <input type="hidden" name="View.User.AspNetUserId" value="@Model.View.User.AspNetUserId" />
     <input type="hidden" name="View.User.UserName" value="@Model.View.User.UserName" id="view_user_name" />
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />

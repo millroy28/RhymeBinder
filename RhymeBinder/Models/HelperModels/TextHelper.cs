@@ -394,7 +394,7 @@ namespace RhymeBinder.Models.HelperModels
             }
             return displayTextGroups;
         }
-        public List<DisplayTextHeader> GetDisplayTextHeaders(SavedView savedView, int page)
+        public List<DisplayTextHeader> GetDisplayTextHeaders(SavedView savedView)//, int page)
         {
 
             //TO DO: make this less ponderous and introduce error handling?
@@ -579,13 +579,10 @@ namespace RhymeBinder.Models.HelperModels
 
             return theseDisplayTextHeaders;
         }
-        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page)
+        public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId)//, int page)
         {
             // ALERT - REFACTOR IN PROGRESS 
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView()
-            {
-                Page = page
-            };
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new();
 
             SavedView savedView = GetSavedView(viewId);
             DisplayBinder binder = GetDisplayBinder(userId, savedView.BinderId);
@@ -633,7 +630,7 @@ namespace RhymeBinder.Models.HelperModels
             List<DisplayTextHeader> textHeaders = new List<DisplayTextHeader>();
             try
             {
-                textHeaders = GetDisplayTextHeaders(savedView, page);
+                textHeaders = GetDisplayTextHeaders(savedView);//, page);
             }
             catch
             {
@@ -641,16 +638,16 @@ namespace RhymeBinder.Models.HelperModels
                 return displayTextHeadersAndSavedView;
             }
 
-            // do some page calculation
-            int headerCount = textHeaders.Count;
-            int upperIndex = savedView.RecordsPerPage * page;
-            int lowerIndex = upperIndex - savedView.RecordsPerPage;
-            if (upperIndex > headerCount) { upperIndex = headerCount; };
-            int count = upperIndex - lowerIndex;
-            int pageCount = (headerCount - 1) / savedView.RecordsPerPage + 1;
+            //// do some page calculation
+            //int headerCount = textHeaders.Count;
+            //int upperIndex = savedView.RecordsPerPage * page;
+            //int lowerIndex = upperIndex - savedView.RecordsPerPage;
+            //if (upperIndex > headerCount) { upperIndex = headerCount; };
+            //int count = upperIndex - lowerIndex;
+            //int pageCount = (headerCount - 1) / savedView.RecordsPerPage + 1;
 
             // remove any headers not to be shown based on page and number of records per page
-            List<DisplayTextHeader> displayTextHeadersOnPage = textHeaders.GetRange(lowerIndex, count);
+            List<DisplayTextHeader> displayTextHeadersOnPage = textHeaders;//.GetRange(lowerIndex, count);
 
             // Pop list of binders for transfer dropdown
             List<Binder> userBinders = GetBinders(userId, "active_excluding_current");
@@ -675,11 +672,11 @@ namespace RhymeBinder.Models.HelperModels
             displayTextHeadersAndSavedView.Groups = groups;
             displayTextHeadersAndSavedView.Binder = binder;
             displayTextHeadersAndSavedView.UserBinders = userBinders;
-            displayTextHeadersAndSavedView.Page = page;
-            displayTextHeadersAndSavedView.TotalPages = pageCount;
-            displayTextHeadersAndSavedView.LowIndex = lowerIndex + 1;
-            displayTextHeadersAndSavedView.HighIndex = upperIndex;
-            displayTextHeadersAndSavedView.TotalHeaders = headerCount;
+            //displayTextHeadersAndSavedView.Page = page;
+            //displayTextHeadersAndSavedView.TotalPages = pageCount;
+            //displayTextHeadersAndSavedView.LowIndex = lowerIndex + 1;
+            //displayTextHeadersAndSavedView.HighIndex = upperIndex;
+            //displayTextHeadersAndSavedView.TotalHeaders = headerCount;
 
             // update last accessed
             UpdateBinderLastAccessed(binder.BinderId, userId);

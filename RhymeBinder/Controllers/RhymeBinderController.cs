@@ -242,11 +242,11 @@ namespace RhymeBinder.Controllers
                 return RedirectToAction("ListTextsOnSessionStart");
             }
 
-            int currentPage;
-            if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
+            //int currentPage;
+            //if (page == null) { currentPage = 1; } else { currentPage = (int)page; };
 
             // TO DO: ---> Figure out multi-user and how texts will be returned across views
-            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.TextHelper.GetDisplayTextHeadersAndSavedView(userId, viewId, currentPage);
+            DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = _modelHelper.TextHelper.GetDisplayTextHeadersAndSavedView(userId, viewId);//, currentPage);
 
             if (displayTextHeadersAndSavedView.View.SavedViewId == -1)
             {
@@ -339,8 +339,8 @@ namespace RhymeBinder.Controllers
                 case "CreateGroup":
                     return Redirect($"/RhymeBinder/CreateGroup?binderID={savedView.View.BinderId}");
 
-                case "ChangePage":
-                    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page={value}");
+                //case "ChangePage":
+                //    return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page={value}");
 
                 case "Search":
                     return Redirect($"/RhymeBinder/ListTexts?viewID={savedView.View.SavedViewId}&page=1&searchValue={value}");
@@ -350,7 +350,7 @@ namespace RhymeBinder.Controllers
             }
 
             // For most switch cases we redirect back to the same list of texts...
-            return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}&page={savedView.Page}");
+            return Redirect($"/RhymeBinder/ListTexts?viewID={status.recordId}");
         }
         public IActionResult ViewTextsInSequence(int groupId)
         {
