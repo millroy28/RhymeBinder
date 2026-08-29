@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
 using RhymeBinder.Models.DBModels;
 using RhymeBinder.Models.DTOModels;
 using RhymeBinder.Models.Enums;
 using RhymeBinder.Models.HelperModels;
 using RhymeBinder.Models.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 
@@ -234,6 +228,7 @@ namespace RhymeBinder.Controllers
         [HttpGet]
         public IActionResult ListTexts(int viewId, int? page, string searchValue)
         {
+            // ALERT - REFACTOR IN PROGRESS 
             // Check for alerts
             TempData["AlertMessage"] = HttpContext.Request.Cookies["AlertMessage"];
             TempData["AlertSeverity"] = HttpContext.Request.Cookies["AlertSeverity"];

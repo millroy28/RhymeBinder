@@ -1,5 +1,10 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
+import TextList from './TextList.vue'
 
-createApp(App).mount('#list-texts-app')
+
+const dataEl = document.getElementById('list-texts-data')
+const initialData = JSON.parse(dataEl.textContent)
+
+createApp(TextList, { initialData }).mount('#list-texts-app')

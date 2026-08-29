@@ -16,16 +16,39 @@
     string styleTags = binderColorTag + menuTextColorTag;
 
 }
-
-<div id="list-texts-app"></div>
-<div id="list-texts-app"></div>
-<link rel="stylesheet" href="~/dist/list-texts/assets/index-CsUDhMuy.css" /> <script type="module" src="~/dist/list-texts/assets/index-9KsYR2D7.js"></script>
-
 @Html.Partial("_Alert")
 
-<script language="Javascript" src="~/js/site.js"></script>
+<div id="list-texts-app"></div>
+<link rel="stylesheet" href="~/dist/list-texts/assets/index-CsUDhMuy.css" /> 
+<script type="module" src="~/dist/list-texts/assets/index-VAY_6Wi5.js"></script>
 
 
+@* <script language="Javascript" src="~/js/site.js"></script> *@
+
+@{
+    var listTextsPayload = new
+    {
+        Model.TextHeaders,
+        GroupSequenceView = Model.View.GroupSequence,
+        Columns = new
+        {
+            Model.View.LastModified,
+            Model.View.LastModifiedBy,
+            Model.View.Created,
+            Model.View.CreatedBy,
+            Model.View.VisionNumber,
+            Model.View.RevisionStatus,
+            Model.View.Groups,
+            Model.View.WordCount,
+            Model.View.CharacterCount
+        },
+        Model.View.SortValue,
+        Model.View.Descending,
+        Model.View.SearchValue
+    };
+}
+<script id="list-texts-data" type="application/json">@Json.Serialize(listTextsPayload)</script>
+<div id="list-texts-app"></div>
 
 
 
@@ -57,248 +80,6 @@
     <input type="submit" hidden name="action" value="LastView" id="bttn_sub" />
     <input type="hidden" name="value" value="-1" id="record_id" />
 
-    <div class="table-view-wrapper">
-        <div class="menu-bar">
-
-            <div class="list-texts-menu-bar-main">
-                <div class="menu-bar-title menu-bar-title-mobile" id="menu_bar_title" style="@styleTags">
-                    @Model.MenuTitle
-                </div>
-                <div class="menu-bar-item">
-                    @if(Model.View.GroupSequence == true)
-                    {
-                        <a class="menu-bar-button" onclick="show_sequence_inputs(@Model.View.SavedViewId)" id="updateSequenceButton">Edit Sequence</a>
-                    }
-                </div>
-                <div class="menu-bar-item">
-                        @if(Model.View.GroupSequence == true)
-                        {
-                            <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', @Model.View.SetValue)">New Text</a>
-                        }
-                        else
-                        {
-                            <a class="menu-bar-button" onclick="selected_action_form_submit('NewText', -1)">New Text</a>
-                        }
-                </div>
-
-
-                
-                <div class="menu-bar-dropdown">
-                    <div class="menu-bar-button-dropdown">
-                        Columns ▼
-                    </div>
-                    <div class="menu-bar-dropdown-content">
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified', this.id, 'last_modified_col')" id="toggle_last_modified">? Last Edited</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_last_modified_by', this.id, 'last_modified_by_col')" id="toggle_last_modified_by">? Last Edited By</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created', this.id, 'created_col')" id="toggle_created">? Created</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_created_by', this.id, 'created_by_col')" id="toggle_created_by">? Created By</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_vision_number', this.id, 'vision_col')" id="toggle_vision_no">? Vision No</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'revision_status', this.id, 'revision_col')" id="toggle_revision">? Revision</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_groups', this.id, 'groups_col')" id="toggle_groups">? Groups</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_word_count', this.id, 'wordcount_col')" id="toggle_wordcount">? Word Count</a>
-                        <a class="menu-bar-dropdown-item" onclick="hidden_view_form_submit('LastView', 'view_char_count', this.id, 'charcount_col')" id="toggle_charcount">? Character Count</a>
-
-
-                    </div>
-                </div>
-                <div class="menu-bar-dropdown">
-                    <div class="menu-bar-button-dropdown">
-                        Views ▼
-                    </div>
-                    <div class="menu-bar-dropdown-content">
-                        @foreach(var group in Model.Groups)
-                        {
-                            if(group.TextGroupId < 0)
-                            {
-                                <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
-                            }
-                        }
-                        <a class="menu-bar-dropdown-item" >――――――――</a>
-                        <a class="menu-bar-dropdown-item" onclick="sub_form('SaveDefault');">Set Default</a>
-                    </div>
-                </div>
-                <div class="menu-bar-dropdown">
-                    <div class="menu-bar-button-dropdown">
-                        Groups ▼
-                    </div>
-                    <div class="menu-bar-dropdown-content">
-                        <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('CreateGroup', -1)">New Group</a>
-                        @if(Model.Groups.Count > 3)  // 3 views created by default for each binder
-                        {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('ManageGroups', -1)">Edit Groups</a>
-                            <a class="menu-bar-dropdown-item" onclick="open_group_list_modal_with_id('groups','ListTexts')">Add to / Remove from Groups</a>
-                        }
-
-                  
-
-                    </div>
-                </div>
-                <div class="menu-bar-dropdown">
-                    <div class="menu-bar-button-dropdown">
-                        Actions ▼
-                    </div>
-                    <div class="menu-bar-dropdown-content">
-                        @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue == "Hidden")
-                        {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Restore', '-1')">Restore (unhide in binder)</a>
-                            <a class="menu-bar-dropdown-item" >――――――――</a>
-                        } 
-                        @* Disabling for now - questioning whether current hiding method works for my use or is confusing *@
-@*                         @if(Model.Binder.Name != "Trash" && Model.Binder.Name != "Loose Pages" && Model.View.SetValue != "Hidden" && Model.View.SetValue != "All")
-                        {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Hide', '-1')">Hide (hide in binder)</a>
-                        } *@
-                        <a class="menu-bar-dropdown-item" onclick="populate_list_modal_footer_with_record_count_message(); open_modal_with_Id('binders')">Transfer To Binder</a>
-@*                         @foreach(var binder in Model.UserBinders)
-                        {
-                            <a class="menu-bar-dropdown-item" onclick="selected_action_form_submit('Transfer', @binder.BinderId)"> ▶ @binder.Name</a>
-                        } *@
-
-                    </div>
-                </div>
-                <div class="menu-bar-item">
-                        @Html.EditorFor(x => x.View.SearchValue)
-           
-                        <a class="menu-bar-button" onclick="selected_action_form_submit('LastView', 0)">Search</a>
-           
-                        <a class="menu-bar-button" onclick="clear_search()">Clear</a>
-                </div>
-            </div>
-            @if (Model.View.GroupSequence == true)
-            {
-                <div class="menu-bar-escape">
-                    <div class="menu-bar-item-right-final">
-                        <a class="menu-bar-button" href="/RhymeBinder/ListTextsOnSessionStart?binderId=@Model.Binder.BinderId">Return to Binder</a>
-                    </div>                
-                </div>
-            }
-        </div>
-
-
-
-        <div class="table-view-table-container-left"> 
-        </div>
-        <div class="table-view-table-container">
-            <table>
-                <tr>
-                    <th name="selected_col" id="Selected"><input type="checkbox" id="SelectAll" onclick="toggle_select_all_text_headers()"/></th>
-                    @if(Model.View.GroupSequence == true)
-                    {
-                        <th name="group_sequence_col" id="Sequence" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');" width="5px"><a>Sequence</a></th>
-                    } else
-                    {
-                        <th></th>
-                    }
-                    <th name="title_col" id="Title" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Title</a></th>
-                    <th name="last_modified_col" id="Last Edited" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Edited</a></th>
-                    <th name="last_modified_by_col" id="Last Edited By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Last Edited By</a></th>
-                    <th name="created_col" id="Created" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created</a></th>
-                    <th name="created_by_col" id="Created By" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Created By</a></th>
-                    <th name="vision_col" id="Vision Number" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Vision Number</a></th>
-                    <th name="revision_col" id="Revision" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Revision Status</a></th>
-                    <th name="groups_col" id="Groups" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Groups</a></th>
-                    <th name="wordcount_col" id="Word Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Word Count</a></th>
-                    <th name="charcount_col" id="Character Count" onclick="col_header_sort_change(this.id, 'view_sort_value', 'view_descending');"><a>Character Count</a></th>
-                </tr>
-
-                @* Insert a row with a link to view all texts in sequence *@
-                @if(Model.View.GroupSequence == true && Model.TextHeaders.Any(x => x.GroupSequence.HasValue))
-                {
-                    <tr>
-
-                        <td style="text-align: right"></td>
-                        <td></td>
-                        <td><a class="menu-bar-button" href="/RhymeBinder/ViewTextsInSequence?groupId=@Model.View.SetValue">View All "@Model.View.ViewName" Texts in Sequence</a></td>
-                        <td style="text-align: center" name="last_modified_col"></td>
-                        <td style="text-align: center" name="last_modified_by_col"></td>
-                        <td style="text-align: center" name="created_col"></td>
-                        <td style="text-align: center" name="created_by_col"></td>
-                        <td style="text-align: center" name="vision_col"></td>
-                        <td style="text-align: center" name="revision_col"></td>
-                        <td name="groups_col">
-                        </td>
-                    </tr>
-                }
-
-                @foreach (var text in Model.TextHeaders)
-                {
-
-                    <tr>
-
-                        <td style="text-align: right">
-                            <input type="hidden" name="TextHeaders[@index].TextHeaderId" id="TextHeaders[@index].TextHeaderId" value="@text.TextHeaderId" />
-                            <input type="checkbox" name="TextHeaders[@index].Selected" value="true" />
-                        </td>
-                        @if(Model.View.GroupSequence == true)
-                        {
-                            <td style="text-align: center" name="group_sequence_col">
-                                <input type="number" min="0" max="99999" class="sequence-number-input" name="TextHeaders[@index].GroupSequence" id="TextHeaders[@index].GroupSequence" value="@text.GroupSequence" hidden/>
-                                <div name="groupSequence">@text.GroupSequence</div>
-                            </td>
-                        }
-                        else
-                        {
-                            <td></td>
-                        }
-                        <td><a class="link-item"  href="/RhymeBinder/ViewText?textHeaderID=@text.TextHeaderId">@text.Title</a></td>
-                        <td style="text-align: center" name="last_modified_col">@text.LastModified</td>
-                        <td style="text-align: center" name="last_modified_by_col">@text.ModifyByName</td>
-                        <td style="text-align: center" name="created_col">@text.Created</td>
-                        <td style="text-align: center" name="created_by_col">@text.CreatedByName</td>
-                        <td style="text-align: center" name="vision_col">@text.VisionNumber</td>
-                        <td style="text-align: center" name="revision_col">@text.RevisionStatus</td>
-                        <td name="groups_col">
-                            @foreach(var group in text.Groups)
-                                {
-                                    <a class="link-item"   onclick="selected_action_form_submit('GroupFilter', this.id)" id=@group.SavedViewId>@group.GroupTitle</a>
-                                }
-                        </td>
-                        <td style="text-align: center" name="wordcount_col">@text.WordCount.ToString("N0")</td>
-                        <td style="text-align: center" name="charcount_col">@text.CharacterCount.ToString("N0");</td>
-                    </tr>
-                    { index++; }
-                }
-
-            </table>
-        </div>
-        <div class="table-view-page-control-container">
-            <div class="table-view-page-control-container-item">
-                Records <b>@Model.LowIndex - @Model.HighIndex</b> of <b>@Model.TotalHeaders</b>
-            </div>
-            <div class="table-view-page-control-container-item">
-
-                @if(Model.Page > 1)
-                {
-                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (1))">▐◄</a>
-                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (@Model.Page - 1))">◄ </a>
-                }
-                else
-                {
-                    @:<a class="button menu-bar-button-disabled">▐◄</a>
-                    @:<a class="button menu-bar-button-disabled">◄ </a>
-                }        
-                
-                Page <b>@Model.Page</b> of <b>@Model.TotalPages</b>
-
-                @if(Model.Page < Model.TotalPages)
-                {
-                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (@Model.Page + 1))">►</a>
-                   @:<a class="button menu-bar-button" onclick="selected_action_form_submit('ChangePage', (@Model.TotalPages))">►▌</a>
-                }
-                else
-                {
-                    @:<a class="menu-bar-button-disabled">►</a>
-                    @:<a class="menu-bar-button-disabled">►▌</a>                    
-                }    
-            </div>
-            <div class="table-view-page-control-container-item table-view-page-control-container-item-mobileHide">
-                @Html.EditorFor(x => x.View.RecordsPerPage) Records Per Page
-            </div>
-                
-        </div>
-        <div class="table-view-table-container-right"> 
-        </div>
-    </div>
 
 
             @* Group Modal *@
@@ -384,7 +165,7 @@
 
 
 
-    <script language="Javascript">
+@*     <script language="Javascript">
     window.onload = on_start_get_form_sub_button('bttn_sub');
     window.onload = toggle_hide_element('view_last_modified', 'toggle_last_modified', 'last_modified_col', 'init');
     window.onload = toggle_hide_element('view_last_modified_by', 'toggle_last_modified_by', 'last_modified_by_col', 'init');
@@ -396,7 +177,7 @@
     window.onload = toggle_hide_element('view_word_count', 'toggle_wordcount', 'wordcount_col', 'init');
     window.onload = toggle_hide_element('view_char_count', 'toggle_charcount', 'charcount_col', 'init');
     window.onload = on_start_mark_sorted_column('view_sort_value', 'view_descending');
-</script>
+</script> *@
 </form>
 
 

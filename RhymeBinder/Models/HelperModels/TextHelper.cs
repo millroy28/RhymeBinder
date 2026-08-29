@@ -396,6 +396,7 @@ namespace RhymeBinder.Models.HelperModels
         }
         public List<DisplayTextHeader> GetDisplayTextHeaders(SavedView savedView, int page)
         {
+
             //TO DO: make this less ponderous and introduce error handling?
             //Get all text headers for this view
             List<TextHeader> theseTextHeaders = new List<TextHeader>();
@@ -580,6 +581,7 @@ namespace RhymeBinder.Models.HelperModels
         }
         public DisplayTextHeadersAndSavedView GetDisplayTextHeadersAndSavedView(int userId, int viewId, int page)
         {
+            // ALERT - REFACTOR IN PROGRESS 
             DisplayTextHeadersAndSavedView displayTextHeadersAndSavedView = new DisplayTextHeadersAndSavedView()
             {
                 Page = page
