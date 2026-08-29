@@ -190,7 +190,7 @@
         @if(Model.TextHeaderStamps.Count > 0)
         {
             <div class="right-sidebar-item-heading">Stamps:</div>
-            @foreach(var selectedStamp in Model.TextHeaderStamps.Where(x => x.SelectedValue == true))
+            foreach(var selectedStamp in Model.TextHeaderStamps.Where(x => x.SelectedValue == true))
             {
                 <div class="right-sidebar-item">
                     <span>@selectedStamp.HeaderName</span>
@@ -198,7 +198,7 @@
                         <select name="$stamp-{@selectedStamp.LinkId}">
                             @foreach (var stamp in Model.TextHeaderStamps.Where(x => x.LinkId == selectedStamp.LinkId).OrderBy(x => x.SortOrder))
                             {
-                                <option value="${@stamp.ValueName}" selected=@stamp.SelectedValue>@stamp.ValueName</option>
+                                <option value="${@stamp.ValueName}" selected=@stamp.SelectedValue">@stamp.ValueName</option>
                             }
                         </select>
                     </span>

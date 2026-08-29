@@ -449,6 +449,15 @@ namespace RhymeBinder.Controllers
             return Redirect($"/BinderCore/EditTextsInSequence?groupId={editedTexts.GroupId}");
         }
 
+        [HttpPost]
+        public void UpdateTextStamp([FromBody] StampUpdateModel stampUpdate)
+        {
+            int userId = GetUserId(); 
+            Status status = _modelHelper.TextHelper.UpdateTextHeaderStamp(userId, stampUpdate);
+            SetAlertCookieGenericSaveStatus(status.success);
+            return;
+        }
+
         #endregion
 
         //-------GROUP:

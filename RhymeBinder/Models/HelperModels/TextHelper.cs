@@ -1772,6 +1772,59 @@ namespace RhymeBinder.Models.HelperModels
             }
             return status;
         }
+        public Status UpdateTextHeaderStamp(int userId, StampUpdateModel stampUpdateModel)
+        {
+            // Removes previous stamp selection
+            // (BinderTextMetadataValueId via lnkMetadataTextHeaders) 
+            // And adds new
+            // 1: Check user authority
+            // 2: Retrieve existing link and update
+            // 3: If no existing, create new
+
+            // 1: Check authority:
+            Status status = new Status();
+            if(!UserAuthorized(userId, stampUpdateModel.TextHeaderId, SharedObjectTypeEnum.TextHeader, SharedObjectActionEnum.EDIT))
+            {
+                status.success = false;
+                status.message = "User not authorized to edit Text Header";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                return status;
+            }
+
+            // 2: Retrieve and update
+            try
+            {
+                var lnkToUpdate = _context.LnkMetadataTextHeaders.SingleOrDefault(x => x.LnkMetadataTextHeaderId == stampUpdateModel.LinkId);
+                if (lnkToUpdate != null)
+                {
+                    lnkToUpdate.BinderTextMetadataValueId = stampUpdateModel.NewBinderTextMetadataValueId;
+                    _context.Update(lnkToUpdate);
+                }
+                else
+                {
+                    var lnkToInsert = new LnkMetadataTextHeader()
+                    {
+                        TextHeaderId = stampUpdateModel.TextHeaderId,
+                        BinderTextMetadataValueId = stampUpdateModel.NewBinderTextMetadataValueId
+                    };
+                    _context.LnkMetadataTextHeaders.Add(lnkToInsert);
+                }
+                _context.SaveChanges();
+                status.success = true;
+                status.message = "Stamp Updated!";
+                status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+                return status;
+            }
+            catch
+            {
+                status.success = false;
+                status.message = "Failed to Update Stamp";
+                status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                return status;
+            }
+
+
+        }
 
     }
 
