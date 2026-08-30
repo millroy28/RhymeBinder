@@ -12,6 +12,84 @@
     text-align: right;
 }
 
+:root {
+    --color-bg-body: #f4f5ef;
+    --color-bg-panel: #eff3d8;
+    --color-bg-accent: #d7e19d;
+    --color-bg-hover: #c6c9b6;
+    --color-bg-active: #9ea091;
+    --color-border-dark: #464936;
+    --color-table-rule: #2a4d6f;
+    --color-table-rule-light: #575775;
+    --font-ui: Verdana, Geneva, Tahoma, sans-serif;
+    --font-body: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+/*``[List Texts Shell - scoped to ListTexts]*/
+
+.list-texts-shell {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    box-sizing: border-box;
+    height: 90vh;
+    background: #eff3d8;
+}
+
+.list-texts-shell-rail-left,
+.list-texts-shell-rail-right {
+    flex: 0 0 1%;
+    background: linear-gradient(90deg, rgba(193,193,193,1) 0%, rgba(215,225,157,1) 35%, rgba(244,245,239,1) 100%);
+}
+
+.list-texts-shell-rail-right {
+    background: linear-gradient(270deg, rgba(193,193,193,1) 0%, rgba(215,225,157,1) 35%, rgba(244,245,239,1) 100%);
+}
+
+.list-texts-shell-main {
+    flex: 1 1 98%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+#list-texts-app {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* the flexbox scroll trap from before, same fix */
+}
+
+.table-toolbar {
+    flex: 0 0 auto;
+    padding: 6px 4px;
+}
+
+.table-scroll-region {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    font-size: small;
+}
+
+    .table-scroll-region table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-scroll-region thead th {
+        position: sticky;
+        top: 0;
+        background: #eff3d8; /* matches the table's own background so rows don't show through when scrolled under */
+        z-index: 1;
+    }
+
+.list-texts-status-bar {
+    flex: 0 0 auto;
+    font-size: small;
+    padding: 6px 12px;
+    border-top: 1px solid #c6c9b6;
+}
   
 
 
@@ -455,19 +533,20 @@
         }
 
 
-        .list-texts-menu-bar-main {
-            grid-column: 1 / 4;
+    .list-texts-menu-bar-main {
+        /*            grid-column: 1 / 4;
             grid-row: 1 / 2;
-            gap: 12px;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-content: space-around;
-            align-items: center;
-            background-color: #d7e19d;
-            font-size: small;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-        }
+            gap: 12px;*/
+        display: flex;
+        flex: 0 0 auto; /* stay fixed height at the top, don't grow or shrink */
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: space-around;
+        align-items: center;
+        background-color: #d7e19d;
+        font-size: small;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
 
         .menu-bar {
             grid-column: 1/6;
@@ -480,7 +559,7 @@
         }
 
         .menu-bar-main {
-            gap: 12px;
+/*            gap: 12px;*/
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
@@ -493,6 +572,16 @@
         display:none;
     }
 */
+    .menu-bar-secondary {
+        /*gap: 12px;*/
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: small;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: 600;
+    }
 
 
         .menu-bar-escape {

@@ -1,4 +1,42 @@
-﻿<script setup>
+﻿<style scoped>
+    .table-toolbar {
+        flex: 0 0 auto;
+        padding: 6px 4px;
+        font-family: var(--font-ui);
+    }
+
+    .table-scroll-region {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        font-size: small;
+    }
+
+        .table-scroll-region table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--color-bg-panel);
+        }
+
+        .table-scroll-region thead th {
+            position: sticky;
+            top: 0;
+            background: var(--color-bg-panel);
+            border-bottom-style: double;
+            border-bottom-color: var(--color-table-rule);
+            z-index: 1;
+        }
+
+    .list-texts-status-bar {
+        flex: 0 0 auto;
+        font-size: small;
+        padding: 6px 12px;
+        border-top: 1px solid var(--color-bg-hover);
+        font-family: var(--font-ui);
+    }
+</style>
+
+<script setup>
     import { ref, reactive, computed } from 'vue'
     import { formatDate, formatNumber } from '../formatters.js'
 
@@ -59,41 +97,51 @@
 </script>
 
 <template>
-    <div class="menu-bar-item">
-        <input type="text" v-model="searchTerm" placeholder="Search titles..." />
+    <div class="menu-bar-secondary">
+        <div class="menu-bar-title">Filters</div>
+        <div class="menu-bar-item">
+            <input type="text" v-model="searchTerm" placeholder="Title..." />
+        </div>
+        <div class="menu-bar-item">
+            Groups:
+        </div>
     </div>
 
-    <table>
-        <tr>
-            <th></th>
-            <th v-if="groupSequenceView" @click="setSort('groupSequence')">Sequence</th>
-            <th v-else></th>
-            <th @click="setSort('title')">Title</th>
-            <th v-for="col in visibleColumnDefs"
-                :key="col.key"
-                :class="`align-${col.align}`"
-                @click="col.sortable && setSort(col.key)">{{ col.label }}</th>
-            <th v-if="columns.groups">Groups</th>
-        </tr>
-        <tr v-for="(text, index) in visibleTexts" :key="text.textHeaderId">
-            <td>
-                <input type="hidden" :name="`TextHeaders[${index}].TextHeaderId`" :value="text.textHeaderId" />
-                <input type="checkbox" :name="`TextHeaders[${index}].Selected`" value="true" v-model="selected[text.textHeaderId]" />
-            </td>
-            <td v-if="groupSequenceView">{{ text.groupSequence }}</td>
-            <td v-else></td>
-            <td><a class="link-item" :href="`/RhymeBinder/ViewText?textHeaderID=${text.textHeaderId}`">{{ text.title }}</a></td>
-            <td v-for="col in visibleColumnDefs" :key="col.key" :class="`align-${col.align}`">
-                {{ col.format ? col.format(text[col.key]) : text[col.key] }}
-            </td>
-            <td v-if="columns.groups"
-                v-for="g in text.groups"
-                :key="g.savedViewId"
-                class="link-item"
-                :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}
-            </td>
-        </tr>
-    </table>
+    <div class="table-scroll-region">
+
+        <table>
+            <tr>
+                <th></th>
+                <th v-if="groupSequenceView" @click="setSort('groupSequence')">Sequence</th>
+                <th v-else></th>
+                <th @click="setSort('title')">Title</th>
+                <th v-for="col in visibleColumnDefs"
+                    :key="col.key"
+                    :class="`align-${col.align}`"
+                    @click="col.sortable && setSort(col.key)">{{ col.label }}</th>
+                <th v-if="columns.groups">Groups</th>
+            </tr>
+        
+                <tr v-for="(text, index) in visibleTexts" :key="text.textHeaderId">
+                    <td>
+                        <input type="hidden" :name="`TextHeaders[${index}].TextHeaderId`" :value="text.textHeaderId" />
+                        <input type="checkbox" :name="`TextHeaders[${index}].Selected`" value="true" v-model="selected[text.textHeaderId]" />
+                    </td>
+                    <td v-if="groupSequenceView">{{ text.groupSequence }}</td>
+                    <td v-else></td>
+                    <td><a class="link-item" :href="`/RhymeBinder/ViewText?textHeaderID=${text.textHeaderId}`">{{ text.title }}</a></td>
+                    <td v-for="col in visibleColumnDefs" :key="col.key" :class="`align-${col.align}`">
+                        {{ col.format ? col.format(text[col.key]) : text[col.key] }}
+                    </td>
+                    <td v-if="columns.groups"
+                        v-for="g in text.groups"
+                        :key="g.savedViewId"
+                        class="link-item"
+                        :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}
+                    </td>
+                </tr>
+        </table>
+    </div>
 
     <div style="font-style: italic;">Showing {{ visibleTexts.length }} of {{ texts.length }} texts</div>
 </template>
