@@ -173,9 +173,6 @@ function populate_list_modal_footer_with_record_count_message() {
             footerRecordCounts[i].innerText = "Apply changes to " + checkedBoxes + " selected records: ";
         }
     }
-
-
-    document.GetElements
     return;
 }
 
@@ -211,26 +208,26 @@ function populate_group_selected_text_header_counts() {
     // Get Selected Text Header IDs
     var inputs = document.getElementsByTagName("input");
     var selectedTextHeaderIds = [];
-    
+
+
     for (var i = 0; i < inputs.length; i++) {
         if (inputs[i].type == "checkbox" && inputs[i].checked == true && inputs[i].name.startsWith("TextHeaders")) {
             var index = inputs[i].name.replace("TextHeaders[", "").replace("].Selected", "");
 
             //console.log("got index " + index);
-            selectedTextHeaderIds.push(document.getElementById("TextHeaders[" + index + "].TextHeaderId").value);
+            var inputElement = document.getElementsByName("TextHeaders[" + index + "].TextHeaderId");
+            selectedTextHeaderIds.push(inputElement[0].value);
 
         }
     }
 
     // If no headers, disable and move on
     if (selectedTextHeaderIds.length == 0) {
-
         for (var i = 0; i < inputs.length; i++) {
             if (inputs[i].type == "checkbox" && inputs[i].name == "GroupCheckbox") {
                 inputs[i].disabled = true;
             }
         }
-
     } else {    
         for (var i = 0; i < groupIds.length; i++) {
 
@@ -250,7 +247,7 @@ function populate_group_selected_text_header_counts() {
                 for (var j = 0; j < groupTextHeaderIds.length; j++) {
                
                     for (var k = 0; k < selectedTextHeaderIds.length; k++) {
-                        // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
+                         //console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
                         if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
                             matchCount++;
                         }
