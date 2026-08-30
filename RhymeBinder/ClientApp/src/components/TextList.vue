@@ -1,9 +1,4 @@
 ﻿<style scoped>
-    .table-toolbar {
-        flex: 0 0 auto;
-        padding: 6px 4px;
-        font-family: var(--font-ui);
-    }
 
     .table-scroll-region {
         flex: 1 1 auto;
@@ -122,24 +117,24 @@
                 <th v-if="columns.groups">Groups</th>
             </tr>
         
-                <tr v-for="(text, index) in visibleTexts" :key="text.textHeaderId">
-                    <td>
-                        <input type="hidden" :name="`TextHeaders[${index}].TextHeaderId`" :value="text.textHeaderId" />
-                        <input type="checkbox" :name="`TextHeaders[${index}].Selected`" value="true" v-model="selected[text.textHeaderId]" />
-                    </td>
-                    <td v-if="groupSequenceView">{{ text.groupSequence }}</td>
-                    <td v-else></td>
-                    <td><a class="link-item" :href="`/RhymeBinder/ViewText?textHeaderID=${text.textHeaderId}`">{{ text.title }}</a></td>
-                    <td v-for="col in visibleColumnDefs" :key="col.key" :class="`align-${col.align}`">
-                        {{ col.format ? col.format(text[col.key]) : text[col.key] }}
-                    </td>
-                    <td v-if="columns.groups"
-                        v-for="g in text.groups"
-                        :key="g.savedViewId"
-                        class="link-item"
-                        :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}
-                    </td>
-                </tr>
+            <tr v-for="(text, index) in visibleTexts" :key="text.textHeaderId">
+                <td>
+                    <input type="hidden" :name="`TextHeaders[${index}].TextHeaderId`" :value="text.textHeaderId" />
+                    <input type="checkbox" :name="`TextHeaders[${index}].Selected`" value="true" v-model="selected[text.textHeaderId]" />
+                </td>
+                <td v-if="groupSequenceView">{{ text.groupSequence }}</td>
+                <td v-else></td>
+                <td><a class="link-item" :href="`/RhymeBinder/ViewText?textHeaderID=${text.textHeaderId}`">{{ text.title }}</a></td>
+                <td v-for="col in visibleColumnDefs" :key="col.key" :class="`align-${col.align}`">
+                    {{ col.format ? col.format(text[col.key]) : text[col.key] }}
+                </td>
+                <td v-if="columns.groups">
+                    <template v-for="(g, i) in text.groups" :key="g.savedViewId">
+                        <a class="link-item" :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}</a>
+ 
+                    </template>
+                </td>
+            </tr>
         </table>
     </div>
 

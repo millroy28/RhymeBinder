@@ -558,29 +558,29 @@
             height: fit-content;
         }
 
-        .menu-bar-main {
-/*            gap: 12px;*/
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: center;
-            font-size: small;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-weight: 600;
-        }
+    .menu-bar-main {
+        /*            gap: 12px;*/
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: small;
+        font-family: var(--font-ui);
+        font-weight: 600;
+    }
         /*    .mobile-menu-bar-main {
         display:none;
     }
 */
     .menu-bar-secondary {
         /*gap: 12px;*/
+        flex: 0 0 auto;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
         font-size: small;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        font-weight: 600;
+        font-family: var(--font-ui);
     }
 
 
