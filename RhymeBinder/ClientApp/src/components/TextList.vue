@@ -1,19 +1,34 @@
-<script setup>
+﻿<script setup>
     import { ref, reactive, computed } from 'vue'
+    import { formatDate, formatNumber } from '../formatters.js'
 
     const props = defineProps({ initialData: Object })
 
     const texts = ref(props.initialData.textHeaders)
     const groupSequenceView = props.initialData.groupSequenceView
-    const columns = props.initialData.columns
+    const columns = reactive({ ...props.initialData.columns }) // now Vue-owned, ready to wire a toggle to later
 
-    // Not carrying over the legacy sort state here - it used header-label
-    // strings like "Last Edited" that don't map 1:1 to property names.
-    // Starting from a plain default instead; can revisit if you want continuity.
     const sortField = ref('title')
     const sortDescending = ref(false)
     const searchTerm = ref(props.initialData.searchValue || '')
     const selected = reactive({})
+
+    // Single source of truth for every "plain scalar" column: label, alignment,
+    // formatting, sortability, and visibility all live here instead of being
+    // scattered across the template. Title/Sequence/Groups are excluded because
+    // they need custom markup (links, lists), not just a formatted value.
+    const columnDefs = computed(() => [
+        { key: 'lastModified', label: 'Last Edited', align: 'center', format: formatDate, sortable: true, visible: columns.lastModified },
+        { key: 'modifyByName', label: 'Last Edited By', align: 'center', sortable: true, visible: columns.lastModifiedBy },
+        { key: 'created', label: 'Created', align: 'center', format: formatDate, sortable: true, visible: columns.created },
+        { key: 'createdByName', label: 'Created By', align: 'center', sortable: true, visible: columns.createdBy },
+        { key: 'visionNumber', label: 'Vision Number', align: 'center', sortable: true, visible: columns.visionNumber },
+        { key: 'revisionStatus', label: 'Revision Status', align: 'center', sortable: true, visible: columns.revisionStatus },
+        { key: 'wordCount', label: 'Word Count', align: 'right', format: formatNumber, sortable: true, visible: columns.wordCount },
+        { key: 'characterCount', label: 'Character Count', align: 'right', format: formatNumber, sortable: true, visible: columns.characterCount },
+    ])
+
+    const visibleColumnDefs = computed(() => columnDefs.value.filter(c => c.visible))
 
     function setSort(field) {
         if (sortField.value === field) {
@@ -54,15 +69,11 @@
             <th v-if="groupSequenceView" @click="setSort('groupSequence')">Sequence</th>
             <th v-else></th>
             <th @click="setSort('title')">Title</th>
-            <th v-if="columns.lastModified" @click="setSort('lastModified')">Last Edited</th>
-            <th v-if="columns.lastModifiedBy" @click="setSort('modifyByName')">Last Edited By</th>
-            <th v-if="columns.created" @click="setSort('created')">Created</th>
-            <th v-if="columns.createdBy" @click="setSort('createdByName')">Created By</th>
-            <th v-if="columns.visionNumber" @click="setSort('visionNumber')">Vision Number</th>
-            <th v-if="columns.revisionStatus" @click="setSort('revisionStatus')">Revision Status</th>
+            <th v-for="col in visibleColumnDefs"
+                :key="col.key"
+                :class="`align-${col.align}`"
+                @click="col.sortable && setSort(col.key)">{{ col.label }}</th>
             <th v-if="columns.groups">Groups</th>
-            <th v-if="columns.wordCount" @click="setSort('wordCount')">Word Count</th>
-            <th v-if="columns.characterCount" @click="setSort('characterCount')">Character Count</th>
         </tr>
         <tr v-for="(text, index) in visibleTexts" :key="text.textHeaderId">
             <td>
@@ -72,17 +83,15 @@
             <td v-if="groupSequenceView">{{ text.groupSequence }}</td>
             <td v-else></td>
             <td><a class="link-item" :href="`/RhymeBinder/ViewText?textHeaderID=${text.textHeaderId}`">{{ text.title }}</a></td>
-            <td v-if="columns.lastModified">{{ text.lastModified }}</td>
-            <td v-if="columns.lastModifiedBy">{{ text.modifyByName }}</td>
-            <td v-if="columns.created">{{ text.created }}</td>
-            <td v-if="columns.createdBy">{{ text.createdByName }}</td>
-            <td v-if="columns.visionNumber">{{ text.visionNumber }}</td>
-            <td v-if="columns.revisionStatus">{{ text.revisionStatus }}</td>
-            <td v-if="columns.groups">
-                <a v-for="g in text.groups" :key="g.savedViewId" class="link-item" :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}</a>
+            <td v-for="col in visibleColumnDefs" :key="col.key" :class="`align-${col.align}`">
+                {{ col.format ? col.format(text[col.key]) : text[col.key] }}
             </td>
-            <td v-if="columns.wordCount">{{ text.wordCount }}</td>
-            <td v-if="columns.characterCount">{{ text.characterCount }}</td>
+            <td v-if="columns.groups"
+                v-for="g in text.groups"
+                :key="g.savedViewId"
+                class="link-item"
+                :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}
+            </td>
         </tr>
     </table>
 

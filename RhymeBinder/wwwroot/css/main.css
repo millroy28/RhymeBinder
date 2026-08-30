@@ -1,4 +1,21 @@
-﻿/*``[Desktop]*/
+﻿
+/*``[Global]*/
+.align-left {
+    text-align: left;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.align-right {
+    text-align: right;
+}
+
+  
+
+
+/*``[Desktop]*/
 @media (min-width:1024px){
     /*``[HEADER and Navbar]*/
     header {
@@ -1187,6 +1204,7 @@
             width: 100%;
             border-collapse: collapse;
             cursor: default;
+            font-size: smaller;
         }
 
         th {
@@ -2636,6 +2654,7 @@ height: 70vh;
         background-color: #eff3d8;
         width: 100%;
         border-collapse: collapse;
+        font-size: smaller;
     }
 
     th {

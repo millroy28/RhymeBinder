@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import TextList from './TextList.vue'
+import TextList from './components/TextList.vue'
 
 
 const dataEl = document.getElementById('list-texts-data')
