@@ -32,12 +32,15 @@
 </style>
 
 <script setup>
-    import { ref, reactive, computed } from 'vue'
+    import { ref, reactive, computed, onMounted } from 'vue'
     import { formatDate, formatNumber } from '../formatters.js'
+    import GroupAssignmentModal from './GroupAssignmentModal.vue'
+    import BinderTransferModal from './BinderTransferModal.vue'
 
     const props = defineProps({ initialData: Object })
 
     const texts = ref(props.initialData.textHeaders)
+    const groups = ref(props.initialData.groups)
     const groupSequenceView = props.initialData.groupSequenceView
     const columns = reactive({ ...props.initialData.columns }) // now Vue-owned, ready to wire a toggle to later
 
@@ -45,6 +48,10 @@
     const sortDescending = ref(false)
     const searchTerm = ref(props.initialData.searchValue || '')
     const selected = reactive({})
+
+    const selectedIds = computed(() => Object.keys(selected).filter(id => selected[id]).map(Number))
+    const showGroupModal = ref(false)
+    const showBinderModal = ref(false)
 
     // Single source of truth for every "plain scalar" column: label, alignment,
     // formatting, sortability, and visibility all live here instead of being
@@ -89,6 +96,41 @@
         })
         return sorted
     })
+
+    function handleGroupsSubmitted(updatedGroupsByTextId) {
+        // Table's Groups column - already working, unchanged
+        for (const t of texts.value) {
+            if (updatedGroupsByTextId[t.textHeaderId]) t.groups = updatedGroupsByTextId[t.textHeaderId]
+        }
+
+        // Modal's own membership data - the actual fix
+        const affectedTextIds = Object.keys(updatedGroupsByTextId).map(Number)
+        for (const group of groups.value) {
+            // Drop every affected text from this group's membership list, then
+            // re-add only the ones the server confirms are still (or newly) members
+            group.memberTextHeaderIds = group.memberTextHeaderIds.filter(id => !affectedTextIds.includes(id))
+            for (const textId of affectedTextIds) {
+                const stillMember = updatedGroupsByTextId[textId].some(g => g.textGroupId === group.textGroupId)
+                if (stillMember) group.memberTextHeaderIds.push(textId)
+            }
+        }
+
+        showGroupModal.value = false
+    }
+
+    function handleTransferred(transferredIds) {
+        const idSet = new Set(transferredIds)
+        texts.value = texts.value.filter(t => !idSet.has(t.textHeaderId))
+        transferredIds.forEach(id => delete selected[id])
+        showBinderModal.value = false
+    }
+
+    onMounted(() => {
+        window.listTextsActions = {
+            openGroupModal: () => { showGroupModal.value = true },
+            openBinderModal: () => { showBinderModal.value = true }
+        }
+    })
 </script>
 
 <template>
@@ -116,7 +158,7 @@
                     @click="col.sortable && setSort(col.key)">{{ col.label }}</th>
                 <th v-if="columns.groups">Groups</th>
             </tr>
-        
+
             <tr v-for="(text, index) in visibleTexts" :key="text.textHeaderId">
                 <td>
                     <input type="hidden" :name="`TextHeaders[${index}].TextHeaderId`" :value="text.textHeaderId" />
@@ -131,7 +173,7 @@
                 <td v-if="columns.groups">
                     <template v-for="(g, i) in text.groups" :key="g.savedViewId">
                         <a class="link-item" :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}</a>
- 
+
                     </template>
                 </td>
             </tr>
@@ -139,4 +181,15 @@
     </div>
 
     <div style="font-style: italic;">Showing {{ visibleTexts.length }} of {{ texts.length }} texts</div>
+
+    <GroupAssignmentModal v-if="showGroupModal"
+                          :groups="groups"
+                          :selectedTextHeaderIds="selectedIds"
+                          @close="showGroupModal = false"
+                          @submitted="handleGroupsSubmitted" />
+    <BinderTransferModal v-if="showBinderModal"
+                         :binders="props.initialData.userBinders"
+                         :selectedTextHeaderIds="selectedIds"
+                         @close="showBinderModal = false"
+                         @transferred="handleTransferred" />
 </template>

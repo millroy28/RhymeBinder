@@ -215,11 +215,11 @@ function populate_group_selected_text_header_counts() {
             var index = inputs[i].name.replace("TextHeaders[", "").replace("].Selected", "");
 
             //console.log("got index " + index);
-            var inputElement = document.getElementsByName("TextHeaders[" + index + "].TextHeaderId");
-            selectedTextHeaderIds.push(inputElement[0].value);
+            selectedTextHeaderIds.push(document.getElementsByTagName("TextHeaders[" + index + "].TextHeaderId").value);
 
         }
     }
+
 
     // If no headers, disable and move on
     if (selectedTextHeaderIds.length == 0) {
@@ -228,7 +228,9 @@ function populate_group_selected_text_header_counts() {
                 inputs[i].disabled = true;
             }
         }
+
     } else {    
+
         for (var i = 0; i < groupIds.length; i++) {
 
             // Get text header IDs associated with group
@@ -247,7 +249,7 @@ function populate_group_selected_text_header_counts() {
                 for (var j = 0; j < groupTextHeaderIds.length; j++) {
                
                     for (var k = 0; k < selectedTextHeaderIds.length; k++) {
-                         //console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
+                        // console.log("comparing group text header id " + groupTextHeaderIds[j].innerHTML + "with selected text id " + selectedTextHeaderIds[k])
                         if (groupTextHeaderIds[j].innerHTML == selectedTextHeaderIds[k]) {
                             matchCount++;
                         }

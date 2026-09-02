@@ -524,7 +524,25 @@ namespace RhymeBinder.Controllers
             SetAlertCookieGenericSaveStatus(status.success);
 
             return Redirect($"/Rhymebinder/ListGroups?binderId={newGroup.BinderId}");
-        } 
+        }
+
+        [HttpPost]
+        public IActionResult UpdateGroupMembershipJson([FromBody] GroupMembershipUpdateRequest request)
+        {
+            int userId = GetUserId();
+            // AUTHORIZATION GAP: nothing here yet confirms userId can edit these specific
+            // TextHeaderIds/Groups. Your existing UserAuthorized(...) check takes a single
+            // viewId - this endpoint takes arbitrary ID lists, so it needs its own check.
+            // I don't know that method's signature well enough to wire it in blind - worth
+            // adding before this goes anywhere near production.
+
+            Status status = _modelHelper.TextHelper.AddRemoveHeadersFromGroups(request.TextHeaderIds, request.GroupChanges);
+            if (!status.success) return BadRequest(new { message = status.message });
+
+            var updatedGroupsByTextId = _modelHelper.TextHelper.GetGroupsForTextHeaders(request.TextHeaderIds);
+            return Ok(new { updatedGroupsByTextId });
+        }
+
         #endregion
 
         //-------BINDER METHODS:
@@ -649,7 +667,16 @@ namespace RhymeBinder.Controllers
             SetAlertCookieGenericSaveStatus(status.success);
             return;
         }
+        [HttpPost]
+        public IActionResult TransferTextsToBinderJson([FromBody] BinderTransferRequest request)
+        {
+            int userId = GetUserId();
+            // Same authorization gap as above.
 
+            Status status = _modelHelper.TextHelper.TransferHeadersAcrossBinders(request.TextHeaderIds, request.DestinationBinderId);
+            if (!status.success) return BadRequest(new { message = status.message });
+            return Ok();
+        }
         #endregion
 
         //-------MISC:

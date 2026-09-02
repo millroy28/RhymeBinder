@@ -1341,6 +1341,34 @@ namespace RhymeBinder.Models.HelperModels
             status.recordId = savedView.View.SavedViewId;
             return status;
         }
+
+        public Status TransferHeadersAcrossBinders(List<int> selectedTextHeaderIds, int newBinderId)
+        {
+            Status status = new Status();
+            foreach (var textHeaderId in selectedTextHeaderIds)
+            {
+                TextHeader thisTextHeader = _context.TextHeaders.Single(x => x.TextHeaderId == textHeaderId);
+                thisTextHeader.BinderId = newBinderId;
+                thisTextHeader.Deleted = false;
+                try
+                {
+                    _context.Entry(thisTextHeader).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    _context.Update(thisTextHeader);
+                }
+                catch
+                {
+                    status.success = false;
+                    status.message = "Failed to transfer text header across binders";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    return status;
+                }
+            }
+            _context.SaveChanges();
+            status.success = true;
+            status.alertLevel = Enums.AlertLevelEnum.SUCCESS;
+            status.message = "Changes saved!";
+            return status;
+        }
         public Status AddRevisionToText(int userId, int textHeaderId)
         {
             Status status = new Status();
@@ -1382,6 +1410,19 @@ namespace RhymeBinder.Models.HelperModels
             }
 
             return status;
+        }
+        public Dictionary<int, List<TextGroupSummary>> GetGroupsForTextHeaders(List<int> textHeaderIds)
+        {
+            var groupsByTextId = _context.LnkTextHeadersTextGroups
+                .Where(x => textHeaderIds.Contains(x.TextHeaderId))
+                .Include(x => x.TextGroup)
+                .ToList()
+                .GroupBy(x => x.TextHeaderId)
+                .ToDictionary(g => g.Key, g => g.Select(x => new TextGroupSummary { TextGroupId = x.TextGroup.TextGroupId, SavedViewId = x.TextGroup.SavedViewId, GroupTitle = x.TextGroup.GroupTitle }).ToList());
+
+            // texts that lost all their groups need an explicit empty entry, not a missing one,
+            // so Vue clears the column instead of leaving stale data
+            return textHeaderIds.ToDictionary(id => id, id => groupsByTextId.TryGetValue(id, out var g) ? g : new List<TextGroupSummary>());
         }
         public List<TextHeader> GetPreviousVisions(int textHeaderID, List<TextHeader> prevTextHeaders)
         {
@@ -1485,6 +1526,63 @@ namespace RhymeBinder.Models.HelperModels
                     }
                 }
             }
+            return status;
+        }
+        public Status AddRemoveHeadersFromGroups(List<int> selectedTextHeaderIds, Dictionary<int, bool> groupChanges)
+        {
+            Status status = new Status { success = true, alertLevel = Enums.AlertLevelEnum.SUCCESS, message = "Changes saved!" };
+
+            List<int> groupIdsToRemove = groupChanges.Where(x => x.Value == false).Select(x => x.Key).ToList();
+            List<int> groupIdsToAdd = groupChanges.Where(x => x.Value == true).Select(x => x.Key).ToList();
+
+            if (groupIdsToRemove.Count > 0)
+            {
+                var toRemove = _context.LnkTextHeadersTextGroups
+                    .Where(x => groupIdsToRemove.Contains(x.TextGroupId) && selectedTextHeaderIds.Contains(x.TextHeaderId))
+                    .ToList();
+                try
+                {
+                    _context.LnkTextHeadersTextGroups.RemoveRange(toRemove);
+                    _context.SaveChanges();
+                }
+                catch
+                {
+                    status.success = false;
+                    status.message = "Failed to remove selected texts from selected groups";
+                    status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                    return status; 
+                }
+            }
+
+            if (groupIdsToAdd.Count > 0)
+            {
+                var existing = _context.LnkTextHeadersTextGroups
+                    .Where(x => groupIdsToAdd.Contains(x.TextGroupId) && selectedTextHeaderIds.Contains(x.TextHeaderId))
+                    .ToList();
+
+                var toAdd = new List<LnkTextHeadersTextGroup>();
+                foreach (var groupId in groupIdsToAdd)
+                    foreach (var textId in selectedTextHeaderIds)
+                        if (!existing.Any(x => x.TextGroupId == groupId && x.TextHeaderId == textId))
+                            toAdd.Add(new LnkTextHeadersTextGroup { TextGroupId = groupId, TextHeaderId = textId });
+
+                if (toAdd.Count > 0)
+                {
+                    try
+                    {
+                        _context.LnkTextHeadersTextGroups.AddRange(toAdd);
+                        _context.SaveChanges();
+                    }
+                    catch
+                    {
+                        status.success = false;
+                        status.message = "Failed to add selected texts to selected groups";
+                        status.alertLevel = Enums.AlertLevelEnum.FAIL;
+                        return status;
+                    }
+                }
+            }
+
             return status;
         }
         public Status AddRemoveHeaderFromGroups(TextEdit textEdit)
