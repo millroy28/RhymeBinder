@@ -32,7 +32,7 @@
 </style>
 
 <script setup>
-    import { ref, reactive, computed, onMounted } from 'vue'
+    import { ref, reactive, computed, onMounted, watch } from 'vue'
     import { formatDate, formatNumber } from '../formatters.js'
     import GroupAssignmentModal from './GroupAssignmentModal.vue'
     import BinderTransferModal from './BinderTransferModal.vue'
@@ -52,6 +52,7 @@
     const selectedIds = computed(() => Object.keys(selected).filter(id => selected[id]).map(Number))
     const showGroupModal = ref(false)
     const showBinderModal = ref(false)
+    const selectedGroupIds = ref([])
 
     // Single source of truth for every "plain scalar" column: label, alignment,
     // formatting, sortability, and visibility all live here instead of being
@@ -79,11 +80,23 @@
         }
     }
 
-    const filteredTexts = computed(() =>
-        !searchTerm.value
-            ? texts.value
-            : texts.value.filter(t => t.title?.toLowerCase().includes(searchTerm.value.toLowerCase()))
-    )
+    const filteredTexts = computed(() => {
+        let result = texts.value
+        console.log("filterin!")
+        if (searchTerm.value) {
+            console.log("text filterin");
+            result = result.filter(t => t.title?.toLowerCase().includes(searchTerm.value.toLowerCase()))
+        }
+
+        if (selectedGroupIds.length > 0) {
+            console.log("group filterin");
+            result = result.filter(t =>
+                t.groups?.some(g => selectedGroupIds.value.includes(g.savedViewId))
+            )
+        }
+
+        return result
+    })
 
     const visibleTexts = computed(() => {
         const sorted = [...filteredTexts.value]
@@ -96,6 +109,32 @@
         })
         return sorted
     })
+
+    const allVisibleSelected = computed(() =>
+        visibleTexts.value.length > 0 &&
+        visibleTexts.value.every(t => selected[t.textHeaderId])
+    )
+
+    const someVisibleSelected = computed(() =>
+        visibleTexts.value.some(t => selected[t.textHeaderId]) && !allVisibleSelected.value
+    )
+
+    function toggleSelectAll(event) {
+        const checked = event.target.checked
+        for (const t of visibleTexts.value) {
+            selected[t.textHeaderId] = checked
+        }
+    }
+
+    const selectAllCheckbox = ref(null)
+    watch(someVisibleSelected, (val) => {
+        if (selectAllCheckbox.value) selectAllCheckbox.value.indeterminate = val
+    })
+
+    function clearFilters() {
+        searchTerm.value = ''
+        selectedGroupIds.value = []
+    }
 
     function handleGroupsSubmitted(updatedGroupsByTextId) {
         // Table's Groups column - already working, unchanged
@@ -134,21 +173,34 @@
 </script>
 
 <template>
+    <!--Filters-->
     <div class="menu-bar-secondary">
         <div class="menu-bar-title">Filters</div>
         <div class="menu-bar-item">
             <input type="text" v-model="searchTerm" placeholder="Title..." />
         </div>
         <div class="menu-bar-item">
-            Groups:
+            <label>Groups:</label>
+            <select v-model="selectedGroupIds" size="1">
+                <option v-for="g in groups" :key="g.groupTitle" :value="g.groupTitle">{{ g.groupTitle }}</option>
+            </select>
+        </div>
+        <div class="menu-bar-item">
+            <button type="button" @click="clearFilters">Clear filters</button>
         </div>
     </div>
 
+    <!--Table-->
     <div class="table-scroll-region">
 
         <table>
             <tr>
-                <th></th>
+                <th>
+                    <input type="checkbox"
+                           ref="selectAllCheckbox"
+                           :checked="allVisibleSelected"
+                           @change="toggleSelectAll" />
+                </th>
                 <th v-if="groupSequenceView" @click="setSort('groupSequence')">Sequence</th>
                 <th v-else></th>
                 <th @click="setSort('title')">Title</th>

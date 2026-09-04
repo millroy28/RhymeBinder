@@ -1,5 +1,13 @@
-﻿@{
+﻿@using RhymeBinder.ClientApp
+@{
     ViewData["Title"] = "ListTexts";
+}
+@inject ViteManifestService ViteManifest
+
+<script type="module" src="@ViteManifest.GetScript("src/main.js")"></script>
+@foreach (var css in ViteManifest.GetStyles("src/main.js"))
+{
+    <link rel="stylesheet" href="@css" />
 }
 
 @{
@@ -18,8 +26,8 @@
 }
 @Html.Partial("_Alert")
 
-<link rel="stylesheet" href="~/dist/list-texts/assets/index-B0Zsg3lK.css" />
-<script type="module" src="~/dist/list-texts/assets/index-CJInTxAi.js"></script>
+<link rel="stylesheet" href="~/dist/list-texts/assets/index-DtCihcHV.css" />
+<script type="module" src="~/dist/list-texts/assets/index-cDO-FUU2.js"></script>
 <script language="Javascript" src="~/js/site.js"></script>
 
 

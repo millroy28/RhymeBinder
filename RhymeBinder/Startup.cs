@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RhymeBinder.ClientApp;
 using RhymeBinder.Data;
 using RhymeBinder.Models;
 using RhymeBinder.Models.HelperModels;
@@ -42,6 +43,8 @@ namespace RhymeBinder
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddSingleton<ViteManifestService>();
 
             services.Configure<IISServerOptions>(options =>
             {
