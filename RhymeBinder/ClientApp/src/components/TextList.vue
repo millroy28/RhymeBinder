@@ -29,6 +29,17 @@
         border-top: 1px solid var(--color-bg-hover);
         font-family: var(--font-ui);
     }
+
+    /* keep it from stretching full-width */
+    .menu-bar-item .multiselect {
+        width: 200px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+
+    /*Multiselect styling input main.css*/
+
 </style>
 
 <script setup>
@@ -36,11 +47,16 @@
     import { formatDate, formatNumber } from '../formatters.js'
     import GroupAssignmentModal from './GroupAssignmentModal.vue'
     import BinderTransferModal from './BinderTransferModal.vue'
+    import Multiselect from '@vueform/multiselect'
+    import '@vueform/multiselect/themes/default.css'
 
     const props = defineProps({ initialData: Object })
 
     const texts = ref(props.initialData.textHeaders)
     const groups = ref(props.initialData.groups)
+    const groupOptions = computed(() =>
+        groups.value.map(g => ({ value: g.textGroupId, label: g.groupTitle }))
+    )
     const groupSequenceView = props.initialData.groupSequenceView
     const columns = reactive({ ...props.initialData.columns }) // now Vue-owned, ready to wire a toggle to later
 
@@ -82,16 +98,17 @@
 
     const filteredTexts = computed(() => {
         let result = texts.value
-        console.log("filterin!")
+
         if (searchTerm.value) {
-            console.log("text filterin");
             result = result.filter(t => t.title?.toLowerCase().includes(searchTerm.value.toLowerCase()))
         }
 
-        if (selectedGroupIds.length > 0) {
-            console.log("group filterin");
+        if (selectedGroupIds.value.length > 0) {
             result = result.filter(t =>
-                t.groups?.some(g => selectedGroupIds.value.includes(g.savedViewId))
+                selectedGroupIds.value.some(groupId => {
+                    const group = groups.value.find(g => g.textGroupId === groupId)
+                    return group?.memberTextHeaderIds.includes(t.textHeaderId)
+                })
             )
         }
 
@@ -180,10 +197,12 @@
             <input type="text" v-model="searchTerm" placeholder="Title..." />
         </div>
         <div class="menu-bar-item">
-            <label>Groups:</label>
-            <select v-model="selectedGroupIds" size="1">
-                <option v-for="g in groups" :key="g.groupTitle" :value="g.groupTitle">{{ g.groupTitle }}</option>
-            </select>
+            <label for="selectedGroupIds">Groups:</label>
+            <Multiselect v-model="selectedGroupIds"
+                         :options="groupOptions"
+                         mode="multiple"
+                         :close-on-select="false"
+                         placeholder="All groups" />
         </div>
         <div class="menu-bar-item">
             <button type="button" @click="clearFilters">Clear filters</button>
@@ -225,7 +244,6 @@
                 <td v-if="columns.groups">
                     <template v-for="(g, i) in text.groups" :key="g.savedViewId">
                         <a class="link-item" :href="`/RhymeBinder/ListTexts?viewID=${g.savedViewId}`">{{ g.groupTitle }}</a>
-
                     </template>
                 </td>
             </tr>

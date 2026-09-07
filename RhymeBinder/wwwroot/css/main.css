@@ -14,6 +14,7 @@
 
 :root {
     --color-bg-body: #f4f5ef;
+    --color-bg-control: #F5EFF4;
     --color-bg-panel: #eff3d8;
     --color-bg-accent: #d7e19d;
     --color-bg-hover: #c6c9b6;
@@ -26,6 +27,66 @@
     --font-mono: 'Courier New', Courier, monospace;
 }
 
+/* Override Vueform Multiselect's default look with your app's variables */
+.multiselect {
+    --ms-font-size: small !important;
+    --ms-line-height: 1.4 !important;
+    --ms-bg: var(--color-bg-panel, #fff) !important;
+    --ms-border-color: var(--color-table-rule, #ccc) !important;
+    --ms-border-width: 1px !important;
+    --ms-radius: 3px !important;
+    --ms-py: 2px !important;
+    --ms-px: 6px !important;
+    --ms-min-height: unset !important; /* let it match your other filter inputs' height instead of the plugin's default */
+
+    --ms-ring-width: 0px !important; /* remove the default blue focus glow if it clashes; drop this line to keep it */
+
+    --ms-tag-bg: var(--color-bg-control, #e8e8e8) !important;
+    --ms-tag-color: inherit !important;
+    --ms-tag-radius: 3px !important;
+    --ms-tag-py: 1px !important;
+    --ms-tag-px: 6px !important;
+    --ms-tag-font-size: small !important;
+    --ms-dropdown-bg: var(--color-bg-control, #fff) !important;
+    --ms-dropdown-border-color: var(--color-table-rule, #ccc) !important;
+    --ms-dropdown-radius: 3px !important;
+    --ms-option-bg-selected: var(--color-bg-hover, #ddd) !important;
+    --ms-option-color-selected: inherit !important;
+    --ms-option-bg-selected-pointed: var(--color-bg-hover, #ddd) !important;
+    --ms-option-py: 4px !important;
+    --ms-option-px: 8px !important;
+    font-family: var(--font-ui) !important;
+    background: field !important;
+}
+
+.multiselect-option {
+    /*        box-sizing: border-box;
+        cursor: pointer;
+        line-height: var(--ms-option-line-height, 1.375);
+        padding: var(--ms-option-py, .5rem) var(--ms-option-px, .75rem);
+        text-align: left;
+        justify-content: flex-start;
+        align-items: center;
+        text-decoration: blink;
+        display: flex;*/
+    background: var(--color-bg-control) !important;
+    font-size: small !important;
+    font-family: var(--font-ui) !important;
+}
+
+.multiselect-options {
+    /*        flex-direction: column;
+        display: flex;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;*/
+    background: var(--color-bg-control) !important;
+    font-size: small !important;
+    font-family: var(--font-ui) !important;
+}
+
+
+/**/
 /*``[List Texts Shell - scoped to ListTexts]*/
 
 .list-texts-shell {
